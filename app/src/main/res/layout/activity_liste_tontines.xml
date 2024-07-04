@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".Inscription"
+    android:background="@color/colorWhite">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="4"
+        android:background="@color/colorGrey2"
+        android:orientation="vertical">
+        <com.dd.ShadowLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.7"
+            app:sl_shadowRadius="1dp"
+            app:sl_shadowColor="#f0f0f0"
+            app:sl_dx="0dp"
+            app:sl_dy="2dp"
+
+            app:sl_cornerRadius="2dp">
+
+            <LinearLayout
+                android:id="@+id/bienvenue"
+                android:layout_width="match_parent"
+                android:layout_height="79dp"
+                android:orientation="vertical"
+                android:paddingTop="10dp">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:orientation="horizontal"
+                    android:paddingLeft="10dp">
+
+                    <com.sicmagroup.tondi.FButton
+                        android:id="@+id/back_to"
+                        android:layout_width="75dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="left"
+                        android:drawableLeft="@drawable/ic_chevron_back"
+                        android:paddingLeft="-3dp"
+                        android:paddingRight="8dp"
+                        android:text="Retour"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorBlack"
+                        android:textSize="15sp"
+                        fbutton:buttonColor="@color/colorWhite"
+                        fbutton:cornerRadius="20dp"
+                        fbutton:shadowColor="@color/fbutton_color_asbestos"
+                        fbutton:shadowEnabled="true"
+                        fbutton:shadowHeight="0dp" />
+                    <!--<Button
+                    android:id="@+id/back_to"
+                    android:layout_width="120dp"
+                    android:layout_height="40dp"
+                    android:textColor="@color/colorGray"
+                    android:text="Retour"
+                    android:textAllCaps="false"
+                    android:textSize="17sp"
+                    android:background="@color/colorWhite"
+                    android:shadowRadius="10"
+                    android:drawableLeft="@drawable/ic_back"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"/>
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_back"
+                    android:id="@+id/back_to"
+                    android:contentDescription="@string/app_name" />-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="right"
+                        android:orientation="horizontal">
+
+                        <!--<com.sicmagroup.tondi.FButton
+                        android:id="@+id/btn_nouvelle_tontine"
+                        android:textSize="15sp"
+                        fbutton:buttonColor="@color/colorPrimary"
+                        fbutton:shadowColor="@color/fbutton_color_asbestos"
+                        fbutton:shadowEnabled="true"
+                        fbutton:shadowHeight="2dp"
+                        fbutton:cornerRadius="20dp"
+                        android:layout_height="35dp"
+                        android:paddingLeft="-3dp"
+                        android:paddingRight="8dp"
+                        android:drawableLeft="@drawable/ic_chevron_back"
+                        android:layout_width="75dp"
+                        android:textColor="@color/colorBlack"
+                        android:text="Retour"
+                        android:layout_gravity="left"
+                        android:textAllCaps="false"/>-->
+                        <com.sicmagroup.tondi.FButton
+                            android:id="@+id/btn_nouvelle_tontine"
+                            android:layout_width="match_parent"
+                            android:layout_height="35dp"
+                            android:layout_gravity="left"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="16dp"
+                            android:drawableRight="@drawable/ic_add"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="6dp"
+                            android:text="Commencer une autre tontine"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="15sp"
+                            fbutton:buttonColor="@color/colorPrimary"
+                            fbutton:cornerRadius="20dp"
+                            fbutton:shadowColor="@color/fbutton_color_asbestos"
+                            fbutton:shadowEnabled="true"
+                            fbutton:shadowHeight="0dp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="1dp"
+                    android:gravity="center"
+                    android:text="@string/m_tontines"
+                    android:textAllCaps="true"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </com.dd.ShadowLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2.9"
+            android:gravity="center"
+            android:orientation="vertical"
+            tools:ignore="MissingConstraints">
+
+            <com.ogaclejapan.smarttablayout.SmartTabLayout
+                android:id="@+id/viewpagertab"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                app:stl_indicatorAlwaysInCenter="false"
+                app:stl_indicatorWithoutPadding="false"
+                app:stl_indicatorInFront="true"
+                app:stl_indicatorInterpolation="smart"
+                app:stl_indicatorGravity="bottom"
+                app:stl_indicatorColor="@color/colorPrimaryDark"
+                app:stl_indicatorThickness="4dp"
+                app:stl_indicatorWidth="auto"
+                app:stl_indicatorCornerRadius="2dp"
+                app:stl_overlineColor="#4D000000"
+                app:stl_underlineColor="@color/colorPrimaryDark"
+                app:stl_underlineThickness="1dp"
+                app:stl_dividerColor="#4D000000"
+                app:stl_dividerThickness="0dp"
+                app:stl_defaultTabBackground="?attr/selectableItemBackground"
+                app:stl_defaultTabTextAllCaps="true"
+                app:stl_defaultTabTextColor="#FC000000"
+                app:stl_defaultTabTextSize="12sp"
+                app:stl_defaultTabTextHorizontalPadding="20dp"
+                app:stl_defaultTabTextMinWidth="0dp"
+                app:stl_distributeEvenly="false"
+                app:stl_clickable="true"
+                app:stl_titleOffset="24dp"
+                app:stl_drawDecorationAfterTab="true"
+                />
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center"
+            >
+            <include layout="@layout/deconnexion" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

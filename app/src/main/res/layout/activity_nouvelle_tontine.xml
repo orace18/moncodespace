@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".NouvelleTontine"
+    android:id="@+id/layout_tontine"
+    android:background="@color/colorWhite">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="4"
+        android:orientation="vertical">
+        <com.dd.ShadowLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.7"
+            app:sl_shadowRadius="1dp"
+            app:sl_shadowColor="#f0f0f0"
+            app:sl_dx="0dp"
+            app:sl_dy="2dp"
+
+            app:sl_cornerRadius="2dp">
+        <LinearLayout
+            android:id="@+id/bienvenue"
+            android:paddingTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:paddingLeft="10dp"
+                android:orientation="horizontal">
+
+                <!--<ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/diagonal_line_prim"
+                    android:contentDescription="@string/app_name" />
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="-38dp"
+                    android:src="@drawable/diagonal_line"
+                    android:contentDescription="@string/app_name" />
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_back"
+                    android:id="@+id/back_to"
+                    android:contentDescription="@string/app_name" />-->
+
+                <com.sicmagroup.tondi.FButton
+                    android:id="@+id/back_to"
+                    android:textSize="15sp"
+                    fbutton:buttonColor="@color/colorWhite"
+                    fbutton:shadowColor="@color/fbutton_color_asbestos"
+                    fbutton:shadowEnabled="true"
+                    fbutton:shadowHeight="0dp"
+                    fbutton:cornerRadius="20dp"
+                    android:layout_height="35dp"
+                    android:paddingLeft="-3dp"
+                    android:paddingRight="8dp"
+                    android:drawableLeft="@drawable/ic_chevron_back"
+                    android:layout_width="75dp"
+                    android:textColor="@color/colorBlack"
+                    android:text="Retour"
+                    android:layout_gravity="left"
+                    android:textAllCaps="false"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="35dp"
+                    android:paddingRight="10dp"
+                    android:gravity="right"
+                    android:orientation="horizontal">
+                <com.sicmagroup.tondi.FButton
+                    android:id="@+id/btn_enregistrer_tontine"
+                    fbutton:buttonColor="@color/colorPrimary"
+                    fbutton:shadowColor="@color/fbutton_color_asbestos"
+                    android:layout_marginTop="40dp"
+                    fbutton:shadowEnabled="false"
+                    fbutton:shadowHeight="0dp"
+                    fbutton:cornerRadius="20dp"
+                    android:layout_height="35dp"
+                    android:layout_width="150dp"
+                    android:textColor="@color/colorWhite"
+                    android:text="Valider la tontine"
+                    android:layout_gravity="right"
+                    android:textAllCaps="false"/>
+                </LinearLayout>
+
+
+            </LinearLayout>
+            <TextView
+                android:text="@string/n_tontine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="15dp"
+                android:gravity="right"
+                android:paddingRight="10dp"
+                android:textColor="@color/colorBlack"
+                android:textSize="18sp"
+                android:textAllCaps="true"
+                android:textStyle="bold"/>
+        </LinearLayout>
+        </com.dd.ShadowLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2.9"
+            android:gravity="top"
+            android:orientation="vertical"
+            tools:ignore="MissingConstraints">
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/colorGrey"
+                    android:id="@+id/recyclerView"
+                    android:descendantFocusability="beforeDescendants" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_warning"
+                    android:id="@+id/alert_icon"
+                    android:visibility="gone"
+                    android:layout_gravity="center"/>
+
+                <TextView
+                    android:id="@+id/first_versment_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    android:paddingHorizontal="10dp"
+                    android:paddingTop="5dp"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center"
+            >
+            <include layout="@layout/deconnexion" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

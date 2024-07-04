@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/mon_compte_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bg_color_3"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="?attr/colorPrimary"
+            app:toolbarId="@+id/toolbar">
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.sicmagroup.tondi.FButton
+                        android:id="@+id/back_to"
+                        fbutton:cornerRadius="4dp"
+                        fbutton:shadowColor="@color/colorPrimarylight"
+                        fbutton:shadowEnabled="false"
+                        fbutton:shadowHeight="4dp"
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="left"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:drawableLeft="@drawable/outline_arrow_back_black_24"
+                        android:drawableTint="@color/white"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:text=""
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        app:buttonColor="@color/colorPrimary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Mon compte"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@+id/back_to"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView4"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_anchorGravity="center"
+        android:paddingBottom="16dp"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/photo_cni_cmpte"
+                android:layout_width="match_parent"
+                android:layout_height="192dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                fbutton:srcCompat="@drawable/bj" />
+
+            <ImageView
+                android:id="@+id/avatar"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:layout_margin="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_avatar"
+                android:contentDescription="@string/app_name"
+                android:onClick="onLoadImageClick"
+                android:src="@drawable/ic_person"
+                app:layout_constraintBottom_toTopOf="@+id/cardViewSec"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/photo_cni_cmpte"
+                tools:ignore="OnClick" />
+
+            <TextView
+                android:id="@+id/username"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:ellipsize="marquee"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:paddingStart="16dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="5dp"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:text="CODJO CYRYSD"
+                android:textColor="@color/colorGrey4"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/avatar"
+                app:layout_constraintTop_toBottomOf="@+id/photo_cni_cmpte" />
+
+            <TextView
+                android:id="@+id/solde_compte"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp"
+                android:text="@string/cfg_moncompte"
+                android:textColor="@color/colorGrey4"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/avatar"
+                app:layout_constraintTop_toBottomOf="@+id/username" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardViewSec"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:background="@color/white"
+                app:cardCornerRadius="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/solde_compte"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bg_color_3"
+                    android:orientation="vertical">
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:elevation="5dp"
+                        android:id="@+id/expand_merchant"
+                        android:background="@color/colorPrimary" >                       android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:paddingLeft="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp"
+                            android:text="Mon marchand"
+                            android:textColor="@color/white"
+                            android:paddingEnd="16dp"
+                            android:textSize="18sp"
+                            android:clickable="true"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textStyle="bold" />
+                        <ImageButton
+                            android:id="@+id/expanded_merchant_btn"
+                            android:rotationX="180"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="end"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:background="@color/colorPrimary"
+                            android:src="@drawable/baseline_expand_more_24"
+                            app:tint="@color/white"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <LinearLayout
+                        android:id="@+id/merchant_form_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/form_merchant"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@color/bg_color_3"
+                            android:orientation="vertical"
+                            android:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/title_card_marchand"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="2dp"
+                            android:text="Lier un marchand"
+                            android:textColor="@color/colorGray"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="16dp"
+                            android:background="@color/colorPrimaryDark" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="16dp"
+                            android:orientation="vertical"
+                            android:paddingVertical="20dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <ProgressBar
+                                    android:id="@+id/progress_circ"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:visibility="gone"
+                                    android:indeterminate="true" />
+                                <LinearLayout
+                                    android:id="@+id/merchant_details"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:visibility="gone"
+                                    android:orientation="vertical">
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        android:layout_marginBottom="8dp"
+                                        >
+                                        <ImageView
+                                            android:layout_width="24dp"
+                                            android:layout_height="24dp"
+                                            app:tint="@color/colorGrey4"
+                                            android:src="@drawable/user_1"/>
+                                        <TextView
+                                            android:id="@+id/merchant_name"
+                                            android:layout_gravity="center_vertical"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textColor="@color/colorGrey4"
+                                            android:layout_marginLeft="8dp"
+                                            android:text="John Doe"/>
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginBottom="8dp"
+                                        android:orientation="horizontal"
+                                        >
+                                        <ImageView
+                                            android:layout_width="24dp"
+                                            android:layout_height="24dp"
+                                            app:tint = "@color/colorPrimary"
+                                            android:src="@drawable/key_48px"/>
+                                        <TextView
+                                            android:id="@+id/merchant_code"
+                                            android:layout_gravity="center_vertical"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="8dp"
+                                            android:textColor="@color/colorGrey4"
+                                            android:textStyle="bold"
+                                            android:textAllCaps="true"
+                                            android:text="COM#3645"/>
+                                    </LinearLayout>
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal"
+                                        >
+                                        <ImageView
+                                            android:layout_width="24dp"
+                                            android:layout_height="24dp"
+                                            app:tint="@color/fbutton_color_green_sea"
+                                            android:src="@drawable/outline_phone_24"/>
+                                        <TextView
+                                            android:id="@+id/merchant_tel"
+                                            android:layout_gravity="center_vertical"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginLeft="8dp"
+                                            android:textColor="@color/colorGrey4"
+                                            android:textStyle="normal"
+                                            android:text="+229 96999999"/>
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <com.sicmagroup.tondi.FButton
+                            android:id="@+id/btn_change_merchant"
+                            android:layout_width="100dp"
+                            android:layout_height="35dp"
+                            android:visibility="visible"
+                            android:layout_gravity="end"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginRight="16dp"
+                            android:text="@string/enreg_tontine"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorWhite"
+                            fbutton:buttonColor="@color/colorPrimary"
+                            fbutton:cornerRadius="4dp"
+                            fbutton:shadowColor="@color/colorPrimarylight"
+                            fbutton:shadowEnabled="false"
+                            fbutton:shadowHeight="4dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                android:paddingBottom="16dp"
+                android:background="@color/white"
+                app:cardCornerRadius="8dp"
+                app:layout_constraintTop_toBottomOf="@+id/cardViewSec"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/bg_color_3"
+                    android:orientation="vertical">
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:elevation="5dp"
+                        android:id="@+id/expand_securite"
+                        android:background="@color/colorPrimary" >                       android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:paddingLeft="16dp"
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp"
+                            android:text="@string/cfg_secutites"
+                            android:textColor="@color/white"
+                            android:paddingEnd="16dp"
+                            android:textSize="18sp"
+                            android:clickable="true"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textStyle="bold" />
+                        <ImageButton
+                            android:id="@+id/expanded_btn"
+                            android:rotationX="180"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_gravity="end"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:background="@color/colorPrimary"
+                            android:src="@drawable/baseline_expand_more_24"
+                            app:tint="@color/white"/>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <LinearLayout
+                        android:id="@+id/securite_form_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="16dp"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="2dp"
+                            android:text="Modifier mon mot de passe"
+                            android:textColor="@color/colorGray"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="16dp"
+                            android:background="@color/colorPrimaryDark" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginHorizontal="16dp"
+                            android:orientation="vertical"
+                            android:paddingTop="20dp">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/form_pass"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/bg_color_3"
+                                android:orientation="vertical" />
+
+                        </LinearLayout>
+
+                        <com.sicmagroup.tondi.FButton
+                            android:id="@+id/btn_change_pass"
+                            android:layout_width="100dp"
+                            android:layout_height="35dp"
+                            android:layout_gravity="right"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginRight="16dp"
+                            android:text="@string/enreg_tontine"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorWhite"
+                            fbutton:buttonColor="@color/colorPrimary"
+                            fbutton:cornerRadius="4dp"
+                            fbutton:shadowColor="@color/colorPrimarylight"
+                            fbutton:shadowEnabled="false"
+                            fbutton:shadowHeight="4dp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+
+            <TextView
+                android:id="@+id/cni_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="TextView"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

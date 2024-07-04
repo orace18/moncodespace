@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.sicmagroup.tondi">
+    <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="ANDROID.PERMISSION.READ_EXTERNAL_STORAGE" /> <!-- <uses-permission android:name="android.permission.RECEIVE_SMS" /> -->
+    <!-- <uses-permission android:name="android.permission.READ_SMS" /> -->
+    <!-- <uses-permission android:name="android.permission.SEND_SMS" /> -->
+    <!-- <uses-permission android:name="android.permission.CALL_PHONE" /> -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
+    <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" / -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:name="com.orm.SugarApp"
+        android:allowBackup="false"
+        android:hardwareAccelerated="false"
+        android:icon="@mipmap/ic_launcher2"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher2"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:allowBackup,android:icon">
+        <activity
+            android:name=".CompteDrawerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Home"
+            android:exported="false"
+            android:label="@string/title_activity_home" />
+        <activity android:name=".Inscription_next_2" />
+        <activity android:name=".About_us" /> <!-- <service -->
+        <!-- android:name=".SmsListener" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="true" /> -->
+        <activity
+            android:name=".CodeOtpVerification"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".HistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MdpModification"
+            android:exported="false" />
+        <!--
+        service
+            android:name=".FirebaseService"
+            android:enabled="true"
+            android:exported="true"></service
+        -->
+        <activity
+            android:name=".MesPlaintes"
+            android:label="@string/title_activity_mes_plaintes"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <meta-data
+            android:name="DATABASE"
+            android:value="tondi.db" />
+        <meta-data
+            android:name="VERSION"
+            android:value="3" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="com.sicmagroup.tondi" /> <!-- <meta-data -->
+        <!-- android:name="io.fabric.ApiKey" -->
+        <!-- android:value="cd317c085f06ff088143ba3dfd57324c1527f1e3" /> -->
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+
+        <activity
+            android:name=".SplashScreen"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Accueil"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Inscription"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Connexion"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CGU"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Dashboard"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MesTontines"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name=".MesTontines" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".NouvelleTontine"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MesVersements"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MesRetraits"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MonCompte"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Carte"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Encaisser"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name=".Encaisser" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Encaisser_Marchand"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Compte_Marchand" />
+        <activity
+            android:name=".CropActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CropActivityCni"
+            android:screenOrientation="portrait" />
+        <activity android:name=".Inscription_next" />
+        <activity
+            android:name=".CarteMain"
+            android:exported="true"
+            android:screenOrientation="portrait">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="comuba.e-tondi.com"
+                    android:pathPattern="/customer/cartes/.*"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Message_ok"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Message_changer_pin"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Message_non"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Ccm"
+            android:screenOrientation="portrait" />
+
+        <receiver
+            android:name=".CodeOtpVerification$OtpReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="com.google.android.gms.auth.api.phone.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".SmsReader" />
+        <service
+            android:name=".OverlayShowingService"
+            android:exported="false" />
+        <service
+            android:name=".SplashLoadingService"
+            android:exported="false" /> <!-- <receiver -->
+        <!-- android:name=".VersementAlarmReceiver" -->
+        <!-- android:process=":remote" /> -->
+        <!-- <receiver -->
+        <!-- android:name=".VersementReceiver" -->
+        <!-- android:enabled="false"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="comubatondiatondi.AutoVersement" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <!-- <service -->
+        <!-- android:name=".AutoVersement" -->
+        <!-- android:exported="false" -->
+        <!-- android:launchMode="singleTop" /> -->
+        <service
+            android:name=".FirebaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+<!--         <service android:name=".TondiJobService"-->
+<!--         android:label="Notification Service"-->
+<!--         android:permission="android.permission.BIND_JOB_SERVICE">-->
+<!--         </service>-->
+        <!-- <receiver android:name=".AutoversementBroadCastReceiver"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.BOOT_COMPLETED"/> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="cd317c085f06ff088143ba3dfd57324c1527f1e3" />
+    </application>
+
+</manifest>

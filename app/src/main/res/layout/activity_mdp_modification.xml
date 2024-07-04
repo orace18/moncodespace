@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:background="@color/bg_color_3"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:padding="16dp"
+    android:id="@+id/layout_code_otp"
+    tools:context=".CodeOtpVerification">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/colorGrey4"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Modifier votre mot de passe "/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/form_pass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_color_3"
+        android:orientation="vertical" />
+    <com.sicmagroup.tondi.FButton
+        android:id="@+id/btn_change_pass"
+        android:layout_width="100dp"
+        android:layout_height="35dp"
+        android:visibility="visible"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/enreg_tontine"
+        android:textAllCaps="false"
+        android:textColor="@color/colorWhite"
+        fbutton:buttonColor="@color/colorPrimary"
+        fbutton:cornerRadius="4dp"
+        fbutton:shadowColor="@color/colorPrimarylight"
+        fbutton:shadowEnabled="false"
+        fbutton:shadowHeight="4dp" />
+</LinearLayout>

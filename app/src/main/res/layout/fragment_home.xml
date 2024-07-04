@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+
+    tools:context=".ui.home.HomeFragment">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="10dp"
+            android:paddingLeft="16dp"
+            android:id="@+id/linear_layout_welcome"
+            android:background="@drawable/background_home"
+            android:elevation="1dp"
+
+
+            tools:ignore="MissingConstraints">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bienvenue"
+                android:textSize="12dp"
+                android:textColor="@color/white"
+            />
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:singleLine="true"
+                android:fadingEdge="horizontal"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:scrollHorizontally="true"
+                android:text="User USER"
+                android:textSize="23dp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/compte_user"
+                android:text="Compte N°: 123 456 789 98"
+                android:textSize="12dp"
+                android:textColor="@color/white"
+            />
+
+        </LinearLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="40dp"
+
+        app:layout_constraintTop_toTopOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:id="@+id/scroll_constraint"
+            android:layout_height="wrap_content">
+<!--    <androidx.core.widget.NestedScrollView-->
+<!--        android:id="@+id/nestedScrollView3"-->
+<!--        android:layout_width="match_parent"-->
+
+<!--        -->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_behavior="LinearLayout$ScrollingViewBehavior">-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:paddingTop="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recycler_view_home"
+                android:background="@color/colorPrimary"
+
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/scroll_constraint"
+                android:orientation="horizontal"
+                android:paddingBottom="15dp"
+
+                >
+
+            </androidx.recyclerview.widget.RecyclerView>
+            <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="15dp"
+        android:background="@drawable/background_home"
+        android:gravity="center"
+        android:id="@+id/affiche_background"
+        app:layout_constraintTop_toBottomOf="@+id/recycler_view_home"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+
+        >
+        <Button
+            android:layout_height="40dp"
+            android:layout_width="125dp"
+            android:textColor="@color/colorWhite"
+            android:text="Afficher tout"
+            android:id="@+id/btn_afficher_tout"
+            android:layout_gravity="center"
+            android:background="@drawable/border_color"
+            android:textAllCaps="false"/>
+
+    </LinearLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/title_history_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+            android:background="@color/bg_color_3"
+        app:layout_constraintTop_toBottomOf="@+id/affiche_background"
+        android:layout_marginVertical="10dp">
+
+        <TextView
+            android:id="@+id/text_historiques"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Historiques"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="15dp"
+
+            />
+            <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+            android:text="Voir plus"
+                android:id="@+id/voir_plus_history"
+            android:gravity="end"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="15dp"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/alerte"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="16dp"
+                android:paddingHorizontal="16dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/title_history_home"
+                android:text="Votre compte est désactivé temporairement"
+                android:textColor="@color/red"
+                android:visibility="gone"
+                />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:background="@color/bg_color_3"
+            android:id="@+id/recycler_view_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/alerte">
+
+        </androidx.recyclerview.widget.RecyclerView></androidx.constraintlayout.widget.ConstraintLayout>
+<!--            -->
+<!--    </androidx.core.widget.NestedScrollView>-->
+</ScrollView>
+
+<!--    <TextView-->
+<!--        android:id="@+id/text_home"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textSize="20sp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+</androidx.constraintlayout.widget.ConstraintLayout>

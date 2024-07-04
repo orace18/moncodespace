@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color_3"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_weight="3.7">
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/msg_check"
+                android:padding="10dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/ic_error"
+                app:tint="@color/colorPrimary"
+                android:gravity="center"
+                android:text="Opération Réussie"/>
+            <TextView
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorPrimary"
+                android:textSize="20sp"
+                android:lineHeight="25dp"
+
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:text="Opération échouée"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/msg_desc"
+            android:padding="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGrey4"
+            android:textAlignment="center"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:text="Lorem Ipsum Lorem Ipsum Lorem IpsumLorem IpsumLorem Ipsum"/>
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="0.3">
+        <com.sicmagroup.tondi.FButton
+            android:id="@+id/btn_oui"
+            android:textSize="15sp"
+            fbutton:shadowColor="@color/colorPrimarylight"
+            fbutton:shadowEnabled="false"
+            fbutton:shadowHeight="4dp"
+            fbutton:cornerRadius="4dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_height="35dp"
+            android:paddingLeft="100dp"
+            android:paddingRight="100dp"
+            android:layout_width="match_parent"
+            android:textColor="@color/white"
+            android:text="OK"
+            fbutton:buttonColor="@color/colorPrimary"
+            android:layout_gravity="left"
+            android:textAllCaps="true"/>
+    </LinearLayout>
+</LinearLayout>

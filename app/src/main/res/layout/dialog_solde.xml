@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/bg_color_3"
+    android:minWidth="280dp"
+    android:paddingBottom="16dp"
+    android:minHeight="250dp"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/colorPrimarylight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="126dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginEnd="126dp"
+            android:layout_marginBottom="26dp"
+            android:foregroundGravity="center_horizontal"
+            app:tint="@color/colorPrimaryDark"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/outline_account_balance_wallet_black_48" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/solde_value"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:text="Votre solde est de : 1000F FCA"
+        android:textColor="@color/colorGrey4"
+        android:textSize="13sp"
+        android:paddingEnd="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:fontFamily="sans-serif"
+        android:text="Votre solde s'élève à :"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingEnd="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/numero_compte_value" />
+
+    <com.sicmagroup.tondi.FButton
+        android:id="@+id/btn_oui"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="16dp"
+        android:text="Fermer"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:buttonColor="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/solde_value"
+        app:layout_constraintBottom_toBottomOf="parent"
+        fbutton:cornerRadius="4dp"
+        fbutton:shadowColor="@color/colorPrimarylight"
+        fbutton:shadowEnabled="false"
+        fbutton:shadowHeight="4dp" />
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:paddingEnd="16dp"
+        android:text="Numéro de compte COMUBA TONDi : "
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <TextView
+        android:id="@+id/numero_compte_value"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="xxxxxx0000021"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView19" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

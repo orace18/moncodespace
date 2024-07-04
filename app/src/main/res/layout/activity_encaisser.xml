@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".Inscription"
+    android:background="@color/bg_color_3"
+>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="4"
+        android:orientation="vertical">
+        <com.dd.ShadowLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.7"
+            app:sl_shadowRadius="1dp"
+            app:sl_shadowColor="#f0f0f0"
+            app:sl_dx="0dp"
+            app:sl_dy="2dp"
+
+            app:sl_cornerRadius="2dp">
+            <LinearLayout
+                android:paddingTop="10dp"
+                android:id="@+id/bienvenue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:paddingLeft="10dp"
+                    android:orientation="horizontal">
+                    <com.sicmagroup.tondi.FButton
+                        android:id="@+id/back_to"
+                        android:textSize="15sp"
+                        fbutton:buttonColor="@color/colorWhite"
+                        fbutton:shadowColor="@color/fbutton_color_asbestos"
+                        fbutton:shadowEnabled="true"
+                        fbutton:shadowHeight="0dp"
+                        fbutton:cornerRadius="20dp"
+                        android:layout_height="35dp"
+                        android:paddingLeft="-3dp"
+                        android:paddingRight="8dp"
+                        android:drawableLeft="@drawable/ic_chevron_back"
+                        android:layout_width="75dp"
+                        android:textColor="@color/colorBlack"
+                        android:text="Retour"
+                        android:layout_gravity="left"
+                        android:textAllCaps="false"/>
+                    <!--<Button
+                        android:id="@+id/back_to"
+                        android:layout_width="120dp"
+                        android:layout_height="40dp"
+                        android:textColor="@color/colorGray"
+                        android:text="Retour"
+                        android:textAllCaps="false"
+                        android:textSize="17sp"
+                        android:background="@color/colorWhite"
+                        android:shadowRadius="10"
+                        android:drawableLeft="@drawable/ic_back"
+                        android:paddingLeft="10dp"
+                        android:paddingRight="10dp"/>
+                    <ImageView
+                        android:layout_width="35dp"
+                        android:layout_height="30dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_back"
+                        android:id="@+id/back_to"
+                        android:contentDescription="@string/app_name" />-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="right"
+                        android:orientation="horizontal">
+
+                        <!--<com.sicmagroup.tondiMarchand.FButton
+                            android:id="@+id/btn_nouvelle_tontine"
+                            android:textSize="15sp"
+                            fbutton:buttonColor="@color/colorPrimary"
+                            fbutton:shadowColor="@color/fbutton_color_asbestos"
+                            fbutton:shadowEnabled="true"
+                            fbutton:shadowHeight="2dp"
+                            fbutton:cornerRadius="20dp"
+                            android:layout_height="35dp"
+                            android:paddingLeft="-3dp"
+                            android:paddingRight="8dp"
+                            android:drawableLeft="@drawable/ic_chevron_back"
+                            android:layout_width="75dp"
+                            android:textColor="@color/colorBlack"
+                            android:text="Retour"
+                            android:layout_gravity="left"
+                            android:textAllCaps="false"/>-->
+                        <com.sicmagroup.tondi.FButton
+                            android:id="@+id/btn_supprimer_code"
+                            fbutton:buttonColor="@color/colorPrimaryDark"
+                            fbutton:shadowColor="@color/fbutton_color_asbestos"
+                            android:layout_marginTop="10dp"
+                            android:drawableRight="@drawable/ic_delete_forever"
+                            fbutton:shadowEnabled="true"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:paddingRight="10dp"
+                            fbutton:shadowHeight="0dp"
+
+                            android:paddingLeft="10dp"
+                            fbutton:cornerRadius="20dp"
+                            android:layout_height="35dp"
+                            android:textSize="15sp"
+                            android:layout_width="match_parent"
+                            android:textColor="@color/colorWhite"
+                            android:text="Supprimer ce code de retrait"
+                            android:layout_gravity="left"
+                            android:textAllCaps="false"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+                <TextView
+                    android:text="Code de retrait"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="18sp"
+                    android:textAllCaps="true"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+        </com.dd.ShadowLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2.8"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="@color/colorGrey2"
+            tools:ignore="MissingConstraints">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/token"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGray"
+                            android:paddingLeft="16dp"
+                            android:gravity="center"
+                            android:paddingBottom="5dp"
+                            android:textSize="32sp"
+                            android:text="5466 2222 3333"
+                            android:paddingStart="16dp"
+                            android:layout_marginBottom="10dp"/>
+                    </LinearLayout>
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:layout_marginBottom="20dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/recap_epargnant"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorPrimary"
+                                android:paddingLeft="16dp"
+                                android:background="@drawable/bg_brd"
+                                android:paddingBottom="8dp"
+                                android:paddingTop="8dp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="5dp"
+                                android:textSize="18sp"
+                                android:text="Récapitulatif"/>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <LinearLayout
+                                    android:paddingLeft="16dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <ImageView
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:layout_marginTop="7dp"
+                                        android:src="@drawable/ic_date"/>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/colorGray"
+                                        android:textSize="16sp"
+                                        android:textStyle="italic"
+                                        android:text=" Généré le "/>
+                                    <TextView
+                                        android:id="@+id/creation"
+                                        android:paddingRight="16dp"
+                                        android:paddingTop="8dp"
+                                        android:textStyle="italic"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/colorGray"
+                                        android:gravity="right"
+                                        android:textSize="16sp"
+                                        android:text="12-02-2019"/>
+                                </LinearLayout>
+
+
+                                <LinearLayout
+                                    android:paddingLeft="16dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/colorGray"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:text="Montant total côtisé "/>
+                                    <TextView
+                                        android:id="@+id/montant_cumule"
+                                        android:paddingRight="16dp"
+                                        android:paddingTop="8dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/colorGray"
+                                        android:gravity="right"
+                                        android:textSize="16sp"
+                                        android:text="100 000 F"/>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:paddingLeft="16dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/colorGray"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:text="Commission (3%) "/>
+                                    <TextView
+                                        android:id="@+id/commission"
+                                        android:paddingRight="16dp"
+                                        android:paddingTop="8dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/colorPrimaryDark"
+                                        android:gravity="right"
+                                        android:textSize="16sp"
+                                        android:text="100 000 F"/>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:paddingLeft="16dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/colorGray"
+                                        android:textStyle="bold"
+                                        android:textSize="16sp"
+                                        android:text="Montant total à encaisser "/>
+                                    <TextView
+                                        android:id="@+id/montant_a_encaisser"
+                                        android:paddingRight="16dp"
+                                        android:paddingTop="8dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:textColor="@color/fbutton_color_green_sea"
+                                        android:gravity="right"
+                                        android:textSize="16sp"
+                                        android:text="100 000 F"/>
+                                </LinearLayout>
+
+                                <TextView
+                                    android:id="@+id/decompteur"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="@color/colorPrimaryDark"
+                                    android:paddingLeft="16dp"
+                                    android:paddingBottom="8dp"
+                                    android:paddingTop="8dp"
+                                    android:textStyle="italic"
+                                    android:textSize="14sp"
+                                    android:text="Expire dans 01 Heure(s) 22 Minute(s) 36 seconde(s)  "/>
+
+
+                            </LinearLayout>
+
+
+
+
+
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+                    <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_marginBottom="20dp">
+                        <com.sicmagroup.tondi.FButton
+                            android:id="@+id/btn_cmt_retirer"
+                            android:layout_width="match_parent"
+                            android:layout_height="35dp"
+                            android:layout_gravity="left"
+                            android:drawableRight="@drawable/ic_help"
+                            android:paddingLeft="30dp"
+                            android:paddingRight="6dp"
+                            android:text="Comment retirer vos tontines"
+                            android:textAllCaps="false"
+                            android:textColor="@color/colorWhite"
+                            android:textSize="15sp"
+                            fbutton:buttonColor="@color/colorPrimary"
+                            fbutton:cornerRadius="0dp"
+                            fbutton:shadowColor="@color/fbutton_color_asbestos"
+                            fbutton:shadowEnabled="true"
+                            fbutton:shadowHeight="0dp" />
+                        <!--<LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorPrimary"
+                            android:paddingLeft="16dp"
+                            android:background="@drawable/bg_brd"
+                            android:paddingBottom="8dp"
+                            android:paddingTop="8dp"
+                            android:textStyle="bold"
+                            android:textSize="18sp"
+                            android:text="Via code de retrait"/>
+
+
+
+
+
+
+
+
+                    </LinearLayout>-->
+                </androidx.cardview.widget.CardView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorGrey2"
+                        android:layout_marginBottom="20dp"
+                        android:orientation="horizontal">
+
+
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+            </ScrollView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center"
+            >
+            <include layout="@layout/deconnexion" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

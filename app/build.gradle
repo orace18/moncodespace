@@ -1,0 +1,146 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
+//apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
+
+android {
+    compileSdkVersion 31
+    defaultConfig {
+        applicationId "com.sicmagroup.tondi"
+        minSdkVersion 23
+        targetSdkVersion 31
+        versionCode 29
+        versionName "1.0.2"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            debuggable = false
+            minifyEnabled = true
+            shrinkResources = true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            debuggable = true
+            minifyEnabled = false
+            shrinkResources = false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    buildFeatures {
+        viewBinding true
+        dataBinding true
+
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //noinspection GradleCompatible
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.navigation:navigation-fragment:2.4.0-alpha05'
+    implementation 'androidx.navigation:navigation-ui:2.4.0-alpha05'
+    implementation 'com.google.android.play:core:1.7.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+//    implementation 'com.google.firebase:firebase-messaging:22.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    //implementation 'com.leo.simpletextview:simpletextvw:1.0.0'
+    //implementation 'info.hoang8f:fbutton:1.0.5'
+    //implementation 'com.github.florent37:shapeofview:1.2.0'
+    //implementation 'me.riddhimanadib.form-master:form-master:1.1.0'
+    //implementation 'me.biubiubiu.justifytext:library:1.1'
+    implementation 'com.github.dmytrodanylyk.shadow-layout:library:1.0.1'
+    implementation 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
+    //Optional: see how to use the utility.
+    implementation 'com.ogaclejapan.smarttablayout:utils-v4:1.6.1@aar'
+    //Optional: see how to use the utility.
+    //implementation 'com.ogaclejapan.smarttablayout:utils-v13:1.6.1@aar'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'com.tapadoo.android:alerter:2.0.6'
+    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.pixplicity.easyprefs:library:1.9.0'
+    implementation 'de.hdodenhof:circleimageview:2.1.0'
+    //implementation('com.hover:android-sdk:0.17.0-rc11') { transitive = true; }
+    //implementation 'com.romellfudi.ussdlibra:ussdlibra:1.1.e'
+    //implementation 'com.github.pqpo:SmartCropper:v1.2.3@aar'
+    //implementation 'com.github.pwittchen:infinitescroll:0.0.2'
+    //implementation 'com.github.satyan:sugar:1.3'
+    implementation 'com.romellfudi.permission:fudi-permission:1.0.a'
+    //implementation 'com.google.zxing:core:3.2.1'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.6.0'
+    implementation 'com.github.satyan:sugar:1.3'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.yarolegovich:lovely-dialog:1.1.0'
+    implementation 'com.crowdfire.cfalertdialog:cfalertdialog:1.1.0'
+    implementation 'com.mikhaellopez:circularprogressbar:2.0.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    //implementation "ch.acra:acra-mail:5.1.3"
+    //implementation 'com.google.firebase:firebase-crash:16.2.1'
+    // Add dependency
+    //implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+    //implementation project(path: ':viewflow')
+    //compile project(path: ':viewflow')
+    //implementation 'com.soundcloud.android:android-crop:1.0.1@aar'
+    //implementation 'com.github.desnyki:InfinityMenu:1.0.3'
+    implementation project(':ussdlibra')
+    //implementation project(':ussdlibra')
+    implementation project(':formmaster')
+
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
+    implementation 'com.google.firebase:firebase-core:19.0.0'
+//    implementation 'com.crashlytics.sdk.android:crashlytics:17.2.2'
+    implementation platform('com.google.firebase:firebase-bom:28.2.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-messaging'
+
+    // Add the Firebase Crashlytics SDK.
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'androidx.multidex:multidex:2.0.1'
+
+    def  work_version = "2.6.0"
+    implementation "androidx.work:work-runtime:$work_version"
+
+    implementation 'com.google.android.gms:play-services-auth:19.2.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.5.1'
+
+    implementation 'com.google.android.gms:play-services-base:17.6.0'
+    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
+    implementation 'com.loopj.android:android-async-http:1.4.9'
+
+    /*implementation('com.crashlytics.sdk.android:crashlytics:2.10.0@aar') {
+        transitive = true;
+    }*/
+//    implementation 'com.google.android.gms:play-services-mlkit-text-recognition:16.3.0'
+
+}
+apply plugin: 'com.google.gms.google-services'  // Google Play services Gradle plugin

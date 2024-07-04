@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bg_color_3"
+    android:minWidth="280dp"
+    android:paddingBottom="16dp"
+    android:minHeight="250dp"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/colorPrimarylight"
+        fbutton:layout_constraintStart_toStartOf="parent"
+        fbutton:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="126dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginEnd="126dp"
+            android:layout_marginBottom="26dp"
+            android:foregroundGravity="center_horizontal"
+            app:tint="@color/colorPrimaryDark"
+            fbutton:layout_constraintBottom_toBottomOf="parent"
+            fbutton:layout_constraintEnd_toEndOf="parent"
+            fbutton:layout_constraintStart_toStartOf="parent"
+            fbutton:layout_constraintTop_toTopOf="parent"
+            fbutton:srcCompat="@drawable/ic_info" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/deco_title"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textAllCaps="true"
+        android:paddingEnd="16dp"
+        fbutton:layout_constraintStart_toStartOf="parent"
+        fbutton:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <TextView
+        android:id="@+id/deco_message"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:text="deco_message"
+        android:textAllCaps="false"
+        android:textColor="@color/colorGrey4"
+        android:textSize="14sp"
+        android:paddingEnd="16dp"
+        fbutton:layout_constraintStart_toStartOf="parent"
+        fbutton:layout_constraintTop_toBottomOf="@+id/deco_title" />
+
+    <TextView
+        android:id="@+id/code_otp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="16dp"
+        android:layout_marginTop="8dp"
+        android:text="002568"
+        android:textAllCaps="true"
+        android:textColor="@color/colorGrey4"
+        android:textSize="12sp"
+        android:paddingEnd="20dp"
+        android:textStyle="bold"
+        fbutton:layout_constraintStart_toStartOf="parent"
+        fbutton:layout_constraintTop_toBottomOf="@+id/deco_message" />
+
+
+    <com.sicmagroup.tondi.FButton
+        android:id="@+id/btn_oui"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Oui"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        fbutton:buttonColor="@color/colorPrimary"
+        fbutton:cornerRadius="4dp"
+        fbutton:layout_constraintBottom_toBottomOf="parent"
+        fbutton:layout_constraintEnd_toEndOf="parent"
+        fbutton:layout_constraintTop_toBottomOf="@+id/code_otp"
+        fbutton:shadowColor="@color/colorPrimarylight"
+        fbutton:shadowEnabled="false"
+        fbutton:shadowHeight="4dp" />
+
+    <com.sicmagroup.tondi.FButton
+        android:id="@+id/btn_non"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="Non"
+        android:background="@drawable/border_btn_non"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
+        fbutton:cornerRadius="4dp"
+        fbutton:layout_constraintBottom_toBottomOf="parent"
+        fbutton:layout_constraintEnd_toStartOf="@+id/btn_oui"
+        fbutton:layout_constraintTop_toBottomOf="@+id/code_otp"
+        fbutton:shadowColor="@color/colorPrimarylight"
+        fbutton:shadowEnabled="false"
+        fbutton:shadowHeight="4dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

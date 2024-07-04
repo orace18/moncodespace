@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/navigation_home">
+
+    <fragment
+        android:id="@+id/navigation_home"
+        android:name="com.sicmagroup.tondi.ui.home.HomeFragment"
+        android:label="@string/title_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/navigation_retraits"
+        android:name="com.sicmagroup.tondi.ui.retraits.RetraitsFragment"
+        android:label="@string/title_retraits"
+        tools:layout="@layout/fragment_retraits" />
+
+    <fragment
+        android:id="@+id/navigation_tontines"
+        android:name="com.sicmagroup.tondi.ui.tontines.TontinesFragment"
+        android:label="@string/title_tontines"
+
+        tools:layout="@layout/fragment_tontines" />
+
+    <fragment
+        android:id="@+id/navigation_avances"
+        android:name="com.sicmagroup.tondi.ui.avances.AvancesFragment"
+        android:label="@string/title_avances"
+        tools:layout="@layout/fragment_avances" />
+
+    <fragment
+        android:id="@+id/navigation_plaintes"
+        android:name="com.sicmagroup.tondi.ui.plaintes.PlaintesFragment"
+        android:label="@string/title_plaintes"
+        tools:layout="@layout/fragment_plaintes" />
+
+
+
+</navigation>

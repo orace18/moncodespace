@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:background="@color/bg_color_3"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_code_otp"
+    tools:context=".CodeOtpVerification">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/colorGrey4"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="@string/code_otp_saisit"/>
+
+    <EditText
+        android:id="@+id/code_otp_saisit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:layout_margin="16dp"/>
+
+    <TextView
+        android:id="@+id/help_msg_saisit_codeotp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/colorGrey4"
+        android:textSize="16sp"
+        android:text="@string/help_msg_code_otp_saisit"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.sicmagroup.tondi.FButton
+            android:id="@+id/annuler_code_otp"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_marginRight="16dp"
+            android:text="Annuler"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:background="@drawable/border_btn_non"
+            android:textSize="15sp"
+            fbutton:cornerRadius="4dp"
+            fbutton:shadowColor="@color/colorPrimarylight"
+            fbutton:shadowEnabled="false"
+            fbutton:shadowHeight="4dp" />
+
+        <com.sicmagroup.tondi.FButton
+            android:id="@+id/valider_code_otp"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="@string/valider"
+            android:textAllCaps="false"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp"
+            fbutton:buttonColor="@color/colorPrimary"
+            fbutton:cornerRadius="4dp"
+            fbutton:shadowColor="@color/colorPrimarylight"
+            fbutton:shadowEnabled="false"
+            fbutton:shadowHeight="4dp" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vous n'avez pas reçu de code ?"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="16dp"
+        android:orientation="horizontal">
+        <TextView
+            android:id="@+id/resend_otp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Renvoyez-le"
+            android:layout_marginLeft="5dp"
+            android:clickable="false"
+            android:textColor="@color/colorPrimary"/>
+
+        <TextView
+            android:id="@+id/timer_fornewOtp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="dans "
+            android:layout_marginLeft="5dp" />
+
+    </LinearLayout>
+</LinearLayout>

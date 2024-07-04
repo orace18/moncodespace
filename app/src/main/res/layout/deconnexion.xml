@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginHorizontal="0dp"
+    android:background="@drawable/myrect"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/myrect"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.sicmagroup.tondi.FButton
+            android:id="@+id/btn_accueil"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:drawableTop="@drawable/ic_home"
+            android:drawablePadding="-10dp"
+            android:drawableTint="@color/colorGrey3"
+            android:inputType="textCapSentences"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="15dp"
+            android:text="@string/accueil"
+            android:textAllCaps="false"
+            android:textColor="@color/colorGrey3"
+            fbutton:buttonColor="@color/colorWhite"
+            fbutton:cornerRadius="0dp"
+            fbutton:shadowColor="@color/colorPrimaryDark"
+            fbutton:shadowEnabled="false"
+            fbutton:shadowHeight="0dp" />
+
+        <com.sicmagroup.tondi.FButton
+            android:id="@+id/btn_about"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:drawableTop="@drawable/ic_info_menu"
+            android:drawablePadding="-10dp"
+            android:drawableTint="@color/colorGrey3"
+            android:inputType="textCapSentences"
+            android:paddingLeft="40dp"
+            android:paddingRight="40dp"
+            android:paddingTop="15dp"
+            android:text="@string/about"
+            android:textAllCaps="false"
+            android:textColor="@color/colorGrey3"
+            fbutton:buttonColor="@color/colorWhite"
+            fbutton:cornerRadius="0dp"
+            fbutton:shadowColor="@color/colorPrimaryDark"
+            fbutton:shadowEnabled="false"
+            fbutton:shadowHeight="0dp" />
+
+        <com.sicmagroup.tondi.FButton
+            android:id="@+id/btn_deconnexion"
+            android:layout_width="wrap_content"
+            android:layout_height="65dp"
+            android:drawableTop="@drawable/ic_power"
+            android:drawablePadding="-10dp"
+            android:drawableTint="@color/colorGrey3"
+            android:inputType="textCapSentences"
+            android:paddingLeft="35dp"
+            android:paddingRight="35dp"
+            android:paddingTop="15dp"
+            android:text="@string/deconnexion"
+            android:textAllCaps="false"
+            android:textColor="@color/colorGrey3"
+            fbutton:buttonColor="@color/colorWhite"
+            fbutton:cornerRadius="0dp"
+            fbutton:shadowColor="@color/colorPrimaryDark"
+            fbutton:shadowEnabled="false"
+            fbutton:shadowHeight="0dp" />
+    </LinearLayout>
+    <!--    <comubatondiatondi.FButton-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:id="@+id/btn_deconnexion"-->
+<!--        fbutton:buttonColor="@color/colorWhite"-->
+<!--        fbutton:shadowColor="@color/colorPrimaryDark"-->
+<!--        android:textColor="@color/colorGray"-->
+<!--        fbutton:shadowEnabled="false"-->
+<!--        fbutton:shadowHeight="0dp"-->
+<!--        fbutton:cornerRadius="0dp"-->
+<!--        android:drawableLeft="@drawable/ic_power"-->
+<!--        android:textAllCaps="false"-->
+<!--        android:drawablePadding="10dp"-->
+<!--        android:paddingLeft="120dp"-->
+<!--        android:paddingRight="120dp"-->
+<!--        android:inputType="textCapSentences"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:text="@string/deconnexion"/>-->
+</RelativeLayout>

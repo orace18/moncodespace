@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/dialog_bg_all"
+    android:minWidth="280dp"
+    android:paddingBottom="16dp"
+    android:minHeight="250dp"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/colorPrimarylight"
+        fbutton:layout_constraintStart_toStartOf="parent"
+        fbutton:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="126dp"
+            android:layout_marginTop="26dp"
+            android:layout_marginEnd="126dp"
+            android:layout_marginBottom="26dp"
+            android:foregroundGravity="center_horizontal"
+            fbutton:tint="@color/colorPrimaryDark"
+            fbutton:layout_constraintBottom_toBottomOf="parent"
+            fbutton:layout_constraintEnd_toEndOf="parent"
+            fbutton:layout_constraintStart_toStartOf="parent"
+            fbutton:layout_constraintTop_toTopOf="parent"
+            fbutton:srcCompat="@drawable/outline_toll_black_48" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/deco_title"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Sélectionner une option de retrait"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingEnd="16dp"
+        fbutton:layout_constraintStart_toStartOf="parent"
+        fbutton:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <RadioGroup
+        android:id="@+id/radio_retrait"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        fbutton:layout_constraintStart_toStartOf="parent"
+        fbutton:layout_constraintTop_toBottomOf="@+id/deco_title">
+
+        <RadioButton
+            android:id="@+id/radioMale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:fontFamily="sans-serif"
+            android:tag="1"
+            android:textSize="13sp"
+            android:text="@string/retrait_sur_mon_compte_mobilemoney"
+            android:textColor="@color/colorGrey4" />
+
+        <RadioButton
+            android:id="@+id/radioFemale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif"
+            android:tag="2"
+            android:textSize="13sp"
+            android:text="@string/retrait_en_esp_ces"
+            android:textColor="@color/colorGrey4" />
+
+    </RadioGroup>
+
+
+    <com.sicmagroup.tondi.FButton
+        android:id="@+id/btn_continue_retrait"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="16dp"
+        android:text="Continuer"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        fbutton:buttonColor="@color/colorPrimary"
+        fbutton:cornerRadius="4dp"
+        fbutton:layout_constraintEnd_toEndOf="parent"
+        fbutton:layout_constraintTop_toBottomOf="@+id/radio_retrait"
+        fbutton:shadowColor="@color/colorPrimarylight"
+        fbutton:layout_constraintBottom_toBottomOf="parent"
+        fbutton:shadowEnabled="false"
+        fbutton:shadowHeight="4dp" />
+
+    <com.sicmagroup.tondi.FButton
+        android:id="@+id/btn_non"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="16dp"
+        android:text="Annuler"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
+        android:background="@drawable/border_btn_non"
+        fbutton:cornerRadius="4dp"
+        fbutton:layout_constraintEnd_toStartOf="@+id/btn_continue_retrait"
+        fbutton:layout_constraintTop_toBottomOf="@+id/radio_retrait"
+        fbutton:layout_constraintBottom_toBottomOf="parent"
+        fbutton:shadowColor="@color/colorPrimarylight"
+        fbutton:shadowEnabled="false"
+        fbutton:shadowHeight="4dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:top="28px">
+        <layer-list>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="#08000000" />
+                    <corners android:radius="4dp" />
+                    <padding
+                        android:bottom="3px"
+                        android:left="3px"
+                        android:right="3px"
+                        android:top="3px" />
+            </shape>
+            </item>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="#09000000" />
+                    <corners android:radius="4dp" />
+                    <padding
+                        android:bottom="2px"
+                        android:left="2px"
+                        android:right="2px"
+                        android:top="2px" />
+                </shape>
+            </item>
+
+
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="#d47865" />
+                    <corners android:radius="4dp" />
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px" />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="#d57865" />
+                    <corners android:radius="4dp" />
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px" />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="#d67865" />
+                    <corners android:radius="4dp" />
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px" />
+                </shape>
+            </item>
+            <item>
+                <shape android:shape="oval">
+                    <solid android:color="#d77865" />
+                    <corners android:radius="4dp" />
+                    <padding
+                        android:bottom="1px"
+                        android:left="1px"
+                        android:right="1px"
+                        android:top="1px" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#FFF" />
+            <corners android:radius="4dp" />
+            <padding
+                android:bottom="15dp"
+                android:left="15dp"
+                android:right="15dp"
+                android:top="15dp" />
+        </shape>
+    </item>
+</layer-list>
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >-->
+
+    <!--    &lt;!&ndash; Background &ndash;&gt;-->
+    <!--    <item>-->
+    <!--        <shape-->
+    <!--            android:shape="oval">-->
+    <!--            <solid android:color="@color/colorPrimarylight" />-->
+
+    <!--            <corners android:radius="550dp" />-->
+    <!--                        <stroke-->
+    <!--                            android:color="@color/white"-->
+    <!--                            android:width="0dp" />-->
+
+
+    <!--        </shape>-->
+    <!--&lt;!&ndash;        <shape xmlns:android="http://schemas.android.com/apk/res/android"&ndash;&gt;-->
+    <!--&lt;!&ndash;            android:shape="rectangle">&ndash;&gt;-->
+
+    <!--&lt;!&ndash;            <stroke&ndash;&gt;-->
+    <!--&lt;!&ndash;                android:color="@color/colorPrimary"&ndash;&gt;-->
+    <!--&lt;!&ndash;                android:width="1.5dp" />&ndash;&gt;-->
+    <!--&lt;!&ndash;            <solid android:color="@color/colorWhite"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;        </shape>&ndash;&gt;-->
+    <!--    </item>-->
+
+    <!--</layer-list>-->

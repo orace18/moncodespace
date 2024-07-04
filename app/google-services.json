@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "898370922162",
+    "project_id": "tondi-50d4d",
+    "storage_bucket": "tondi-50d4d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:898370922162:android:e8301146c873dd5dc04bab",
+        "android_client_info": {
+          "package_name": "com.sicmagroup.tondi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "898370922162-d607aua65bfrcjrk5okenj1s57alate6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlTK71fFH6b3dTN86WiJH017Mci9aM-lo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "898370922162-d607aua65bfrcjrk5okenj1s57alate6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

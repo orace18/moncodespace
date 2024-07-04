@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bg_color_3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="?attr/colorPrimary"
+            app:toolbarId="@+id/toolbar">
+
+
+            <androidx.coordinatorlayout.widget.CoordinatorLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.sicmagroup.tondi.FButton
+                        android:id="@+id/back_to"
+                        fbutton:cornerRadius="4dp"
+                        fbutton:shadowColor="@color/colorPrimarylight"
+                        fbutton:shadowEnabled="false"
+                        fbutton:shadowHeight="4dp"
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="start"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/outline_arrow_back_black_24"
+                        android:drawableTint="@color/white"
+                        android:paddingLeft="3dp"
+                        android:paddingRight="3dp"
+                        android:text=""
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        app:buttonColor="@color/colorPrimary"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Code de retrait"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toEndOf="@+id/back_to"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            >
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:cardCornerRadius="8dp"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/show_token"
+                            android:layout_width="match_parent"
+                            android:textAlignment="center"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textSize="18sp"
+                            android:paddingHorizontal="16dp"
+                            android:layout_marginVertical="16dp"
+                            android:textColor="@color/colorGray"
+                            android:text="TOKEN"
+                            />
+
+
+                    <com.dd.ShadowLayout
+                        android:id="@+id/nav"
+                        android:layout_width="270dp"
+                        android:layout_height="wrap_content"
+                        android:elevation="4dp"
+                        android:layout_gravity="center"
+                        app:sl_fillColor="@color/bg_color_3"
+                        app:sl_shadowColor="@color/gray_text"
+                        android:isScrollContainer="true"
+                        android:scrollbars="vertical"
+                        android:nestedScrollingEnabled="true"
+                        android:paddingVertical="16dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:sl_cornerRadius="8dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textStyle="normal"
+                                android:textAlignment="center"
+                                android:textSize="13sp"
+                                android:layout_marginVertical="8dp"
+                                android:textColor="@color/colorGray"
+                                android:text="Scannez le Qr Code"/>
+
+                            <ImageView
+                                android:id="@+id/qr_code_view"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:layout_gravity="center"
+                                android:layout_marginBottom="16dp"
+                                android:contentDescription="Qr CODE"
+                                android:src="@drawable/qr_code"
+                                android:visibility="visible" />
+
+                            <ImageView
+                                android:layout_gravity="center"
+                                android:id="@+id/qr_code_view_hide"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:src="@drawable/qr_code"
+                                android:layout_marginBottom="16dp"
+                                android:visibility="gone"
+                                />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:layout_height="wrap_content"
+                                    app:layout_constraintLeft_toLeftOf="parent"
+                                    app:layout_constraintRight_toRightOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent"
+                                    >
+
+                                <LinearLayout
+                                    android:layout_width="60dp"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="16dp"
+                                    android:background="@color/dark_blue"
+                                     />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:layout_marginHorizontal="16dp"
+                                    android:text="OU TAPEZ"/>
+
+                                <LinearLayout
+                                    android:layout_width="60dp"
+                                    android:layout_height="1dp"
+                                    android:layout_marginTop="16dp"
+                                    android:background="@color/dark_blue" />
+                            </LinearLayout>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                            <TextView
+                                android:id="@+id/token"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/colorGray"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:paddingBottom="5dp"
+                                android:textSize="18sp"
+                                android:text="5466 2222 3333"
+                                android:layout_marginTop="16dp"
+                                android:visibility="visible"
+                                android:layout_marginBottom="10dp"/>
+                        </LinearLayout>
+
+
+                    </com.dd.ShadowLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="normal"
+                            android:layout_gravity="center"
+                            android:textSize="13sp"
+                            android:visibility="gone"
+                            android:textColor="@color/colorGray"
+                            android:text="Montant a encaissé"/>
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:orientation="horizontal">
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_marginTop="12dp"
+                                app:tint="@color/fbutton_color_green_sea"
+                                android:src="@drawable/payments_48px"/>
+
+                            <TextView
+                                android:id="@+id/montant_a_encaisser"
+                                android:paddingTop="8dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/fbutton_color_green_sea"
+                                android:gravity="center"
+                                android:layout_marginLeft="8dp"
+                                android:textStyle="bold"
+                                android:textSize="24dp"
+                                android:text="100 000 F CFA"/>
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/trait_ho"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@+id/card"
+                android:layout_marginVertical="16dp"
+                android:background="@color/black"
+                android:orientation="horizontal" />
+            <androidx.cardview.widget.CardView
+                app:layout_constraintTop_toBottomOf="@+id/trait_ho"
+                android:layout_width="match_parent"
+                app:cardCornerRadius="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:text="DETAILS"/>
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:src="@drawable/ic_date"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGray"
+                            android:textSize="16sp"
+                            android:textStyle="italic"
+                            android:text=" Généré le "/>
+                        <TextView
+                            android:id="@+id/creation"
+                            android:paddingRight="16dp"
+                            android:paddingTop="8dp"
+                            android:textStyle="italic"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGray"
+                            android:gravity="right"
+                            android:textSize="16sp"
+                            android:text="12-02-2019"/>
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:layout_marginRight="4dp"
+                            android:src="@drawable/savings_48px"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGray"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:text="Montant total côtisé "/>
+                        <TextView
+                            android:id="@+id/montant_cumule"
+                            android:paddingRight="16dp"
+                            android:paddingTop="8dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGray"
+                            android:gravity="right"
+                            android:textSize="16sp"
+                            android:text="100 000 F"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:layout_marginRight="4dp"
+                            app:tint = "@color/red"
+                            android:src="@drawable/swap_vert_48px"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGray"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:text="Commission (3,226%) "/>
+                        <TextView
+                            android:id="@+id/commission"
+                            android:paddingRight="16dp"
+                            android:paddingTop="8dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/red"
+                            android:gravity="right"
+                            android:textSize="16sp"
+                            android:text="100 000 F"/>
+                    </LinearLayout>
+
+
+
+                    <TextView
+                        android:id="@+id/decompteur"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:paddingLeft="16dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="8dp"
+                        android:textStyle="italic"
+                        android:textSize="14sp"
+                        android:text="Expire dans 01 Heure(s) 22 Minute(s) 36 seconde(s)  "/>
+
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:orientation="vertical"-->
+<!--                >-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="horizontal">-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/token"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textColor="@color/colorGray"-->
+<!--                        android:paddingLeft="16dp"-->
+<!--                        android:gravity="center"-->
+<!--                        android:paddingBottom="5dp"-->
+<!--                        android:textSize="32sp"-->
+<!--                        android:text="5466 2222 3333"-->
+<!--                        android:paddingStart="16dp"-->
+<!--                        android:layout_marginBottom="10dp"/>-->
+<!--                </LinearLayout>-->
+<!--                <androidx.cardview.widget.CardView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_margin="10dp"-->
+<!--                    android:layout_marginBottom="20dp">-->
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:orientation="vertical">-->
+<!--                        <TextView-->
+<!--                            android:id="@+id/recap_epargnant"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textColor="@color/colorPrimary"-->
+<!--                            android:paddingLeft="16dp"-->
+<!--                            android:background="@drawable/bg_brd"-->
+<!--                            android:paddingBottom="8dp"-->
+<!--                            android:paddingTop="8dp"-->
+<!--                            android:textStyle="bold"-->
+<!--                            android:layout_marginBottom="5dp"-->
+<!--                            android:textSize="18sp"-->
+<!--                            android:text="Récapitulatif"/>-->
+
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:orientation="vertical">-->
+
+<!--                            <LinearLayout-->
+<!--                                android:paddingLeft="16dp"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:orientation="horizontal">-->
+<!--                                <ImageView-->
+<!--                                    android:layout_width="20dp"-->
+<!--                                    android:layout_height="20dp"-->
+<!--                                    android:layout_marginTop="7dp"-->
+<!--                                    android:src="@drawable/ic_date"/>-->
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:textColor="@color/colorGray"-->
+<!--                                    android:textSize="16sp"-->
+<!--                                    android:textStyle="italic"-->
+<!--                                    android:text=" Généré le "/>-->
+<!--                                <TextView-->
+<!--                                    android:id="@+id/creation"-->
+<!--                                    android:paddingRight="16dp"-->
+<!--                                    android:paddingTop="8dp"-->
+<!--                                    android:textStyle="italic"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:textColor="@color/colorGray"-->
+<!--                                    android:gravity="right"-->
+<!--                                    android:textSize="16sp"-->
+<!--                                    android:text="12-02-2019"/>-->
+<!--                            </LinearLayout>-->
+
+
+<!--                            <LinearLayout-->
+<!--                                android:paddingLeft="16dp"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:orientation="horizontal">-->
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:textColor="@color/colorGray"-->
+<!--                                    android:textStyle="bold"-->
+<!--                                    android:textSize="16sp"-->
+<!--                                    android:text="Montant total côtisé "/>-->
+<!--                                <TextView-->
+<!--                                    android:id="@+id/montant_cumule"-->
+<!--                                    android:paddingRight="16dp"-->
+<!--                                    android:paddingTop="8dp"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:textColor="@color/colorGray"-->
+<!--                                    android:gravity="right"-->
+<!--                                    android:textSize="16sp"-->
+<!--                                    android:text="100 000 F"/>-->
+<!--                            </LinearLayout>-->
+
+<!--                            <LinearLayout-->
+<!--                                android:paddingLeft="16dp"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:orientation="horizontal">-->
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:textColor="@color/colorGray"-->
+<!--                                    android:textStyle="bold"-->
+<!--                                    android:textSize="16sp"-->
+<!--                                    android:text="Commission (3,226%) "/>-->
+<!--                                <TextView-->
+<!--                                    android:id="@+id/commission"-->
+<!--                                    android:paddingRight="16dp"-->
+<!--                                    android:paddingTop="8dp"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:textColor="@color/colorPrimaryDark"-->
+<!--                                    android:gravity="right"-->
+<!--                                    android:textSize="16sp"-->
+<!--                                    android:text="100 000 F"/>-->
+<!--                            </LinearLayout>-->
+
+<!--                            <LinearLayout-->
+<!--                                android:paddingLeft="16dp"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:orientation="horizontal">-->
+<!--                                <TextView-->
+<!--                                    android:layout_width="wrap_content"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:textColor="@color/colorGray"-->
+<!--                                    android:textStyle="bold"-->
+<!--                                    android:textSize="16sp"-->
+<!--                                    android:text="Montant total à encaisser "/>-->
+<!--                                <TextView-->
+<!--                                    android:id="@+id/montant_a_encaisser"-->
+<!--                                    android:paddingRight="16dp"-->
+<!--                                    android:paddingTop="8dp"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:textColor="@color/fbutton_color_green_sea"-->
+<!--                                    android:gravity="right"-->
+<!--                                    android:textSize="16sp"-->
+<!--                                    android:text="100 000 F"/>-->
+<!--                            </LinearLayout>-->
+
+<!--                            <TextView-->
+<!--                                android:id="@+id/decompteur"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:textColor="@color/colorPrimaryDark"-->
+<!--                                android:paddingLeft="16dp"-->
+<!--                                android:paddingBottom="8dp"-->
+<!--                                android:paddingTop="8dp"-->
+<!--                                android:textStyle="italic"-->
+<!--                                android:textSize="14sp"-->
+<!--                                android:text="Expire dans 01 Heure(s) 22 Minute(s) 36 seconde(s)  "/>-->
+
+
+<!--                        </LinearLayout>-->
+
+
+
+
+
+
+<!--                    </LinearLayout>-->
+<!--                </androidx.cardview.widget.CardView>-->
+<!--                <androidx.cardview.widget.CardView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_margin="10dp"-->
+<!--                    android:layout_marginBottom="20dp">-->
+
+
+<!--                </androidx.cardview.widget.CardView>-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:background="@color/colorGrey2"-->
+<!--                    android:layout_marginBottom="20dp"-->
+<!--                    android:orientation="horizontal">-->
+
+
+
+<!--                </LinearLayout>-->
+
+
+<!--            </LinearLayout>-->
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_cmt_retirer"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/outline_help_outline_white_24"
+        app:backgroundTint="@color/colorSecondaryDark"
+        android:layout_gravity="bottom|end"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_margin="16dp" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

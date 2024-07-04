@@ -1,0 +1,2104 @@
+package com.sicmagroup.tondi;
+
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
+import com.google.android.gms.auth.api.phone.SmsRetriever;
+import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NetworkError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+//import com.crashlytics.android.Crashlytics;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.OnSuccessListener;
+import com.google.firebase.crashlytics.FirebaseCrashlytics;
+
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.orm.SugarRecord;
+import com.orm.query.Condition;
+import com.orm.query.Select;
+import com.pixplicity.easyprefs.library.Prefs;
+import com.romellfudi.permission.PermissionService;
+import com.sicmagroup.formmaster.model.FormElementTextPhone;
+import com.sicmagroup.formmaster.model.FormElementZero;
+import com.sicmagroup.tondi.Enum.OperationTypeEnum;
+import com.sicmagroup.tondi.utils.Constantes;
+import com.sicmagroup.ussdlibra.USSDController;
+import com.sicmagroup.ussdlibra.USSDService;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.sicmagroup.formmaster.FormBuilder;
+import com.sicmagroup.formmaster.model.BaseFormElement;
+import com.sicmagroup.formmaster.model.FormElementTextPassword;
+
+//import io.fabric.sdk.android.Fabric;
+
+import static com.sicmagroup.tondi.Accueil.MOOV_DATA_SHARING;
+import static com.sicmagroup.tondi.utils.Constantes.CODE_MARCHAND_KEY;
+import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
+import static com.sicmagroup.tondi.utils.Constantes.STATUT_UTILISATEUR;
+
+public class Connexion extends AppCompatActivity {
+    private static final String TAG = "service_";
+    TextView textView;
+    private RecyclerView mRecyclerView;
+    private FormBuilder mFormBuilder;
+    private static final int TAG_TEL = 21;
+    private static final int TAG_PASS = 22;
+//<<<<<<< HEAD
+    String url_login = SERVEUR+"/api/v1/utilisateurs/login";
+
+    String user_existe = SERVEUR + "/api/v1/utilisateurs/connecter";
+    String user_credential_check = SERVEUR + "/api/v1/utilisateurs/check_password";
+    String medias_url = SERVEUR + "/medias/";
+    Utilitaire utilitaire;
+    ProgressDialog progressDialog;
+
+    private HashMap<String, HashSet<String>> map;
+    private USSDController ussdApi;
+
+    static String url_sms = "http://oceanicsms.com/api/http/sendmsg.php";
+    static String numeroExpediteurSms = "TONDi";
+    static String apiSmsCode = "7293";
+    static String utilisateurSms = "sicmaetassocies";
+    static String url_get_code_otp = SERVEUR + "/api/v1/codesotp/generer_code";
+    static String url_verify_code_otp = SERVEUR + "/api/v1/codesotp/verifier_code";
+    static String url_disable_code_otp = SERVEUR + "/api/v1/codesotp/disable_codeotp";
+    static String url_generate_otp_insc = SERVEUR + "/api/v1/codesotp/generer_codeotp_insc";
+    static String url_verify_code_otp_insc = SERVEUR + "/api/v1/codesotp/verifier_codeotp_insc";
+
+//    static String url_get_nom_prenom_from_qos = SERVEUR + "/api/v1/user/get_customer_from_qos";
+    public static String url_save_plainte = SERVEUR + "/api/v1/plaintes/save_plainte";
+    static String url_desactiver_account = SERVEUR + "/api/v1/utilisateurs/desactivate_customer";
+    static String url_get_code_otp_verif = SERVEUR + "/api/v1/codesotp/generer_codeotp_access";
+
+    static String url_get_code_otp_verif_access = SERVEUR + "/api/v1/codesotp/verifier_codeotp_access";
+
+    public static String ID_UTILISATEUR_KEY = "id_utilisateur";
+    public static String NOM_KEY = "nom";
+    public static String PRENOMS_KEY = "prenoms";
+    static String PIN_KEY = "pin";
+    static String PASS_KEY = "pass";
+    static String PHOTO_KEY = "photo";
+    static String PHOTO_CNI_KEY = "cni_photo";
+    public static String NUMERO_COMPTE_KEY = "numero_compte";
+    static String CONNECTER_KEY = "connecter_le";
+    public static String TEL_KEY = "telephone";
+    static String SEXE_KEY = "sexe";
+    static String ACCESS_RETURNf_KEY = "accessibity_return";
+    static String ACCESS_BOOL = "accessibity_bool";
+//    static String ACCESS_NOUVELLE_TONTINE = "nouvelle_tontine_access";
+    static String SPLASH_LOADING = "splash_loading";
+    //static final String ID_TONTINE_USSD = "id_tontine";
+    //static final String MONTANT_VERSE = "mt_verse";
+    static String MTN_MECOTI = "62023231";
+    static String MTN_TEST = "62023231";
+    //static String MTN_MECOTI = "22996665166";
+    //static String MTN_TEST = "96665166";
+    static String MOOV_TEST = "95816309";
+    static String FIREBASE_TOKEN = "firebase_token";
+    static String CODE_OTP_RECU = "codeOtp_recu";
+    //nombre de fois que les 3 tentatives de validation de pin échoue
+    static String NMBR_PWD_FAILED = "nmbr_pwd_failed";
+    // nombre d'echec de validation de pin : à 3 on bloque les champs et tous les bouttons pendant 30sec
+    static String NMBR_PWD_TENTATIVE_FAILED = "nmbr_pwd_tentative_failed";
+
+    static String TOKEN_OPERATION_ENCOURS = "token_op_encours";
+    static String NUMERO_MARCHAND_OP_ENCOURS = "num_marchand_op_encours";
+    static String TEL_CLIENT_OP_ENCOURS = "tel_client_op_encours";
+    static String MONTANT_OP_ENCOURS = "montant_op_encours";
+    static String ID_TONTINE_OP_ENCOURS = "id_tontine_op_encours";
+
+    static String NOM_INSC_ENCOURS = "nom_insc_encours";
+    static String TEL_INSC_ENCOURS = "tel_insc_encours";
+    static String PRENOM_INSC_ENCOURS = "prenom_insc_encours";
+    static String MDP_INSC_ENCOURS = "mdp_insc_encours";
+    static String SEXE_INSC_ENCOURS = "sexe_insc_encours";
+
+
+    /**
+     * A trois état :
+     * inconnu : Aucun message du 124 encore reçu
+     * oui : Le numero est bien dans le telephone
+     * non : Le nnumero n'est pas dans le telephone
+     * */
+    static String NUMERO_VERIFYED = "inconnu";
+    static String numero_saisit_insc = "";
+
+
+    FormElementZero element0 = FormElementZero.createInstance().setTag(99);
+
+    FormElementTextPhone element2 = FormElementTextPhone.createInstance().setTag(TAG_TEL).setTitle("Téléphone").setHint("99999999").setRequired(true);
+
+    FormElementTextPassword element1 = FormElementTextPassword.createInstance().setTag(TAG_PASS).setTitle("Mot de passe").setHint("Mot de passe").setRequired(true);
+
+    TextView mdp_forget;
+
+    private AppUpdateManager appUpdateManager;
+    private static final int RC_APP_UPDATE = 100;
+    private Boolean isFromCarteTontine = false;
+    private int idTontine = 0;
+    private  Sim sim_par_defaut_general = new Sim();
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("onPause","back");
+        //Prefs.putBoolean(ACCESS_BOOL,false);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("onResume","fore");
+        Prefs.putBoolean(ACCESS_BOOL,true);
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo result) {
+                if (result.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS){
+                    try {
+                        appUpdateManager.startUpdateFlowForResult(result, AppUpdateType.IMMEDIATE, Connexion.this, RC_APP_UPDATE);
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+//        if (!isAccessibilitySettingsOn(getApplicationContext())) {
+//
+//            android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
+//            alertDialogBuilder.setTitle("Permission d'accessibilité");
+//            ApplicationInfo applicationInfo = getApplicationInfo();
+//            int stringId = applicationInfo.labelRes;
+//            String name = applicationInfo.labelRes == 0 ?
+//                    applicationInfo.nonLocalizedLabel.toString() : getString(stringId);
+//            alertDialogBuilder
+//                    .setMessage("Tondi a besoin d'exécuter les codes USSD pour les paiements de vos mises en mode déconnecté de l'internet.");
+//            alertDialogBuilder.setCancelable(false);
+//            alertDialogBuilder.setNeutralButton("Continuer pour activer", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    Connexion.this.finish();
+//                    Intent intent = new Intent();
+//                    intent.setClassName("com.android.settings",
+//                            "com.android.settings.Settings");
+//                    intent.setAction(Intent.ACTION_MAIN);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+//                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+//                    intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+//                            "com.android.settings.accessibility.AccessibilitySettings");
+//                    intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS,
+//                            "com.android.settings.accessibility.AccessibilitySettings");
+//                    startActivityForResult(intent, 1);
+//                    startActivityForResult(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), 1);
+//                }
+//            });
+//            android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+//            if (alertDialog != null) {
+//                alertDialog.show();
+//            }
+//            //startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+//        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("onStop","back");
+        Prefs.putBoolean(ACCESS_BOOL,false);
+        //Toast.makeText(Connexion.this,"Home buton pressed",Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("onDestroy","back");
+        Prefs.putBoolean(ACCESS_BOOL,false);
+
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+//        Fabric.with(this, new Crashlytics());
+        FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
+        crashlytics.sendUnsentReports();
+        utilitaire= new Utilitaire(this);
+        new Prefs.Builder()
+                .setContext(this)
+                .setMode(ContextWrapper.MODE_PRIVATE)
+                .setPrefsName(getPackageName())
+                .setUseDefaultSharedPreference(true)
+                .build();
+        if (Prefs.getString(ID_UTILISATEUR_KEY,null) != null){
+            startActivity(new Intent(Connexion.this, Home.class));
+        }
+        // classe de retour après activation des accessibiltés
+        Prefs.putString(ACCESS_RETURNf_KEY,"com.sicmagroup.tondi.Connexion");
+        Prefs.putBoolean(ACCESS_BOOL,true);
+        setContentView(R.layout.activity_connexion);
+        map = new HashMap<>();
+        map.put("KEY_LOGIN", new HashSet<>(Arrays.asList("waiting", "loading")));
+        map.put("KEY_ERROR", new HashSet<>(Arrays.asList("problem", "error")));
+//        new PermissionService(this).request(
+//                new String[]{/*Manifest.permission.CALL_PHONE,*/ /*Manifest.permission.READ_PHONE_STATE,*/ Manifest.permission.READ_SMS , Manifest.permission.RECEIVE_SMS},
+//                callback);
+        Log.d("DEKSP", "dekpe");
+        /**
+         * Upodate automaticaly and IMMEDIAT
+         */
+
+        appUpdateManager = AppUpdateManagerFactory.create(this);
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo result) {
+                if (result.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                        && result.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)){
+                    try {
+                        appUpdateManager.startUpdateFlowForResult(result, AppUpdateType.IMMEDIATE, Connexion.this, RC_APP_UPDATE);
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+//        if (!isAccessibilitySettingsOn(getApplicationContext())) {
+//
+//            android.app.AlertDialog.Builder alertDialogBuilder = new android.app.AlertDialog.Builder(this);
+//            alertDialogBuilder.setTitle("Permission d'accessibilité");
+//            ApplicationInfo applicationInfo = getApplicationInfo();
+//            int stringId = applicationInfo.labelRes;
+//            String name = applicationInfo.labelRes == 0 ?
+//                    applicationInfo.nonLocalizedLabel.toString() : getString(stringId);
+//            alertDialogBuilder
+//                    .setMessage("Tondi a besoin d'exécuter les codes USSD pour les paiements de vos mises en mode déconnecté de l'internet.");
+//            alertDialogBuilder.setCancelable(false);
+//            alertDialogBuilder.setNeutralButton("Continuer pour activer", new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int id) {
+//                    Connexion.this.finish();
+//                    Intent intent = new Intent();
+//                    intent.setClassName("com.android.settings",
+//                            "com.android.settings.Settings");
+//                    intent.setAction(Intent.ACTION_MAIN);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+//                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+//                            | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+//                    intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT,
+//                            "com.android.settings.accessibility.AccessibilitySettings");
+//                    intent.putExtra(PreferenceActivity.EXTRA_SHOW_FRAGMENT_ARGUMENTS,
+//                            "com.android.settings.accessibility.AccessibilitySettings");
+//                    startActivityForResult(intent, 1);
+//                    startActivityForResult(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS), 1);
+//                }
+//            });
+//            android.app.AlertDialog alertDialog = alertDialogBuilder.create();
+//            if (alertDialog != null) {
+//                alertDialog.show();
+//            }
+//            //startActivity(new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS));
+//        }
+        if (getIntent().getExtras()!=null )
+        {
+            Intent activityIntent = getIntent();
+            mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+//            SpacingItemDecorator itemDecorator = new SpacingItemDecorator(40);
+//            mRecyclerView.addItemDecoration(itemDecorator);
+            mFormBuilder = new FormBuilder(this, mRecyclerView);
+            List<BaseFormElement> formItems = new ArrayList<>();
+            formItems.add(element0);
+            formItems.add(element2);
+            formItems.add(element1);
+            //element0.setValue("");
+            element1.setValue(activityIntent.getStringExtra("mdp"));
+            element2.setValue(activityIntent.getStringExtra("tel"));
+
+            mFormBuilder.addFormElements(formItems);
+            if(activityIntent.hasExtra("id_tontine")){
+                isFromCarteTontine = true;
+                idTontine = activityIntent.getIntExtra("id_tontine", 0);
+            }
+        }else{
+            setupForm();
+        }
+
+        TextView lien_inscription = (TextView)findViewById(R.id.lien_inscription);
+        lien_inscription.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                //Connexion.this.finish();
+                startActivity(new Intent(Connexion.this,Inscription.class));
+                /*String phoneNumber="*124#".trim();;
+
+                ussdApi = USSDController.getInstance(Connexion.this);
+                //result.setText("");
+                ussdApi.callUSSDInvoke(phoneNumber, map, new USSDController.CallbackInvoke() {
+                    @Override
+                    public void responseInvoke(String message) {
+                        Log.d("APPUSSpp_ENcours", message);
+                    }
+
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void over(String message) {
+                        Log.d("APPUSSpp", message);
+                        // traiter message quand fini OK
+                        startActivity(new Intent(Connexion.this,Inscription.class));
+                    }
+                });*/
+                //throw new RuntimeException("This is a crash");
+
+            }
+        });
+
+        Button btn_connexion = (Button)findViewById(R.id.btn_connexion);
+        btn_connexion.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                if (!mFormBuilder.isValidForm()){
+                    if (getIntent().getExtras()!=null){
+                        //BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+
+                        //String tel_value = tel.getValue();
+                        Toast.makeText(Connexion.this, "t:"+element1.getValue()+"//"+"t:"+element2.getValue(), Toast.LENGTH_LONG).show();
+                        // verifier sim
+                        //verifier_sim(element2.getValue());
+                    }else{
+                        String msg = "> Veuillez remplir les champs SVP! ";
+                        alertView("Erreurs dans le formulaire",msg);
+                    }
+                }else{
+                    //Toast.makeText(getApplicationContext(),"auth_en_ligne"+"",Toast.LENGTH_LONG).show();
+                    //Log.d("medias___","auth_en_ligne");
+                    //connecter();
+                    BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+                    String tel_value = tel.getValue();
+                    Utilitaire utilitaire = new Utilitaire(Connexion.this);
+//                    if (utilitaire.getOperatorByNumber(tel_value).equals("MOOV"))
+                        auth();
+//                    else
+//                    {
+//                        String msg= "Seul les numéros MOOV sont acceptés";
+//                        Intent i = new Intent(Connexion.this, Message_non.class);
+//                        i.putExtra("msg_desc",msg);
+//                        i.putExtra("class","com.sicmagroup.tondi.Connexion");
+//                        startActivity(i);
+//                    }
+
+                    // verifier sim
+                    //verifier_sim(tel_value);
+                }
+            }
+        });
+        //startService(new Intent(this, AutoVersement.class));
+        final ConstraintLayout mainLayout =  findViewById(R.id.layout_connexion);
+        mdp_forget = (TextView) findViewById(R.id.mdp_forget);
+        mdp_forget.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Snackbar.make(mainLayout, "Contactez le XX XX XX XX puis suivez les instructions.", Snackbar.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    private void setupForm() {
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mFormBuilder = new FormBuilder(this, mRecyclerView);
+
+        /*password.setInputType(InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_VARIATION_PASSWORD);*/
+        List<BaseFormElement> formItems = new ArrayList<>();
+        formItems.add(element0);
+        formItems.add(element2);
+        formItems.add(element1);
+
+        mFormBuilder.addFormElements(formItems);
+        // mFormBuilder.refreshView();
+
+
+
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private void auth() {
+        BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+        BaseFormElement mdp = mFormBuilder.getFormElement(TAG_PASS);
+        String tel_value = tel.getValue();
+        String mdp_value = mdp.getValue();
+        Connexion.AeSimpleSHA1 AeSimpleSHA1 = new Connexion.AeSimpleSHA1();
+
+        try {
+            mdp_value = AeSimpleSHA1.md5(mdp_value);
+            mdp_value = AeSimpleSHA1.SHA1(mdp_value);
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        Utilisateur utilisateur = new Utilisateur();
+
+        auth_en_ligne();
+//        if (utilisateur.auth(tel_value,mdp_value)>0){
+//            final Utilisateur user = utilisateur.getUser(tel_value);
+//            if (user.getStatut().equals("desactive"))
+//            {
+//                if (utilitaire.isConnected()) {
+//                    auth_en_ligne();
+//                }
+//                else
+//                {
+//                    String msg= "Votre compte est désactivé. Rapprochez vous de votre institutions.";
+//                    Intent i = new Intent(Connexion.this, Message_non.class);
+//                    i.putExtra("msg_desc",msg);
+//                    i.putExtra("class","com.sicmagroup.tondi.Connexion");
+//                    startActivity(i);
+//                }
+//            }
+//            else {
+//
+//                //Vérification en ligne des credentials client
+//                //auth_credential_online(user);
+//                auth_en_ligne();
+//            }
+//        }else{
+//            // si connecte
+//            if (utilitaire.isConnected()){
+//                auth_en_ligne();
+//                // si l'utilisateur existe en ligne
+//                // ajouter son compte en local
+//                // et rediriger sur tableau de bord
+//                // sinon
+//                // afficher le message identifiants incorrects
+//
+//            }
+//            // sinon
+//            else{
+//                Connexion.this.finish();
+//                String msg="Vos identifiants sont incorrects. Veuillez réessayer SVP!";
+//                Intent i = new Intent(Connexion.this, Message_non.class);
+//                i.putExtra("msg_desc",msg);
+//                i.putExtra("class","com.sicmagroup.tondi.Connexion");
+//                startActivity(i);
+//
+//                /*Alerter.create(Connexion.this)
+//                        .setTitle("Vos identifiants sont incorrects. Veuillez réessayer SVP!")
+//                        .setIcon(R.drawable.ic_warning)
+//                        .setTitleAppearance(R.style.TextAppearance_AppCompat_Large)
+//                        .setIconColorFilter(R.color.colorPrimaryDark)
+//                        //.setText("Vous pouvez maintenant vous connecter.")
+//                        .setBackgroundColorRes(R.color.colorWhite) // or setBackgroundColorInt(Color.CYAN)
+//                        .show();*/
+//            }
+//
+//        }
+
+
+    }
+
+
+    private void alertView( String title ,String message ) {
+//        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+//        dialog.setTitle( title )
+//                .setIcon(R.drawable.ic_warning)
+//                .setMessage(message)
+////     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+////      public void onClick(DialogInterface dialoginterface, int i) {
+////          dialoginterface.cancel();
+////          }})
+//                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialoginterface, int i) {
+//                    }
+//                }).show();
+
+        Dialog dialog_alert = new Dialog(Connexion.this);
+        dialog_alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog_alert.setCancelable(true);
+        dialog_alert.setContentView(R.layout.dialog_attention);
+
+        TextView titre = (TextView) dialog_alert.findViewById(R.id.deco_title);
+        titre.setText(title);
+        TextView message_deco = (TextView) dialog_alert.findViewById(R.id.deco_message);
+        message_deco.setText(message);
+
+
+
+        Button oui = (Button) dialog_alert.findViewById(R.id.btn_oui);
+        oui.setText("OK");
+        oui.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_alert.cancel();
+            }
+        });
+
+        Button non = (Button) dialog_alert.findViewById(R.id.btn_non);
+        non.setVisibility(View.GONE);
+//        non.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Prefs.putBoolean(MOOV_DATA_SHARING, false);
+//                Toast.makeText(Inscription.this, "TONDi a besoin de cette autorisation pour vous facilitez votre inscription sur l'application TONDi", Toast.LENGTH_SHORT).show();
+//                Inscription.this.finish();
+//                dialog.cancel();
+//
+//            }
+//        });
+
+        dialog_alert.show();
+
+    }
+
+    public static boolean isTimeAutomatic(Context c) {
+        return Settings.Global.getInt(c.getContentResolver(), Settings.Global.AUTO_TIME, 0) == 1;
+    }
+
+
+
+
+    public static class AeSimpleSHA1 {
+        private String convertToHex(byte[] data) {
+            StringBuilder buf = new StringBuilder();
+            for (byte b : data) {
+                int halfbyte = (b >>> 4) & 0x0F;
+                int two_halfs = 0;
+                do {
+                    buf.append((0 <= halfbyte) && (halfbyte <= 9) ? (char) ('0' + halfbyte) : (char) ('a' + (halfbyte - 10)));
+                    halfbyte = b & 0x0F;
+                } while (two_halfs++ < 1);
+            }
+            return buf.toString();
+        }
+
+        public  String SHA1(String text) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] textBytes = text.getBytes("iso-8859-1");
+            md.update(textBytes, 0, textBytes.length);
+            //md.update(text.getBytes("UTF-8"));
+            byte[] sha1hash = md.digest();
+            return convertToHex(sha1hash);
+        }
+
+        public String md5(String string) {
+            byte[] hash;
+
+            try {
+                hash = MessageDigest.getInstance("MD5").digest(string.getBytes("UTF-8"));
+            } catch (NoSuchAlgorithmException e) {
+                throw new RuntimeException("Huh, MD5 should be supported?", e);
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException("Huh, UTF-8 should be supported?", e);
+            }
+
+            StringBuilder hex = new StringBuilder(hash.length * 2);
+
+            for (byte b : hash) {
+                int i = (b & 0xFF);
+                if (i < 0x10) hex.append('0');
+                hex.append(Integer.toHexString(i));
+            }
+
+            return hex.toString();
+        }
+    }
+
+    private void auth_en_ligne( ) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_LOGIN,
+                new Response.Listener<String>()
+                {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void onResponse(String response) {
+
+                        Log.d("medias_url_cy", "11111");
+                        Log.d("Response", response);
+
+                        try {
+                            JSONObject result = new JSONObject(response);
+                            int responseCode = result.getInt("responseCode");
+                            if (responseCode == 0){
+                                final JSONObject user = result.getJSONObject("body");
+                                Long id = Long.valueOf(0);
+                                Utilisateur nouvel_utilisateur = null;
+                                @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                Date creation = (Date)formatter.parse(user.getString("createdAt"));
+                                long output_creation=creation.getTime()/1000L;
+                                String str_creation=Long.toString(output_creation);
+                                long timestamp_creation = Long.parseLong(str_creation) * 1000;
+                                Date maj = (Date)formatter.parse(user.getString("updatedAt"));
+                                long output_maj=maj.getTime()/1000L;
+                                String str_maj=Long.toString(output_maj);
+                                long timestamp_maj = Long.parseLong(str_maj) * 1000;
+                                // enregistrer en local
+                                List<Utilisateur> userH = SugarRecord.find(Utilisateur.class, "numero = ?", user.getString("numero"));
+                                if(userH.size() == 0){
+                                    nouvel_utilisateur = new Utilisateur();
+                                    nouvel_utilisateur.setId_utilisateur(user.getString("id"));
+                                    nouvel_utilisateur.setNumero(user.getString("numero"));
+                                    nouvel_utilisateur.setNom(user.getString("firstName"));
+                                    nouvel_utilisateur.setPrenoms(user.getString("lastName"));
+//                                    nouvel_utilisateur.setPin_acces(user.getString("pin_acces"));
+                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+                                    nouvel_utilisateur.setMdp(user.getString("password"));
+                                    nouvel_utilisateur.setStatut(user.getString("statut"));
+                                    nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
+                                    if(user.isNull("referent"))
+                                        nouvel_utilisateur.setCodeMarchand("");
+                                    else
+                                        nouvel_utilisateur.setCodeMarchand(user.getString("referent"));
+
+                                    Log.d("connexion", "2connexion trying");
+
+                                    // maj des dates
+
+                                    nouvel_utilisateur.setCreation(timestamp_creation);
+                                    nouvel_utilisateur.setId_utilisateur(user.getString("id"));
+                                    nouvel_utilisateur.setMaj(timestamp_maj);
+                                    nouvel_utilisateur.setConnecter_le(timestamp_maj);
+
+                                    Log.e("connexion", "3connexion trying");
+
+                                    nouvel_utilisateur.save();
+                                    Log.e("connexion", "4connexion trying");
+
+                                    id = Long.parseLong(nouvel_utilisateur.getId_utilisateur());
+                                }else {
+                                    nouvel_utilisateur = userH.get(0);
+                                    nouvel_utilisateur.setId_utilisateur(user.getString("id"));
+                                    nouvel_utilisateur.setNumero(user.getString("numero"));
+                                    nouvel_utilisateur.setNom(user.getString("firstName"));
+                                    nouvel_utilisateur.setPrenoms(user.getString("lastName"));
+                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+                                    nouvel_utilisateur.setMdp(user.getString("password"));
+                                    nouvel_utilisateur.setStatut(user.getString("statut"));
+                                    nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
+                                    if(result.isNull("referent"))
+                                        nouvel_utilisateur.setCodeMarchand("");
+                                    else
+                                        nouvel_utilisateur.setCodeMarchand(result.getString("referent"));
+                                    nouvel_utilisateur.setMaj(timestamp_maj);
+                                    nouvel_utilisateur.save();
+                                    id = Long.parseLong(nouvel_utilisateur.getId_utilisateur());
+                                }
+
+                                //Log.d("nouvel_utilisateur_id", "id:"+String.valueOf(id));
+                                if (id!=null){
+
+                                    // Mettre à jour la préférence id utilisateur
+                                    Prefs.putString(ID_UTILISATEUR_KEY, String.valueOf(id));
+                                    // Mettre à jour la préférence nom
+                                    Prefs.putString(NOM_KEY, user.getString("firstName"));
+                                    // Mettre à jour la préférence prenoms
+                                    Prefs.putString(PRENOMS_KEY, user.getString("lastName"));
+                                    // Mettre à jour la préférence pin d'accès
+//                                    Prefs.putString(PIN_KEY, user.getString("pin_acces"));
+                                    // Mettre à jour la préférence pin d'accès
+                                    Prefs.putString(PASS_KEY, user.getString("password"));
+                                    Prefs.putBoolean(MOOV_DATA_SHARING, true);
+                                    // Mettre à jour la préférence statut
+                                    Prefs.putString(STATUT_UTILISATEUR, user.getString("statut"));
+                                    //Mettre à jour la preference photo de la CNI
+                                    Prefs.putString(PHOTO_CNI_KEY, user.getString("cniPicture"));
+                                    //Mettre à jour la preference firebase token
+//                                    Prefs.putString(FIREBASE_TOKEN, user.getString("firebase_token"));
+                                    //Mettre à jour la preference sexe
+                                    Prefs.putString(SEXE_KEY, user.getString("sexe"));
+                                    //Mettre à jour la préference numero compte
+                                    Prefs.putString(NUMERO_COMPTE_KEY, user.getString("accountNumber"));
+                                    //Mettre à Jour le code marchand
+                                    if(user.isNull("referent"))
+                                        Prefs.putString(CODE_MARCHAND_KEY, "");
+                                    else
+                                        Prefs.putString(CODE_MARCHAND_KEY, user.getString("referent"));
+
+                                    // Mettre à jour la préférence pin d'accès
+                                    Date currentTime = Calendar.getInstance().getTime();
+                                    long output_current=currentTime.getTime()/1000L;
+                                    String str_current=Long.toString(output_current);
+                                    long timestamp_current = Long.parseLong(str_current) * 1000;
+                                    Prefs.putString(CONNECTER_KEY, String.valueOf(timestamp_current));
+                                    // Mettre à jour la préférence pin d'accès
+                                    Prefs.putString(PHOTO_KEY, user.getString("profilePicture"));
+
+
+
+                                    // recuperation de la photo ditentie
+                                    // recuperer l'url de l'image
+                                    /**/URL url_photo  = new URL(Constantes.URL_MEDIA_PP + Prefs.getString(PHOTO_KEY, null) + ".png");
+//                                    String src = Constantes.URL_MEDIA + Prefs.getString(PHOTO_KEY, null) + ".JPG";
+                                    URL url_photo_cni = new URL(Constantes.URL_MEDIA_CNI + Prefs.getString(PHOTO_CNI_KEY, null) + ".png");
+
+                                    //Bitmap bitmap_photo =Utilitaire.getBitmapFromURL(src);
+
+                                    Prefs.putString(TEL_KEY, String.valueOf(user.getString("numero")));
+
+                                    // enrgeistrer les tontines en local
+//                                    Log.e("user_data", result.get("tontines")+"");
+                                    JSONArray tontines = user.getJSONArray("tontines");
+
+                                    if(tontines.length()>0){
+                                        Log.d("tontines_trouve","oui:"+tontines.length());
+                                        List<Tontine> existeTontines = null;
+                                        List<Versement> existeVersement = null;
+                                        List<Retrait> existeRetrait = null;
+
+                                        for (int i=0;i<tontines.length();i++){
+                                            Tontine nouvelle_tontine = new Tontine();
+
+                                            existeTontines = SugarRecord.find(Tontine.class, "id_server = ?", tontines.getJSONObject(i).getString("id"));
+                                            if(existeTontines.size() == 0){
+                                                //nouvelle_tontine.setId(Long.valueOf(tontines.getJSONObject(i).getString("id")));
+                                                nouvelle_tontine.setId_utilisateur(Prefs.getString(ID_UTILISATEUR_KEY,null));
+                                                nouvelle_tontine.setPeriode(tontines.getJSONObject(i).getString("periode"));
+                                                nouvelle_tontine.setMise(Integer.parseInt(tontines.getJSONObject(i).getString("mise")));
+                                                nouvelle_tontine.setPrelevement_auto(tontines.getJSONObject(i).getBoolean("isAutoPayment"));
+//                                                nouvelle_tontine.setIdSim(String.valueOf(sim_par_defaut.getId()));
+                                                nouvelle_tontine.setCarnet(tontines.getJSONObject(i).getString("carnet"));
+                                                nouvelle_tontine.setContinuer(Long.valueOf(tontines.getJSONObject(i).getString("carnet")));
+                                                nouvelle_tontine.setStatut(tontines.getJSONObject(i).getString("state"));
+                                                nouvelle_tontine.setId_server(tontines.getJSONObject(i).getString("id"));
+                                                if(!tontines.getJSONObject(i).isNull("unBlockDate")){
+                                                    nouvelle_tontine.setDateDeblocage(tontines.getJSONObject(i).getString("unBlockDate"));
+                                                }
+                                                if(tontines.getJSONObject(i).getString("denomination") == "")
+                                                    nouvelle_tontine.setDenomination("Ma tontine "+nouvelle_tontine.getCarnet());
+                                                else
+                                                    nouvelle_tontine.setDenomination(tontines.getJSONObject(i).getString("denomination"));
+                                                // maj des dates
+                                                @SuppressLint("SimpleDateFormat") DateFormat formatter_1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                                Date creation_1 = formatter_1.parse(tontines.getJSONObject(i).getString("createdAt"));
+                                                long output_creation_1=creation_1.getTime()/1000L;
+                                                String str_creation_1=Long.toString(output_creation_1);
+                                                long timestamp_creation_1 = Long.parseLong(str_creation_1) * 1000;
+                                                nouvelle_tontine.setCreation(timestamp_creation_1);
+                                                Date creation_2 = formatter_1.parse(tontines.getJSONObject(i).getString("updatedAt"));
+                                                long output_creation_2=creation_2.getTime()/1000L;
+                                                String str_creation_2=Long.toString(output_creation_2);
+                                                long timestamp_maj_1 = Long.parseLong(str_creation_2) * 1000;
+                                                nouvelle_tontine.setMaj(timestamp_maj_1);
+                                                Log.e("connexion", "5connexion trying");
+
+                                                nouvelle_tontine.save();
+                                            }
+                                            else {
+                                                nouvelle_tontine = existeTontines.get(0);
+                                                nouvelle_tontine.setContinuer(Long.valueOf(tontines.getJSONObject(i).getString("carnet")));
+                                                nouvelle_tontine.setStatut(tontines.getJSONObject(i).getString("state"));
+                                                @SuppressLint("SimpleDateFormat") DateFormat formatter_1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                                Date creation_2 = formatter_1.parse(tontines.getJSONObject(i).getString("updatedAt"));
+                                                long output_creation_2=creation_2.getTime()/1000L;
+                                                String str_creation_2=Long.toString(output_creation_2);
+                                                long timestamp_maj_1 = Long.parseLong(str_creation_2) * 1000;
+                                                nouvelle_tontine.setMaj(timestamp_maj_1);
+                                                Log.e("connexion", "5connexion trying");
+
+                                                nouvelle_tontine.save();
+                                            }
+
+                                            // enrgeistrer les versements en local
+
+                                            JSONArray versements = tontines.getJSONObject(i).getJSONArray("payments");
+                                            Log.d("versements_trouve","oui:"+versements.length());
+                                            Log.d("versement", versements.toString());
+                                            if(versements.length()>0) {
+
+                                                Log.d("versements_trouve","oui:"+versements.length()+" carnet: "+nouvelle_tontine.getCarnet());
+                                                for (int j=0;j<versements.length();j++){
+                                                    Versement versement = new Versement();
+                                                    existeVersement = SugarRecord.find(Versement.class, "id_vers_serv = ?", versements.getJSONObject(j).getString("id"));
+
+                                                    if(existeVersement.size() == 0) {
+                                                        Log.d("versements_trouve","for:"+j+" carnet: "+nouvelle_tontine.getCarnet());
+                                                        versement.setMontant(versements.getJSONObject(j).getString("amount"));
+                                                        versement.setStatut_paiement(versements.getJSONObject(j).getBoolean("isValide"));
+                                                        versement.setFractionne(versements.getJSONObject(j).getString("isFractioned"));
+                                                        versement.setIdVersement(versements.getJSONObject(j).getString("idVersement"));
+                                                        versement.setIdVersServ(versements.getJSONObject(j).getString("id"));
+                                                        Log.d("versements_trouve","idServeur1:"+versements.getJSONObject(j).getString("id"));
+                                                        versement.setTontine(nouvelle_tontine);
+
+                                                        // maj des dates
+                                                        @SuppressLint("SimpleDateFormat") DateFormat formatter_11 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                                        Date creation_11 = formatter_11.parse(versements.getJSONObject(j).getString("createdAt"));
+                                                        long output_creation_11 = creation_11.getTime() / 1000L;
+                                                        String str_creation_11 = Long.toString(output_creation_11);
+                                                        long timestamp_creation_11 = Long.parseLong(str_creation_11) * 1000;
+                                                        versement.setCreation(timestamp_creation_11);
+                                                        Date creation_21 = formatter_11.parse(versements.getJSONObject(j).getString("updatedAt"));
+                                                        long output_creation_21 = creation_21.getTime() / 1000L;
+                                                        String str_creation_21 = Long.toString(output_creation_21);
+                                                        long timestamp_maj_11 = Long.parseLong(str_creation_21) * 1000;
+                                                        versement.setMaj(timestamp_maj_11);
+                                                        Utilisateur u = SugarRecord.find(Utilisateur.class, "id_utilisateur = ? ", Prefs.getString(ID_UTILISATEUR_KEY, "")).get(0);
+                                                        versement.setUtilisateur(u);
+                                                        versement.save();
+                                                    } else {
+                                                        versement = existeVersement.get(0);
+                                                        Log.d("versements_trouve","idServeur2-1 : "+versement.getIdVersServ());
+                                                    }
+                                                    Log.d("versements_trouve","idServeur2-2 : "+versement.getIdVersServ());
+                                                    if (versements.getJSONObject(j).getString("isFractioned").equals("false")){
+                                                        List<Versement> versementList = Select.from(Versement.class)
+                                                                .where(Condition.prop("id_vers_serv").eq(versements.getJSONObject(j).getString("idVersement")))
+                                                                .orderBy("id desc")
+                                                                .list();
+                                                        //Versement v = SugarRecord.findById(Versement.class, Long.valueOf(versements.getJSONObject(j).getString("id_versement")));
+                                                        if(versementList.size() >0){
+                                                            versement.setIdVersement(String.valueOf(versementList.get(0).getId()));
+                                                            versement.save();
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+
+
+                                            Log.e("connexion", "7connexion trying");
+                                            Log.e("connexion", tontines.getJSONObject(i).get("withdraw")+"");
+                                            // enrgeistrer les versements en local
+                                            if(tontines.getJSONObject(i).has("withdraw") && !tontines.getJSONObject(i).isNull("withdraw"))
+                                            {
+                                                JSONObject retraits = tontines.getJSONObject(i).getJSONObject("withdraw");
+
+                                                existeRetrait = SugarRecord.find(Retrait.class, "token = ?", retraits.getString("token"));
+                                                Retrait retrait = new Retrait();
+                                                if(existeRetrait.size() == 0) {
+
+                                                    retrait.setTontine(nouvelle_tontine);
+                                                    retrait.setToken(retraits.getString("token"));
+                                                    retrait.setStatut(retraits.getString("state"));
+//                                                        retrait.setIdMarchand(retraits.getJSONObject(k).getString("id_marchand"));
+                                                    retrait.setMontant(retraits.getString("amount"));
+
+                                                    // maj des dates
+                                                    @SuppressLint("SimpleDateFormat") DateFormat formatter_111 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                                    Date creation_111 = formatter_111.parse(retraits.getString("createdAt"));
+                                                    long output_creation_111 = creation_111.getTime() / 1000L;
+                                                    String str_creation_111 = Long.toString(output_creation_111);
+                                                    long timestamp_creation_111 = Long.parseLong(str_creation_111) * 1000;
+                                                    retrait.setCreation(timestamp_creation_111);
+                                                    Date creation_211 = formatter_111.parse(retraits.getString("updatedAt"));
+                                                    long output_creation_211 = creation_211.getTime() / 1000L;
+                                                    String str_creation_211 = Long.toString(output_creation_211);
+                                                    long timestamp_maj_111 = Long.parseLong(str_creation_211) * 1000;
+                                                    retrait.setMaj(timestamp_maj_111);
+                                                    Utilisateur u = SugarRecord.find(Utilisateur.class, "id_utilisateur = ? ", Prefs.getString(ID_UTILISATEUR_KEY, "")).get(0);
+                                                    retrait.setUtilisateur(u);
+                                                    retrait.save();
+                                                }
+                                                else {
+                                                    retrait = existeRetrait.get(0);
+                                                    retrait.setStatut(retraits.getString("state"));
+                                                    @SuppressLint("SimpleDateFormat") DateFormat formatter_111 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                                    Date creation_211 = formatter_111.parse(retraits.getString("updatedAt"));
+                                                    long output_creation_211 = creation_211.getTime() / 1000L;
+                                                    String str_creation_211 = Long.toString(output_creation_211);
+                                                    long timestamp_maj_111 = Long.parseLong(str_creation_211) * 1000;
+                                                    retrait.setMaj(timestamp_maj_111);
+                                                    retrait.save();
+                                                }
+
+
+
+                                            }
+
+
+
+                                        }
+                                    }
+                                    // enregistrer les historiques
+                                    if(user.has("histories") && !user.isNull("histories")){
+                                        JSONArray histories = user.getJSONArray("histories");
+                                        Log.e("blablabl",histories.length()+"");
+                                        if(histories.length()>0) {
+                                            Log.d("histories_trouve", "oui:" + histories.length());
+                                            List<History> existeHistories = null;
+                                            List<Versement> existeVersement = null;
+                                            List<Retrait> existeRetrait = null;
+
+                                            for (int i = 0; i < histories.length(); i++) {
+                                                History nouvelle_history = new History();
+
+                                                existeHistories = SugarRecord.find(History.class, "id_server = ?", histories.getJSONObject(i).getString("id"));
+                                                if (existeHistories.size() == 0) {
+                                                    //nouvelle_histories.setId(Long.valueOf(tontines.getJSONObject(i).getString("id")));
+                                                    nouvelle_history.setContenu(histories.getJSONObject(i).getString("content"));
+                                                    nouvelle_history.setTitre(histories.getJSONObject(i).getString("title"));
+                                                    nouvelle_history.setEtat(histories.getJSONObject(i).getBoolean("state") ? 1 : 0);
+                                                    nouvelle_history.setUser(nouvel_utilisateur);
+//                                                nouvelle_history.setNumero(Integer.parseInt(histories.getJSONObject(i).getString("numero_client")));
+                                                    nouvelle_history.setId_server(histories.getJSONObject(i).getString("id"));
+
+                                                    @SuppressLint("SimpleDateFormat")
+                                                    DateFormat formatter_1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                                    Date creation_1 = formatter_1.parse(histories.getJSONObject(i).getString("createdAt"));
+                                                    long output_creation_1 = creation_1.getTime() / 1000L;
+                                                    String str_creation_1 = Long.toString(output_creation_1);
+                                                    long timestamp_creation_1 = Long.parseLong(str_creation_1) * 1000;
+                                                    nouvelle_history.setCreation(timestamp_creation_1);
+
+
+
+                                                    nouvelle_history.save();
+                                                }
+                                            }
+                                        }
+                                    }
+
+
+
+                                    new DownloadTask().execute(url_photo);
+                                    new DownloadTaskCNI().execute(url_photo_cni);
+                                    Log.e("connexion", "9connexion trying");
+
+                                    //saveImage(src,Prefs.getString(PHOTO_KEY, null)+".JPG");
+
+                                    Log.d("medias_url_cy2", "k");
+                                    //utilitaire.saveImageUrl(url_photo,Prefs.getString(PHOTO_KEY, null));
+                                    progressDialog.dismiss();
+
+                                /*try {
+                                    URL url = new URL("http://....");
+                                    Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                                } catch(IOException e) {
+                                    System.out.println(e);
+                                }*/
+
+//                                    FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+//                                        @Override
+//                                        public void onComplete(@NonNull Task<String> task) {
+//                                            if(!task.isSuccessful())
+//                                            {
+//                                                Log.e("testFirebase", "Fetching FCM registration token failed", task.getException());
+//                                                return;
+//                                            }
+//
+//                                            // Get new FCM registration token
+//                                            String token = task.getResult();
+//
+//                                            //Save du token dans la bdd local
+//                                            Utilisateur user_entity = null;
+//                                            try {
+//                                                user_entity = new Utilisateur().getUser(user.getString("numero"));
+//                                                user_entity.setFirebaseToken(token);
+//                                                user_entity.save();
+//                                                SendFirebaseToken(token, user.getString("numero"));
+//                                            } catch (JSONException e) {
+//                                                e.printStackTrace();
+//                                            }
+//
+//
+//                                            // Log and toast
+//                                            @SuppressLint({"StringFormatInvalid", "LocalSuppress"}) String msg = getString(R.string.msg_token_fmt, token);
+//                                            Log.d("testFirebase", msg);
+//                                            //Toast.makeText(Dashboard.this, msg, Toast.LENGTH_SHORT).show();
+//
+//
+//                                        }
+//                                    });
+
+
+                                    if(isFromCarteTontine){
+                                        Connexion.this.finish();
+                                        Intent carteMainIntent = new Intent(Connexion.this, CarteMain.class);
+                                        carteMainIntent.putExtra("id_tontine", idTontine);
+                                        startActivity(carteMainIntent);
+                                    } else{
+                                        isFromCarteTontine = false;
+                                        //add
+                                        if(user.getString("firstConnexion").equals("0") && user.getBoolean("addByMerchant")){
+                                            Log.e("test1","1success");
+                                            //rediriger vers l'interface de code OTP
+                                            //Demande d'envoyer code OTP
+                                            BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+                                            String tel_value = tel.getValue();
+
+                                            askCodeOtpVerif(tel.getValue());
+
+                                        }else{
+                                            Log.e("firstConnexion",user.getString("firstConnexion"));
+                                            Log.e("addByMerchant",user.getString("addByMerchant"));
+                                            Log.e("test1","2echec");
+                                            startActivity(new Intent(Connexion.this,Home.class));
+                                            Connexion.this.finish();
+                                        }
+                                        //end add
+                                        Log.e("Homeadvance","home2");
+//                                        startActivity(new Intent(Connexion.this,Dashboard.class));
+                                        //startActivity(new Intent(Connexion.this,Home.class));
+                                    }
+
+
+
+                                }
+
+                            }else{
+                                progressDialog.dismiss();
+                                String msg=result.getString("body");
+                                Intent i = new Intent(Connexion.this, Message_non.class);
+                                i.putExtra("msg_desc",msg);
+                                i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                                startActivity(i);
+                            }
+
+
+                        } catch (Throwable t) {
+                            Log.d("errornscription", String.valueOf(t.getCause()));
+                            Log.e("My_App", response);
+                            Log.e("Connexion", t.getMessage());
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        progressDialog.dismiss();
+                        // error
+                        Log.d("Error.Inscription", String.valueOf(volleyError.getMessage()));
+                        ConstraintLayout mainLayout =  findViewById(R.id.layout_connexion);
+
+                        String message;
+                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError) {
+                            //Toast.makeText(Connexion.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                            message = "Aucune connexion Internet!";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            auth_en_ligne();
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+
+                        } else if (volleyError instanceof TimeoutError) {
+                            message = "Erreur de temporisation!";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            auth_en_ligne();
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+                        } else if (volleyError instanceof ServerError) {
+                            message = "Impossible de contacter le serveur!";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            auth_en_ligne();
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+                        }  else if (volleyError instanceof ParseError) {
+                            //message = "Parsing error! Please try again later";
+                            message = "Une erreur est survenue!";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            auth_en_ligne();
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+                        }
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+                BaseFormElement mdp = mFormBuilder.getFormElement(TAG_PASS);
+
+                String tel_value = tel.getValue();
+                String mdp_value = mdp.getValue();
+
+                Map<String, String>  params = new HashMap<String, String>();
+
+                params.put("numero", tel_value);
+                params.put("password", mdp_value);
+
+                return params;
+            }
+        };
+        /*postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
+        //DefaultRetryPolicy  retryPolicy = new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
+        //postRequest.setRetryPolicy(new DefaultRetryPolicy(0, -1, 0));
+        //postRequest.setRetryPolicy(retryPolicy);
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(postRequest);
+
+        //initialize the progress dialog and show it
+        progressDialog = new ProgressDialog(Connexion.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Veuillez patienter SVP! La récupération de votre compte est en cours ...");
+        progressDialog.show();
+    }
+
+    public void askCodeOtpVerif(String tel){
+        RequestQueue queue = Volley.newRequestQueue(Connexion.this);
+        StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_GENERATE_OTP,
+                new Response.Listener<String>() {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("ResponseTagMain", response);
+                        // if (!response.equals("Erreur")) {
+                        try {
+
+                            JSONObject result = new JSONObject(response);
+                            if (result.getInt("responseCode") == 0) {
+                                progressDialog.dismiss();
+                                Intent codeOtpVer = new Intent(Connexion.this, CodeOtpVerification.class);
+                                codeOtpVer.putExtra("caller_activity", "connexion");
+                                codeOtpVer.putExtra("tel", tel);
+                                startActivity(codeOtpVer);
+                                SmsRetrieverClient client = SmsRetriever.getClient(Connexion.this);
+                                Task<Void> task = client.startSmsRetriever();
+                                task.addOnSuccessListener(new com.google.android.gms.tasks.OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+
+                                    }
+                                });
+                                task.addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Prefs.putString(ID_UTILISATEUR_KEY, null);
+                                        Intent i = new Intent(Connexion.this, Message_non.class);
+                                        i.putExtra("msg_desc", "Erreur time out. Veuillez réessayer, Merci.");
+                                        i.putExtra("class", "com.sicmagroup.tondi.Connexion");
+                                        startActivity(i);
+                                    }
+                                });
+//                                Connexion.this.finish();
+                            } else {
+                                Log.e("Connexion", "error pour le compte 1");
+//                                progressDialog.dismiss();
+                                Connexion.this.finish();
+                                Prefs.putString(ID_UTILISATEUR_KEY, null);
+                                Intent i = new Intent(Connexion.this, Message_non.class);
+                                i.putExtra("msg_desc", result.getString("body"));
+                                i.putExtra("class", "com.sicmagroup.tondi.Connexion");
+
+                                startActivity(i);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+//                        progressDialog.dismiss();
+                        ConstraintLayout mainLayout =  findViewById(R.id.layout_connexion);
+                        // error
+                        Log.e("Error.connexion", String.valueOf(error.getMessage()));
+                        String message = "Une erreur est survenue! Veuillez réessayer svp1.";
+                        Snackbar snackbar = Snackbar
+                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                .setAction("OK", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+                                    }
+                                });
+                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                        // Changing message text color
+                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                        // Changing action button text color
+                        View sbView = snackbar.getView();
+                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                        textView.setTextColor(Color.WHITE);
+                        snackbar.show();
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                //Date currentDate = new Date();
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("number", tel);
+                params.put("type_operation", OperationTypeEnum.ACCES.toString());
+                // params.put("verification_date", android.text.format.DateFormat.format("yyyy-MM-dd H:i:m", currentDate.getTime()).toString());
+                return params;
+            }
+        };
+
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                25000,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(postRequest);
+//
+        progressDialog = new ProgressDialog(Connexion.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Veuillez patienter SVP! \n Vérification du numero en cours.");
+        progressDialog.show();
+    }
+
+
+    private void auth_credential_online(Utilisateur user)
+    {
+        RequestQueue queue = Volley.newRequestQueue(Connexion.this);
+        StringRequest postRequest = new StringRequest(Request.Method.POST, user_credential_check,
+                new Response.Listener<String>()
+                {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("ResponseTagMain", response);
+                        // if (!response.equals("Erreur")) {
+                        try {
+
+                            JSONObject result = new JSONObject(response);
+                            if(result.getBoolean("success"))
+                            {
+                                final JSONObject user_servData = result.getJSONObject("data");
+                                progressDialog.dismiss();
+
+                                final JSONObject resultat = result.getJSONObject("data");
+                                Prefs.putString(PIN_KEY, user_servData.getString("pin_acces"));
+                                // Mettre à jour la préférence pin d'accès
+                                Prefs.putString(PASS_KEY, user_servData.getString("mdp"));
+
+                                // maj des dates
+                                Date currentTime = Calendar.getInstance().getTime();
+                                long output_creation = currentTime.getTime() / 1000L;
+                                String str_creation = Long.toString(output_creation);
+                                long output_maj = currentTime.getTime() / 1000L;
+                                String str_maj = Long.toString(output_maj);
+                                long timestamp_maj = Long.parseLong(str_maj) * 1000;
+                                user.setConnecter_le(timestamp_maj);
+                                // Mettre à jour la préférence id utilisateur
+                                Prefs.putString(ID_UTILISATEUR_KEY, String.valueOf(user.getId()));
+                                // Mettre à jour la préférence nom
+                                Prefs.putString(NOM_KEY, user.getNom());
+                                // Mettre à jour la préférence prenoms
+                                Prefs.putString(PRENOMS_KEY, user.getPrenoms());
+
+                                Prefs.putString(PHOTO_KEY, user_servData.getString("photo_identite"));
+                                // Mettre à jour la préférence pin d'accès
+                                Prefs.putString(CONNECTER_KEY, String.valueOf(user.getConnecter_le()));
+                                // Mettre à jour la préférence pin d'accès
+                                Prefs.putString(TEL_KEY, user_servData.getString("numero"));
+                                Prefs.putBoolean(MOOV_DATA_SHARING, true);
+                                // Mettre à jour la préférence statut
+                                Prefs.putString(STATUT_UTILISATEUR, user.getStatut());
+                                //Mettre à jour la photo de la CNI
+                                Prefs.putString(PHOTO_CNI_KEY, user_servData.getString("photo_cni"));
+                                //Mettre à jour la preference token firebase
+                                Prefs.putString(FIREBASE_TOKEN, user.getFirebaseToken());
+                                //Mettre à jour la preference sexe
+                                Prefs.putString(SEXE_KEY, user_servData.getString("sexe"));
+
+                                //Mettre à jour la préference numero de compte
+                                Prefs.putString(NUMERO_COMPTE_KEY, result.getString("numero_compte"));
+                                user.setNumero_compte(result.getString("numero_compte"));
+                                user.save();
+
+                                URL url_photo  = new URL(medias_url + Prefs.getString(PHOTO_KEY, null) + ".JPG");
+                                new DownloadTask().execute(url_photo);
+                                URL url_photo_cni = new URL(medias_url + Prefs.getString(PHOTO_CNI_KEY, null) + ".JPG");
+                                new DownloadTaskCNI().execute(url_photo_cni);
+                                Log.e("photo",  Prefs.getString(PHOTO_CNI_KEY, null));
+
+//                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+//                                    @Override
+//                                    public void onComplete(@NonNull Task<String> task) {
+//                                        if(!task.isSuccessful())
+//                                        {
+//                                            Log.e("testFirebase", "Fetching FCM registration token failed", task.getException());
+//                                            return;
+//                                        }
+//
+//                                        // Get new FCM registration token
+//                                        String token = task.getResult();
+//
+//                                        //Save du token dans la bdd local
+//                                        Utilisateur user = new Utilisateur();
+//                                        user = new Utilisateur().getUser(Prefs.getString(TEL_KEY, ""));
+//                                        Prefs.putString(FIREBASE_TOKEN, token);
+//
+//                                        user.setFirebaseToken(token);
+//                                        user.save();
+////                                        SendFirebaseToken(token, user.getNumero());
+//                                        // Log and toast
+//                                        @SuppressLint({"StringFormatInvalid", "LocalSuppress"}) String msg = getString(R.string.msg_token_fmt, token);
+//                                        Log.d("testFirebase", msg);
+//                                        //Toast.makeText(Dashboard.this, msg, Toast.LENGTH_SHORT).show();
+//
+//
+//                                    }
+//                                });
+
+
+                                Connexion.this.finish();
+//                                startActivity(new Intent(Connexion.this, Dashboard.class));
+                                Log.e("Homeadvance","home3");
+                                startActivity(new Intent(Connexion.this, Home.class));
+
+                            }
+                            else
+                            {
+                                progressDialog.dismiss();
+                                Connexion.this.finish();
+                                String msg="Vos identifiants sont incorrects. Veuillez réessayer SVP!";
+                                Intent i = new Intent(Connexion.this, Message_non.class);
+                                i.putExtra("msg_desc",msg);
+                                i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                                startActivity(i);
+                            }
+
+                        } catch (JSONException | MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        progressDialog.dismiss();
+                        Log.e("ResponseTagMain", String.valueOf(volleyError.getMessage()));
+                        Log.e("Stack", "Error StackTrace: \t" + volleyError.getStackTrace());
+                        // error
+                        //Log.d("Error.Inscription", String.valueOf(error.getMessage()));
+                        ConstraintLayout mainLayout =  findViewById(R.id.layout_connexion);
+
+                        // volleyError.getMessage() == null
+                        String message;
+                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                            //Log.d("VolleyError_Test",volleyError.getMessage());
+                            message = "Aucune connexion Internet! Patientez et réessayez.";
+                            final Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("Reessayer", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            auth_credential_online(user);
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+
+                        } else if (volleyError instanceof ServerError) {
+                            message = "Impossible de contacter le serveur! Patientez et réessayez.";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            auth_credential_online(user);
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+                        }  else if (volleyError instanceof ParseError) {
+                            //message = "Parsing error! Please try again later";
+                            message = "Une erreur est survenue! Patientez et réessayez.";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            auth_credential_online(user);
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+                        }
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+
+                BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+                BaseFormElement mdp = mFormBuilder.getFormElement(TAG_PASS);
+
+                String tel_value = tel.getValue();
+                String mdp_value = mdp.getValue();
+
+                Map<String, String>  params = new HashMap<String, String>();
+
+                params.put("numero", tel_value);
+                params.put("mdp", mdp_value);
+                return params;
+            }
+        };
+
+        queue.add(postRequest);
+
+
+        progressDialog = new ProgressDialog(Connexion.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Veuillez patienter SVP!Connexion en cours...");
+        progressDialog.show();
+    }
+
+    public void SendFirebaseToken(final String token, final String numero)
+    {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url_update_firebase_token = SERVEUR+"/api/v1/utilisateurs/update_firebase_token";
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url_update_firebase_token,
+                new Response.Listener<String>()
+                {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void onResponse(String response) {
+                        //progressDialog.dismiss();
+                        // response
+                        Log.d("ResponseTagkk", response);
+                      /*  if (!response.equals("Erreur"))
+                        {*/
+                        try {
+
+                            JSONObject result = new JSONObject(response);
+                            //final JSONArray array = result.getJSONArray("data");
+                            //Log.d("My App", obj.toString());
+                            if (result.getBoolean("success") ){
+                                Log.e("testFirebase", "Success");
+                            }else{
+                                Log.e("testFirebase", "Failed");
+                            }
+
+                        } catch (Throwable t) {
+                            Log.d("errorFirebase",t.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.e("ResponseTag", "Erreur");
+                        String message;
+//                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+//                            SendFirebaseToken(token, numero);
+//
+//                        } else if (volleyError instanceof ServerError) {
+//                            SendFirebaseToken(token, numero);
+//                            //snackbar.show();
+//                        }  else if (volleyError instanceof ParseError) {
+//                            SendFirebaseToken(token, numero);
+//                        }
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("numero", numero);
+                params.put("firebase_token", token);
+                return params;
+            }
+        };
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(postRequest);
+    }
+
+    public static void saveImage(String imageUrl, String destinationFile) throws IOException {
+
+        URL url = new URL(imageUrl);
+        InputStream is = url.openStream();
+        OutputStream os = new FileOutputStream(destinationFile);
+
+        byte[] b = new byte[2048];
+        int length;
+
+        while ((length = is.read(b)) != -1) {
+            os.write(b, 0, length);
+        }
+
+        is.close();
+        os.close();
+    }
+
+    private class DownloadTask extends AsyncTask<URL,Void,Bitmap> {
+        // Before the tasks execution
+        protected void onPreExecute(){
+            // Display the progress dialog on async task start
+
+        }
+
+        // Do the task in background/non UI thread
+        protected Bitmap doInBackground(URL...urls){
+            URL url = urls[0];
+            HttpURLConnection connection = null;
+
+            try{
+                // Initialize a new http url connection
+                connection = (HttpURLConnection) url.openConnection();
+
+                // Connect the http url connection
+                connection.connect();
+
+                // Get the input stream from http url connection
+                InputStream inputStream = connection.getInputStream();
+
+                /*
+                    BufferedInputStream
+                        A BufferedInputStream adds functionality to another input stream-namely,
+                        the ability to buffer the input and to support the mark and reset methods.
+                */
+                /*
+                    BufferedInputStream(InputStream in)
+                        Creates a BufferedInputStream and saves its argument,
+                        the input stream in, for later use.
+                */
+                // Initialize a new BufferedInputStream from InputStream
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+
+                /*
+                    decodeStream
+                        Bitmap decodeStream (InputStream is)
+                            Decode an input stream into a bitmap. If the input stream is null, or
+                            cannot be used to decode a bitmap, the function returns null. The stream's
+                            position will be where ever it was after the encoded data was read.
+
+                        Parameters
+                            is InputStream : The input stream that holds the raw data
+                                              to be decoded into a bitmap.
+                        Returns
+                            Bitmap : The decoded bitmap, or null if the image data could not be decoded.
+                */
+                // Convert BufferedInputStream to Bitmap object
+                Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
+
+                // Return the downloaded bitmap
+                return bmp;
+
+            }catch(IOException e){
+                e.printStackTrace();
+            }finally{
+                // Disconnect the http url connection
+                connection.disconnect();
+            }
+            return null;
+        }
+
+        // When all async task done
+        protected void onPostExecute(Bitmap result){
+            // Hide the progress dialog
+
+
+            if(result!=null){
+                // Save bitmap to internal storage
+                utilitaire.saveToInternalStorage(result,Prefs.getString(PHOTO_KEY, null));
+
+            }else {
+                // Notify user that an error occurred while downloading image
+                Toast.makeText(getApplicationContext(),"Erreur, photo de profile introuvable",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private class DownloadTaskCNI extends AsyncTask<URL,Void,Bitmap> {
+        // Before the tasks execution
+        protected void onPreExecute(){
+            // Display the progress dialog on async task start
+
+        }
+
+        // Do the task in background/non UI thread
+        protected Bitmap doInBackground(URL...urls){
+            URL url = urls[0];
+            HttpURLConnection connection = null;
+
+            try{
+                // Initialize a new http url connection
+                connection = (HttpURLConnection) url.openConnection();
+
+                // Connect the http url connection
+                connection.connect();
+
+                // Get the input stream from http url connection
+                InputStream inputStream = connection.getInputStream();
+
+                /*
+                    BufferedInputStream
+                        A BufferedInputStream adds functionality to another input stream-namely,
+                        the ability to buffer the input and to support the mark and reset methods.
+                */
+                /*
+                    BufferedInputStream(InputStream in)
+                        Creates a BufferedInputStream and saves its argument,
+                        the input stream in, for later use.
+                */
+                // Initialize a new BufferedInputStream from InputStream
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+
+                /*
+                    decodeStream
+                        Bitmap decodeStream (InputStream is)
+                            Decode an input stream into a bitmap. If the input stream is null, or
+                            cannot be used to decode a bitmap, the function returns null. The stream's
+                            position will be where ever it was after the encoded data was read.
+
+                        Parameters
+                            is InputStream : The input stream that holds the raw data
+                                              to be decoded into a bitmap.
+                        Returns
+                            Bitmap : The decoded bitmap, or null if the image data could not be decoded.
+                */
+                // Convert BufferedInputStream to Bitmap object
+                Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
+
+                // Return the downloaded bitmap
+                return bmp;
+
+            }catch(IOException e){
+                e.printStackTrace();
+            }finally{
+                // Disconnect the http url connection
+                connection.disconnect();
+            }
+            return null;
+        }
+
+        // When all async task done
+        protected void onPostExecute(Bitmap result){
+            // Hide the progress dialog
+
+            if(result!=null){
+                // Save bitmap to internal storage
+                utilitaire.saveToInternalStorage(result,Prefs.getString(PHOTO_CNI_KEY, null));
+
+            }else {
+                // Notify user that an error occurred while downloading image
+                Toast.makeText(getApplicationContext(),"Une erreur est survenue",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private PermissionService.Callback callback = new PermissionService.Callback() {
+        @Override
+        public void onRefuse(ArrayList<String> RefusePermissions) {
+            Toast.makeText(Connexion.this,
+                    getString(R.string.refuse_permissions),
+                    Toast.LENGTH_SHORT).show();
+            Connexion.this.finish();
+        }
+
+        @Override
+        public void onFinally() {
+            // pass
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(Connexion.this)) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + Connexion.this.getPackageName()));
+                    startActivity(intent);
+                }
+            }
+        }
+    };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        callback.handler(permissions, grantResults);
+    }
+
+    private void verifier_sim(final String numero){
+        //Toast.makeText(getApplicationContext(),"auth_en_ligne"+""+numero,Toast.LENGTH_LONG).show();
+        final String reseau = utilitaire.getOperatorByNumber(numero);
+        String phoneNumber = null;
+        if (reseau.equals("MTN")){
+            phoneNumber = "*136*8#".trim();
+        }else{
+            phoneNumber = ("*111*2*1#").trim();
+        }
+
+
+        ussdApi = USSDController.getInstance(Connexion.this);
+        final Intent svc = new Intent(Connexion.this, SplashLoadingService.class);
+        svc.putExtra("texte","La vérification de votre mot de passe est en cours...");
+        //startService(svc);
+        //result.setText("");
+        ussdApi.callUSSDInvoke(phoneNumber, map, new USSDController.CallbackInvoke() {
+            @Override
+            public void responseInvoke(String message) {
+                Log.d("APPUSSpp11", message);
+            }
+
+            @SuppressLint("ResourceAsColor")
+            @Override
+            public void over(String message) {
+                //stopService(svc);
+                Log.d("APPUSSpp", message);
+                Pattern pattern_msg_ok;
+                Pattern pattern_msg_ok1=null;
+                Pattern pattern_msg_ok2 = null;
+                Pattern pattern_msg_ok3 = null;
+                Pattern pattern_msg_ok4 = null;
+                if (reseau.equals("MTN")){
+                    pattern_msg_ok = Pattern.compile("229"+numero);
+                    pattern_msg_ok1 = Pattern.compile("ProblèmedeconnexionoucodeIHMnonvalide");
+                    pattern_msg_ok2 = Pattern.compile("MMInonvalide");
+                    pattern_msg_ok3 = Pattern.compile("Invalidservicecode");
+                    pattern_msg_ok4 = Pattern.compile("229"+"\\d");
+                }else{
+                    pattern_msg_ok = Pattern.compile("229"+numero);
+                    pattern_msg_ok1 = Pattern.compile("ProblèmedeconnexionoucodeIHMnonvalide");
+                    pattern_msg_ok2 = Pattern.compile("MMInonvalide");
+                    pattern_msg_ok3 = Pattern.compile("Invalidservicecode");
+                    pattern_msg_ok4 = Pattern.compile("229"+"\\d");
+                }
+
+                Matcher matcher = pattern_msg_ok.matcher(message.replaceAll("\\s",""));
+
+                assert pattern_msg_ok1 != null;
+                assert pattern_msg_ok2 != null;
+                assert pattern_msg_ok3 != null;
+                Matcher matcher_connexion = pattern_msg_ok1.matcher(message.replaceAll("\\s",""));
+                Matcher matcher_connexion_2 = pattern_msg_ok2.matcher(message.replaceAll("\\s",""));
+                Matcher matcher_connexion_3 = pattern_msg_ok3.matcher(message.replaceAll("\\s",""));
+                Matcher matcher_sim_non_4 = pattern_msg_ok4.matcher(message.replaceAll("\\s",""));
+                // if our pattern matches the string, we can try to extract our groups
+                if (matcher.find() ) {
+                    // sim verifie
+                    auth();
+                }else{
+                    // si probleme connexion
+                    if (matcher_sim_non_4.find()){
+                        String msg="La SIM "+numero+" n'a pas pu être vérifié! Veuillez insérer votre SIM ("+numero+") puis réessayer SVP!";
+                        Intent i = new Intent(Connexion.this, Message_non.class);
+                        i.putExtra("mmi","1");
+                        i.putExtra("tel",element2.getValue());
+                        i.putExtra("mdp",element1.getValue());
+                        i.putExtra("msg_desc",msg);
+                        i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                        startActivity(i);
+                    }
+                    else if(matcher_connexion.find()){
+                        // afficher Message_non
+                        //Connexion.this.finish();
+                        String msg="Problème de connexion ou IHM non valide. Veuillez réessayer SVP!";
+                        Intent i = new Intent(Connexion.this, Message_non.class);
+                        i.putExtra("mmi","1");
+                        i.putExtra("tel",element2.getValue());
+                        i.putExtra("mdp",element1.getValue());
+                        i.putExtra("msg_desc",msg);
+                        i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                        startActivity(i);
+                    }else if(matcher_connexion_2.find() || matcher_connexion_3.find()){
+                        // afficher Message_non
+                        //Connexion.this.finish();
+                        String msg="Problème de connexion ou MMI non valide. Veuillez réessayer SVP!";
+                        Intent i = new Intent(Connexion.this, Message_non.class);
+                        i.putExtra("mmi","1");
+                        i.putExtra("tel",element2.getValue());
+                        i.putExtra("mdp",element1.getValue());
+                        i.putExtra("msg_desc",msg);
+                        i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                        startActivity(i);
+                    }else{
+                        // si non verifiéee
+                        // afficher Message_non
+                        //Connexion.this.finish();
+                        String msg="Tondi rencontre des difficultés réseau. Veuillez réessayer plustard SVP!";
+                        Intent i = new Intent(Connexion.this, Message_non.class);
+                        i.putExtra("mmi","1");
+                        i.putExtra("tel",element2.getValue());
+                        i.putExtra("mdp",element1.getValue());
+                        i.putExtra("msg_desc",msg);
+                        i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                        startActivity(i);
+                    }
+
+                }
+
+                /*if(message.equals(message_ok)){
+
+                }*/
+
+            }
+        });
+        //Log.d("APPUSSpp12", "drtdrq");
+    }
+
+    @Override
+    public void onBackPressed() {
+        // your code.
+//        final AlertDialog.Builder builder = new AlertDialog.Builder(Connexion.this);
+//        builder.setTitle("Quitter l'application");
+//        builder.setMessage("Êtes vous sûr de vouloir quitter Tondi ?");
+//        builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                Connexion.this.finishAffinity();
+//            }
+//        });
+//	    builder.setNegativeButton("Pas maintenant", new DialogInterface.OnClickListener() {
+//        @Override
+//        public void onClick(DialogInterface dialogInterface, int i){
+//                dialogInterface.dismiss();
+//            }
+//        });
+//
+//        AlertDialog dialog = builder.create();
+//        dialog.show();
+
+        Dialog dialog_alert = new Dialog(Connexion.this);
+        dialog_alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog_alert.setCancelable(true);
+        dialog_alert.setContentView(R.layout.dialog_attention);
+
+        TextView titre = (TextView) dialog_alert.findViewById(R.id.deco_title);
+        titre.setText("Quitter l'application");
+        TextView message_deco = (TextView) dialog_alert.findViewById(R.id.deco_message);
+        message_deco.setText("Êtes vous sûr de vouloir quitter Tondi ?");
+
+
+
+        Button oui = (Button) dialog_alert.findViewById(R.id.btn_oui);
+        oui.setText("Oui");
+        oui.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_alert.cancel();
+                Connexion.this.finishAffinity();
+            }
+        });
+
+        Button non = (Button) dialog_alert.findViewById(R.id.btn_non);
+        non.setText("Non");
+        non.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog_alert.cancel();
+
+            }
+        });
+
+        dialog_alert.show();
+
+    }
+
+
+    // To check if service is enabled
+    private boolean isAccessibilitySettingsOn(Context mContext) {
+        int accessibilityEnabled = 0;
+        final String service = getPackageName() + "/" + USSDService.class.getCanonicalName();
+        try {
+            accessibilityEnabled = Settings.Secure.getInt(
+                    mContext.getApplicationContext().getContentResolver(),
+                    android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
+            Log.v(TAG, "accessibilityEnabled = " + accessibilityEnabled);
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e(TAG, "Error finding setting, default accessibility to not found: "
+                    + e.getMessage());
+        }
+        TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
+
+        if (accessibilityEnabled == 1) {
+            Log.v(TAG, "***ACCESSIBILITY IS ENABLED*** -----------------");
+            String settingValue = Settings.Secure.getString(
+                    mContext.getApplicationContext().getContentResolver(),
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            if (settingValue != null) {
+                mStringColonSplitter.setString(settingValue);
+                while (mStringColonSplitter.hasNext()) {
+                    String accessibilityService = mStringColonSplitter.next();
+
+                    Log.v(TAG, "-------------- > accessibilityService :: " + accessibilityService + " " + service);
+                    if (accessibilityService.equalsIgnoreCase(service)) {
+                        Log.v(TAG, "We've found the correct setting - accessibility is switched on!");
+                        return true;
+                    }
+                }
+            }
+        } else {
+            Log.v(TAG, "***ACCESSIBILITY IS DISABLED***");
+        }
+
+        return false;
+    }
+
+    private void showCompletedUpdate() {
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Nouvelle version de l'application prête !!",
+                Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("Installer", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                appUpdateManager.completeUpdate();
+            }
+        });
+        snackbar.show();
+    }
+
+
+    @Override
+    protected void onUserLeaveHint() {
+        final Intent svc = new Intent(Connexion.this, SplashLoadingService.class);
+        //stopService(svc);
+        super.onUserLeaveHint();
+    }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode==KeyEvent.KEYCODE_HOME){
+            Log.e("home key pressed", "****");
+            //Toast.makeText(Connexion.this,"Home via",Toast.LENGTH_LONG).show();
+            // write your code here to stop the activity
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_APP_UPDATE && resultCode != RESULT_OK) {
+            Toast.makeText(this, "Annuler", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+}

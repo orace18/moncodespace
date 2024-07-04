@@ -1,0 +1,214 @@
+<<<<<<< HEAD
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+>>>>>>> origin/develop-version-spring
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/drawable/tapez_bg.xml" value="0.195" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/drawable/tontine_bg.xml" value="0.195" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_accueil.xml" value="0.32837301587301587" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_accueil_2.xml" value="0.32837301587301587" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_carte_3.xml" value="0.12355707567336469" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_ccm.xml" value="0.3412698412698413" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_code_otp_verification.xml" value="0.2857142857142857" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_connexion.xml" value="0.10196406184705391" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_dashbord.xml" value="0.5763888888888888" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_encaisser.xml" value="0.3412698412698413" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_history.xml" value="0.10196406184705391" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_home.xml" value="0.44047619047619047" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_inscription.xml" value="0.10196406184705391" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_inscription_next.xml" value="0.10196406184705391" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_liste_retraits_2.xml" value="0.3412698412698413" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_liste_tontines_2.xml" value="0.3412698412698413" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/activity_mdp_modification.xml" value="0.20863616930312098" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/carnet_design_row.xml" value="1.6" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/fragment_dashboard.xml" value="0.44047619047619047" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/fragment_home.xml" value="0.6081349206349206" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/fragment_retrait.xml" value="0.3412698412698413" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/fragment_retraits.xml" value="0.3412698412698413" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/fragment_tontine.xml" value="0.3412698412698413" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/fragment_tontines.xml" value="0.3412698412698413" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/layout/tontine_row.xml" value="0.2" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/menu/bottom_nav_menu.xml" value="0.49" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/app/src/main/res/menu/tontine.xml" value="0.49" />
+        <entry key="..\:/Users/ADMIN/AndroidStudioProjects/TONDi/tondi_app_comub/formmaster/src/main/res/layout/form_element_password.xml" value="0.264" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/drawable/background_home.xml" value="0.198" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/drawable/bg_avatar.xml" value="0.141" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/drawable/bg_services.xml" value="0.231" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/drawable/border_color.xml" value="0.2075" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/drawable/fond_inset.xml" value="0.231" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/drawable/tapez_bg.xml" value="0.164" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_accueil.xml" value="0.18489583333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_accueil_2.xml" value="0.18489583333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_dashbord.xml" value="0.18489583333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_encaisser_2.xml" value="0.1634963768115942" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_history.xml" value="0.1" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_home.xml" value="0.21666666666666667" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_liste_tontines.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_nouvelle_tontine.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_tableau_bord.xml" value="0.18489583333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_versements.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/activity_versements_2.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/carnet_design_row.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/carte_item.xml" value="0.28802083333333334" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/dialog_deconnexion.xml" value="0.24635416666666668" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/fragment_avances.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/fragment_dashboard.xml" value="0.28958333333333336" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/fragment_home.xml" value="0.34305717619603265" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/fragment_plaintes.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/fragment_retrait.xml" value="0.28958333333333336" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/fragment_retraits.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/fragment_tontine.xml" value="0.28958333333333336" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/fragment_tontines.xml" value="0.16666666666666666" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/history_row.xml" value="0.365625" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/history_row_home.xml" value="0.33" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/paiement_row.xml" value="0.365625" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/layout/retrait_row.xml" value="0.365625" />
+        <entry key="..\:/Users/DELL/Desktop/tondi/app-client-comuba-tondi/app/src/main/res/menu/bottom_nav_menu.xml" value="0.3203125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/drawable/background_home.xml" value="0.2715" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/drawable/bg_avatar.xml" value="0.215" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/drawable/ic_mes_retraits_xml_1.xml" value="0.2715" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/drawable/image_border.xml" value="0.3165" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/drawable/outline_mic_24.xml" value="0.2485" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout-sw480dp/activity_mdp_modification.xml" value="0.155859375" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_about_us_2.xml" value="0.22509057971014493" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_accueil.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_carte.xml" value="0.22509057971014493" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_cgu.xml" value="0.1" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_code_otp_verification.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_compte.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_compte_2.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_compte_drawer.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_connexion.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_connexion_2.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_dashbord.xml" value="0.24479166666666666" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_encaisser_3.xml" value="0.25" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_encaisser_marchant.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_history.xml" value="0.13722826086956522" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_home.xml" value="0.22509057971014493" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_inscription.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_inscription_next.xml" value="0.24479166666666666" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_inscription_next_2.xml" value="0.24479166666666666" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_liste_tontines.xml" value="0.2630208333333333" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_liste_tontines_2.xml" value="0.2630208333333333" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_mdp_modification.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_mes_plaintes.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/activity_navigation_drawer.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/bottom_navigation.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/carnet_design_row.xml" value="0.22509057971014493" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/carte_item.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/cropping_activity.xml" value="0.2658514492753623" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/dialog_attention.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/dialog_attention_encaissement_marchand.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/dialog_deconnexion.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/dialog_new_plainte.xml" value="0.20425724637681159" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/form_telephone.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_avances.xml" value="0.22" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_dashboard.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_details_plainte.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_home.xml" value="0.22509057971014493" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_notifications.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_plaintes.xml" value="0.22509057971014493" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_retrait.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_retraits.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_tontine.xml" value="0.1897644927536232" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/fragment_tontines.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/history_row.xml" value="0.2658514492753623" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/history_row_home.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/message_changer_pin.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/nouvelle_sim.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/plainte_row.xml" value="0.20425724637681159" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/playing_plainte_dialog.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/retrait.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/retrait_row.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/service_item.xml" value="0.22509057971014493" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/layout/tontine_row.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/menu/activity_main_drawer.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/menu/bottom_nav_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/app/src/main/res/menu/main_activity_drawer.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/formmaster/src/main/res/drawable/border_bottom.xml" value="0.2665" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/formmaster/src/main/res/drawable/outline_person_outline_24.xml" value="0.215" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/formmaster/src/main/res/layout/form_element.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/formmaster/src/main/res/layout/form_element_denomination.xml" value="0.2658514492753623" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/formmaster/src/main/res/layout/form_element_password.xml" value="0.36666666666666664" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/formmaster/src/main/res/layout/form_element_sexe.xml" value="0.2078125" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/formmaster/src/main/res/layout/form_element_telephone.xml" value="0.2222222222222222" />
+        <entry key="..\:/Users/DELL/Documents/app-client-comuba-tondi/formmaster/src/main/res/layout/form_element_zero.xml" value="0.36666666666666664" />
+      </map>
+    </option>
+  </component>
+  <component name="NullableNotNullManager">
+    <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
+    <option name="myDefaultNotNull" value="android.support.annotation.NonNull" />
+    <option name="myNullables">
+      <value>
+<<<<<<< HEAD
+        <list size="16">
+=======
+        <list size="15">
+>>>>>>> origin/develop-version-spring
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.Nullable" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nullable" />
+          <item index="2" class="java.lang.String" itemvalue="javax.annotation.CheckForNull" />
+          <item index="3" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.Nullable" />
+          <item index="4" class="java.lang.String" itemvalue="android.support.annotation.Nullable" />
+          <item index="5" class="java.lang.String" itemvalue="androidx.annotation.Nullable" />
+          <item index="6" class="java.lang.String" itemvalue="androidx.annotation.RecentlyNullable" />
+          <item index="7" class="java.lang.String" itemvalue="android.annotation.Nullable" />
+          <item index="8" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.qual.Nullable" />
+          <item index="9" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.compatqual.NullableDecl" />
+          <item index="10" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.compatqual.NullableType" />
+          <item index="11" class="java.lang.String" itemvalue="com.android.annotations.Nullable" />
+          <item index="12" class="java.lang.String" itemvalue="org.eclipse.jdt.annotation.Nullable" />
+          <item index="13" class="java.lang.String" itemvalue="io.reactivex.annotations.Nullable" />
+          <item index="14" class="java.lang.String" itemvalue="io.reactivex.rxjava3.annotations.Nullable" />
+<<<<<<< HEAD
+          <item index="15" class="java.lang.String" itemvalue="org.jspecify.nullness.Nullable" />
+=======
+>>>>>>> origin/develop-version-spring
+        </list>
+      </value>
+    </option>
+    <option name="myNotNulls">
+      <value>
+<<<<<<< HEAD
+        <list size="16">
+=======
+        <list size="15">
+>>>>>>> origin/develop-version-spring
+          <item index="0" class="java.lang.String" itemvalue="org.jetbrains.annotations.NotNull" />
+          <item index="1" class="java.lang.String" itemvalue="javax.annotation.Nonnull" />
+          <item index="2" class="java.lang.String" itemvalue="edu.umd.cs.findbugs.annotations.NonNull" />
+          <item index="3" class="java.lang.String" itemvalue="android.support.annotation.NonNull" />
+          <item index="4" class="java.lang.String" itemvalue="androidx.annotation.NonNull" />
+          <item index="5" class="java.lang.String" itemvalue="androidx.annotation.RecentlyNonNull" />
+          <item index="6" class="java.lang.String" itemvalue="android.annotation.NonNull" />
+          <item index="7" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.qual.NonNull" />
+          <item index="8" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.compatqual.NonNullDecl" />
+          <item index="9" class="java.lang.String" itemvalue="org.checkerframework.checker.nullness.compatqual.NonNullType" />
+          <item index="10" class="java.lang.String" itemvalue="com.android.annotations.NonNull" />
+          <item index="11" class="java.lang.String" itemvalue="org.eclipse.jdt.annotation.NonNull" />
+          <item index="12" class="java.lang.String" itemvalue="io.reactivex.annotations.NonNull" />
+          <item index="13" class="java.lang.String" itemvalue="io.reactivex.rxjava3.annotations.NonNull" />
+          <item index="14" class="java.lang.String" itemvalue="lombok.NonNull" />
+<<<<<<< HEAD
+          <item index="15" class="java.lang.String" itemvalue="org.jspecify.nullness.NonNull" />
+=======
+>>>>>>> origin/develop-version-spring
+        </list>
+      </value>
+    </option>
+  </component>
+<<<<<<< HEAD
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
+=======
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+>>>>>>> origin/develop-version-spring
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

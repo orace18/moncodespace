@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <androidx.cardview.widget.CardView
+        android:layout_width="330dp"
+        android:layout_height="200dp"
+        android:background="@drawable/bgtontine_index"
+        app:cardCornerRadius="15dp"
+
+        tools:ignore="MissingConstraints">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="16dp"
+            android:background="@drawable/bgtontine_index"
+
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/card_entete">
+                <ImageView
+                    android:id="@+id/isBlocked"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/lock_48px"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    android:visibility="gone"
+                    app:tint="@color/colorPrimary"
+                    />
+                <TextView
+                    android:id="@+id/card_view_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Carnet Mensuel"
+                    android:textStyle="bold"
+                    android:textSize="16dp"
+                    app:layout_constraintLeft_toRightOf="@+id/isBlocked"
+                    />
+                <TextView
+                    android:id="@+id/created_at"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="@+id/card_entete"
+                    android:text="12/04/2022"
+                    android:textStyle=""
+                    android:textSize="16dp"
+
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/denomination"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:textStyle="bold"
+                android:text="Ma Tontine 5"
+                android:layout_gravity="center"
+                android:paddingVertical="55dp"
+                />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+             >
+                <TextView
+                    android:layout_width="140dp"
+                    android:layout_height="wrap_content"
+                    android:text="Mise: 500 Fcfa"
+                    android:id="@+id/mise"
+                    android:textStyle="bold"
+                    android:textAlignment="textStart"
+                    android:freezesText="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    />
+                <TextView
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:text="Cumulé: 15000 Fcfa"
+                    android:textStyle="bold"
+                    android:textAlignment="textEnd"
+                    android:id="@+id/total"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:freezesText="true"
+                    android:singleLine="true"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

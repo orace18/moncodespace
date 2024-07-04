@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CGU"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bg_color_3"
+>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:ignore="MissingConstraints">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_gravity="end"
+            android:paddingTop="20dp"
+            android:paddingRight="20dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/btn_fermer_cgu"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_close"
+                android:contentDescription="@string/fermer_cgu">
+
+            </ImageView>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGray"
+            android:paddingTop="20dp"
+            android:paddingLeft="20dp"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:text="@string/cgu"/>
+
+            <TextView
+                android:id="@+id/cgu_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorGray"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:textSize="16sp"
+                android:text="@string/cgu_extrait"/>
+            <com.sicmagroup.tondi.FButton
+                android:id="@+id/btn_cgu_lu"
+                fbutton:buttonColor="@color/colorPrimary"
+                fbutton:shadowColor="@color/colorPrimarylight"
+                android:layout_marginTop="40dp"
+                fbutton:shadowEnabled="false"
+                fbutton:shadowHeight="4dp"
+                fbutton:cornerRadius="4dp"
+                android:layout_height="40dp"
+                android:layout_width="150dp"
+                android:layout_marginBottom="20dp"
+                android:textColor="@color/colorWhite"
+                android:text="Je confirme avoir lu"
+                android:layout_gravity="center"
+                android:textAllCaps="false"/>
+
+
+    </LinearLayout>
+
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

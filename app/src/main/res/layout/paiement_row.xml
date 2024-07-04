@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:fbutton="http://schemas.android.com/tools">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        fbutton:ignore="MissingConstraints">
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <TextView
+                    android:id="@+id/reseau"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="16dp"
+                    android:paddingTop="6dp"
+                    android:text="MTN  "
+                    android:textStyle="bold"
+                    android:textColor="@color/colorGray"
+                    android:textSize="18sp" />
+                <TextView
+                    android:id="@+id/id_paiement"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@+id/reseau"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="6dp"
+                    android:text="( 96665166 )"
+                    android:textColor="@color/colorGray"
+                    android:textSize="18sp" />
+                <LinearLayout
+                    android:layout_toRightOf="@id/id_paiement"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tontine_i"
+                    android:gravity="end"
+                    android:orientation="horizontal"
+                    android:paddingLeft="16dp"
+                    android:textStyle="bold"
+                    android:text="1 000 F"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp"
+                    android:paddingBottom="10dp"
+                    fbutton:ignore="NotSibling">
+
+                    <com.sicmagroup.tondi.FButton
+                        android:id="@+id/btn_del_paiement"
+                        android:layout_width="32dp"
+                        android:layout_height="27dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginRight="16dp"
+                        android:clickable="true"
+                        android:drawableStart="@drawable/ic_close"
+                        android:drawableLeft="@drawable/ic_close"
+                        android:drawableTint="@color/colorGray"
+                        android:gravity="right"
+                        android:inputType="textCapSentences"
+                        android:paddingStart="4dp"
+                        android:paddingLeft="4dp"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorGray"
+                        android:textSize="16sp"
+                        fbutton:buttonColor="@color/colorWhite"
+                        fbutton:cornerRadius="5dp"
+                        fbutton:shadowColor="@color/colorPrimaryDark"
+                        fbutton:shadowEnabled="false"
+                        fbutton:shadowHeight="0dp" />
+                </LinearLayout>
+
+
+
+            </RelativeLayout>
+
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
+

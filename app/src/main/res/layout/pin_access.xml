@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="300dp"
+    android:minHeight="200dp"
+    android:background="#ffffffff">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:id="@+id/a"
+        android:textColor="@color/colorWhite"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="Entrez votre mot de passe"
+        android:background="@color/colorPrimaryDark"/>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="20dp"
+        android:orientation="vertical">
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/form_pin_access"
+            />
+
+    </LinearLayout>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="20dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/msg_pin_trying"
+            android:text="lorem ipsum vwvvvkre lkwfre"
+            android:textSize="13sp"
+            android:layout_marginHorizontal="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimaryDark"
+            android:visibility="gone"/>
+    </LinearLayout>
+    <com.sicmagroup.tondi.FButton
+        android:layout_marginRight="16dp"
+        android:id="@+id/btn_continue"
+        fbutton:buttonColor="@color/colorPrimary"
+        android:layout_marginTop="20dp"
+        fbutton:shadowEnabled="true"
+        fbutton:shadowHeight="4dp"
+        fbutton:cornerRadius="20dp"
+        android:layout_height="35dp"
+        android:layout_width="100dp"
+        android:textColor="@color/white"
+        android:text="@string/continuer"
+        android:layout_gravity="right"
+        android:layout_marginBottom="20dp"
+        fbutton:shadowColor="@color/colorPrimarylight"
+        android:textAllCaps="false"/>
+
+</LinearLayout>

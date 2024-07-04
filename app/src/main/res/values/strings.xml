@@ -1,0 +1,360 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!--    <string name="app_name">Tondi</string>-->
+    <string name="app_name">COMUBA TONDi</string>
+    <string name="tontine_digi">Tontine digitale</string>
+    <string name="welcome_message">Bienvenue sur </string>
+    <string name="slogan">la plateforme sécurisée de tontine digitale</string>
+    <string name="cgu">Termes &amp; Conditions générales d\'utilisation</string>
+    <string name="seconnecter">Se connecter</string>
+    <string name="sinscrire">S\'inscrire</string>
+    <string name="inscrivez_v">Inscrivez-vous!</string>
+    <string name="connectez_v">Connectez-vous!</string>
+    <string name="form_fill">Renseigner..</string>
+    <string name="compte_deja">Avez-vous déjà un compte?</string>
+    <string name="pas_compte">Vous n\'avez pas de compte?</string>
+    <string name="lorem">Les termes et conditions d\'utilisation de tondi…</string>
+    <string name="fermer_cgu">Fermer CGU</string>
+    <string name="n_inscription">INSCRIPTION</string>
+    <string name="n_connexion">CONNEXION</string>
+    <string name="acceter_cgu">Accepter nos termes &amp; conditions</string>
+    <string name="dashboard">Accueil</string>
+    <string name="solde">Solde : </string>
+    <string name="deconnexion">Sortir</string>
+    <string name="n_tontine">Nouvelle Tontine</string>
+    <string name="m_tontines">Mes Tontines</string>
+    <string name="m_versements">Historique cotisations</string>
+    <string name="m_compte">Mon Compte &amp; Sécurités</string>
+    <string name="enreg_tontine">Enregistrer</string>
+    <string name="cfg_moncompte">Compte</string>
+    <string name="cfg_secutites">Sécurités</string>
+    <string name="cfg_paiement">Paiement</string>
+    <string name="cni_ravip">CNI / RAVIP</string>
+    <string name="s_lectionner">Sélectionner</string>
+    <string name="ajouter">Ajouter</string>
+    <string name="continuer">Continuer</string>
+    <string name="nouveau_versement">Versement manuel</string>
+    <string name="valider">Valider</string>
+    <string name="retrait_sur_mon_compte_mobilemoney">Retrait sur mon compte MobileMoney</string>
+    <string name="retrait_en_esp_ces">Retrait en espèces</string>
+
+    <string name="refuse_permissions">Veuillez autoriser la permission d\'effectuer les appels USSD pour les paiements déconnecté de l\'internet.</string>
+    <string name="accessibility_service_description">Activer la permission puis retourner dans votre application Tondi pour finaliser votre versement.</string>
+
+    <string name="crop__saving">Enregistrement de l\'image…</string>
+    <string name="crop__wait">Veuillez patienter…</string>
+    <string name="crop__pick_error">Aucune image disponible</string>
+
+    <string name="crop__done">ACCEPTER</string>
+    <string name="crop__cancel" tools:ignore="ButtonCase">ANNULER</string>
+    <string name="les_cgu"><u>les CGU</u></string>
+    <string name="choisissez_l_option_de_retrait_retrait_sur_mon_compte_mobilemoney_et_tapez_le_bouton_continuer">Choisissez l\'option de retrait <u>Retrait sur mon compte MobileMoney</u> et tapez le bouton <u>Continuer</u></string>
+    <string name="choisissez_l_option_de_retrait_retrait_sur_mon_compte_mobilemoney_et_tapez_le_bouton_continuer_B">Choisissez l\'option de retrait <u>Retrait en espèces</u> et tapez le bouton <u>Continuer</u></string>
+    <string name="intitul_mes_retraits">Si la tontine que vous désirez retirer est en cours, veuillez l\'arrêter puis déplacez vous à l\'accueil pour sélectionner le menu intitulé <u>Mes Retraits</u> </string>
+    <string name="tapez_le_bouton_encaisser">Après avoir vérifié votre code PIN, dans la fenêtre qui s\'ouvre, vous verrez la liste de vos tontines terminées. Sélectionner la tontine puis tapez le bouton <u>Encaisser</u></string>
+    <string name="ifNoHistoryMsg">Aucune activitée récente.</string>
+    <string name="ifNoTontinMsg">Aucune tontine</string>
+
+    <string-array name="mtn_prefix_list">
+        <item>97</item>
+        <item>96</item>
+        <item>91</item>
+        <item>90</item>
+        <item>69</item>
+        <item>67</item>
+        <item>66</item>
+        <item>62</item>
+        <item>61</item>
+        <item>51</item>
+        <item>52</item>
+        <item>53</item>
+        <item>54</item>
+    </string-array>
+    <string-array name="moov_prefix_list">
+        <item>99</item>
+        <item>98</item>
+        <item>95</item>
+        <item>94</item>
+        <item>68</item>
+        <item>65</item>
+        <item>64</item>
+        <item>60</item>
+        <item>63</item>
+        <item>55</item>
+    </string-array>
+    <string name="title_activity_mes_plaintes">MesPlaintes</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="m_plaintes">Mes plaintes</string>
+    <string name="alerte_desac_temp">Votre compte est temporairement désactivé. Contacter le XXXXXXXX</string>
+    <string name="mot_de_passe_oubli">Mot de passe oublié ?</string>
+    <string name="msg_token_fmt">Obtention du token</string>
+    <string name="msg_subscribed">Souscription a la rubrique firebase ok!</string>
+    <string name="msg_subscribe_failed">Echec inscription a la rubrique</string>
+    <string name="cgu_extrait"><Part>
+        <P>Les présentes conditions générales d’utilisation (ci-après dénommées « <b>CGU</b> ») ont pour objet de déterminer les règles d’accès et les conditions d’utilisation de la plateforme «  <b>COMUBA Tontine Digitale</b> » éditée par la société « <b>SICMa &amp; Associés S.A.R.L.</b> » au bénéfice de l’IMF la COMUBA. </P> \n
+
+        <P>En accédant à la plateforme, en installant et/ou en utilisant l’application sur son terminal, l\’utilisateur reconnaît avoir lu et accepté, l’intégralité des dispositions ci-après sans restriction ni réserve. Toute utilisation de <b>COMUBA Tontine Digitale</b> doit se faire dans le respect des présentes CGU. </P>\n
+
+<Sect>
+<H4><b>1. Votre relation avec COMUBA Tontine Digitale</b> </H4>\n
+
+<Sect>
+    <H4><b>1.1 Présentation de COMUBA Tontine Digitale </b></H4>\n
+
+<P>COMUBA Tontine Digitale est une application numérique de tontine digitale, une plateforme sécurisée, qui joue le re essentiel de collecteur de l’épargne de manière digitale pour la COMUBA et permet à l’épargnant de réaliser des tontines journalières, hebdomadaires et mensuelles en étant déconnecté/et ou connecté à internet. Elle met à la disposition de ses utilisateurs les services de paiement de compte mobile électronique (MOOV mobile money) pour effectuer le paiement et le retrait instantané de leur tontine via leurs comptes de paiement électroniques chez l’opérateur mobile Moov Africa. COMUBA Tontine Digitale permet également aux particuliers de recevoir leurs montants cotisés en espèces chez un marchand agréé par la COMUBA et utilisant l’application marchande COMUBA Tontine Digitale. </P> \n
+</Sect>
+
+<Sect>
+<H4><b>1.2 Respect de la vie privée </b></H4>\n
+
+<P>La confidentialité et le respect de vos données à caractère personnel et de paiements est importante pour la COMUBA et les services de COMUBA Tontine Digitale mis à votre disposition. Veuillez consulter à ce propos notre Politique de Confidentialité. </P>\n
+</Sect>
+
+<Sect>
+<H4><b>1.3 Propriété intellectuelle </b></H4>\n
+
+<P>L’utilisateur reconnaît expressément que le site/Application et les contenus (images, photographies, marques, logos, articles, URLs, gifs, …) sont la propriété exclusive de l’éditeur et sont protégés par le code de la propriété intellectuelle béninoise ainsi que les traités et les accords internationaux applicables en la matière. En conséquence, toute reproduction, représentation, adaptation, traduction et/ou transformations partielles ou intégrales, ou transferts vers un autre site, sans l’autorisation écrite, expresse et préalable de l’éditeur, sont interdits. </P>\n
+</Sect>
+
+<Sect>
+<H4><b>1.4 Cession de compte COMUBA Tontine Digitale </b></H4>\n
+
+<P>Vous ne pouvez céder aucun droit ni aucune obligation ou transférer votre compte COMUBA Tontine Digitale à un tiers, dans le cadre du présent contrat, sans le consentement écrit préalable de la COMUBA. </P>\n
+</Sect>
+
+<Sect>
+<H4><b>1.5 Notifications qui vous sont destinées</b> </H4>\n
+
+<P>Toute notification ou toute autre information de COMUBA Tontine Digitale vous sera envoyée à votre adresse email ou par appel téléphonique ou par SMS. </P>\n
+
+<P>Excepté les notifications relatives aux modifications apportées au présent contrat, nous considèrerons que vous aurez reçu toute notification que nous vous aurons envoyée dans les 24 heures suivant son envoi par email ou SMS. </P>\n
+</Sect>
+
+<Sect>
+<H4><b>1.6 Notifications destinées à la COMUBA </b></H4>\n
+
+<P>Toute notification envoyée à COMUBA Tontine Digitale dans le cadre du présent contrat doit être adressée par courrier électronique à l’adresse https://support_comuba@e-tondi.com. </P>\n
+</Sect>
+
+<Sect>
+<H4><b>1.7 Historique des transactions </b></H4>\n
+
+<P>Vous pouvez accéder aux détails des transactions de paiement exécutées et à d’autres informations relatives à l’historique de vos transactions dans votre compte sur l’application. </P>\n
+</Sect>
+
+<Sect>
+<H4><b>1.8 Modifications du présent Contrat sur les Conditions Générales d’Utilisations</b> </H4>\n
+
+<P>Nous pouvons à tout moment modifier le présent contrat ou le règlement sur le respect de la vie privée, supprimer certaines de ses clauses ou en ajouter de nouvelles, y compris s’agissant des commissions ou frais appliqués aux services de COMUBA Tontine Digitale. Toute modification sera faite de manière unilatérale par la COMUBA et vous serez réputé avoir accepté les modifications après en avoir reçu notification. Nous vous informerons des modifications avant leur entrée en vigueur, sauf dans les cas oelles sont exigées par la loi ou relatives à l’ajout d’un nouveau service ou d’une nouvelle fonctionnalité aux services existants ou toute autre modification dont nous estimons de manière raisonnable qu’elle ne diminue vos droits ni n’accroît vos responsabilités. Dans ce cas, les modifications seront effectuées sans qu’aucune notification préalable ne vous soit adressée et seront immédiatement applicables. </P>\n
+</Sect>
+
+<Sect>
+    <H4><b>1.9 Activités interdites</b> </H4>\n
+
+<P>COMUBA Tontine Digitale ne doit être utilisée en aucun cas pour des activités : </P>\n
+
+<L>
+<LI>
+    <Lbl><b>•</b> </Lbl>
+
+<LBody>qui violent une loi, un contrat, une ordonnance ou une réglementation; </LBody>
+</LI>\n
+
+<LI>
+    <Lbl><b>•</b> </Lbl>
+
+<LBody>en lien avec des transactions impliquant des produits qui présentent un risque pour la sécurité du consommateur; des drogues et objets associés; des objets illégaux ou objets visant à encourager, promouvoir et faciliter des activités illégales ou à expliquer à d’autres personnes comment les mener; des objets qui prent la haine, la violence, l’intolérance raciale ou l’exploitation financière d’actes criminels; des objets pouvant être considérés comme étant de nature obscène; </LBody>
+</LI>\n
+
+<LI>
+    <Lbl><b>•</b> </Lbl>
+
+<LBody>qui impliquent la vente de produits ou services identifiés par les agences gouvernementales comme présentant une forte probabilité de fraude ; </LBody>
+</LI>\n
+
+<LI>
+    <Lbl><b>•</b> </Lbl>
+
+<LBody>à caractère illicite ou de blanchiment de d’argent ; </LBody>
+</LI>\n
+
+<LI>
+    <Lbl><b>•</b> </Lbl>
+
+<LBody>en relation et/ou en financement du terrorisme. </LBody>
+</LI>\n
+</L>
+</Sect>
+</Sect>
+
+<Sect>
+    <H4><b>2. Application COMUBA Tontine Digitale</b></H4>\n
+
+<Sect>
+    <H4><b>2.1Objet de l’Application </b></H4>\n
+
+<P>Les services et fonctionnalités proposés par l’Application sont mis à la disposition de l’Utilisateur par la COMUBA et accessibles depuis les menus pour les parties ci-après énumérées : </P>\n
+
+<L>
+<LI>
+    <Lbl><b>•</b></Lbl>
+
+<LBody>Créer son compte ; </LBody>
+</LI>\n
+
+<LI>
+    <Lbl><b>•</b> </Lbl>
+
+<LBody>Se connecter et Gérer son compte ;  </LBody>
+</LI>\n
+
+<LI>
+<Lbl><b>•</b> </Lbl>
+
+<LBody>Souscrire à une ou plusieurs tontines ; </LBody>
+</LI>\n
+
+<LI>
+<Lbl><b>•</b> </Lbl>
+
+<LBody>Consulter le solde de ses tontines ; </LBody>
+</LI>\n
+
+<LI>
+<Lbl><b>•</b> </Lbl>
+
+<LBody>Retirer le montant de ses tontines. </LBody>
+</LI>
+</L>\n
+
+<P>Les services et fonctionnalités proposés par l’Application COMUBA Tontine Digitale sont mis à la disposition de l’Utilisateur par la COMUBA. </P>\n
+</Sect>
+
+<Sect>
+<H4><b>2.2 Accès à l’Application</b> </H4>\n
+
+<P>L’Application est téléchargeable gratuitement sur le lien https://comuba.e-tondi.com hors co d’abonnement auprès de l’opérateur de téléphonie mobile, hors co de connexion et d’accès au réseau Internet et hors surco éventuel facturé pour chargement des données. La version du système Android est susceptible d’être mise à jour pour ajouter de nouvelles fonctionnalités et de nouveaux services. La réalisation des mises à jour du logiciel de l’application, régulièrement proposées par la Société SICMa &amp; Associés, relèvent de la responsabilité exclusive de la COMUBA. A cet égard, toute Application téléchargée par un Utilisateur a une durée de validité limitée dans le temps, compte tenu de ces mises à jour à télécharger impérativement et des éventuelles évolutions techniques, législatives ou règlementaires, dont la COMUBA n’a pas le contre. Les services et fonctionnalités sont accessibles à l’Utilisateur à tout moment 24h sur 24 et 7 jours sur 7, à l’exception des périodes de maintenance dans les conditions définies ci-après. Pour accéder à son compte personnel, l’Utilisateur doit préalablement compléter le formulaire d’inscription, auquel il accède via le menu, et entrer dans l’Application le code d’authentification qui lui est adressé par SMS après réception de la demande d’inscription. Ce code d’authentification rattaché au numéro de téléphone de l’Utilisateur lui est strictement personnel et lui permet d’opérer le paramétrage et la reconnaissance automatique de son téléphone mobile ou smartphone à son compte personnel. Pour accéder à et utiliser l’Application COMUBA Tontine Digitale ou ses services, l’Utilisateur doit posséder un téléphone compatible ou un terminal mobile et un accès au réseau Internet muni d’un appareil photo. </P>\n
+</Sect>
+
+<Sect>
+<H4><b>2.3 Accès aux données</b> </H4>\n
+
+<P>L’utilisation des données de l’utilisateur de l’Application COMUBA Tontine Digitale nécessite le consentement préalable expresse de l’Utilisateur. A cet effet, l’Utilisateur devra activer, s’il le souhaite, la fonction d’accessibilité aux services de l’Application COMUBA Tontine Digitale directement dans les réglages de son téléphone mobile et accepter que l’Application COMUBA Tontine Digitale puisse y avoir recours. Cette fonctionnalité peut à tout moment et sans frais, être désactivée ou activée. </P>\n
+
+<P>Grâce à l’acceptation de la fonction d’accessibilité aux services de l’Application COMUBA Tontine Digitale l’Utilisateur peut bénéficier de l’ensemble des services et fonctionnalités de l’Application COMUBA Tontine Digitale. </P>\n
+</Sect>
+</Sect>
+
+<Sect>
+<H4><b>3. Responsabilités et garanties</b> </H4>\n
+
+<P>La COMUBA n’est tenue que par une obligation de moyens ; sa responsabilité ne pourra être engagée pour des dommages résultant de l’Application COMUBA Tontine Digitale tels que : perte de données, intrusion, virus, rupture du service, ou autres. La COMUBA ne saurait notamment être tenue pour responsable d’une rupture de service causée par des dysfonctionnements liés à des causes extérieures à elle ou à la survenance d’un cas de force majeure. A titre d’exemple, la COMUBA ne saurait être tenue pour responsable des conséquences liées à : </P>\n
+
+<L>
+<LI>
+<Lbl><b>• </b></Lbl>
+
+<LBody>Des défaillances affectant le réseau internet et/ou la connexion au wifi ; la qualité du débit et de la performance de la connexion internet ; </LBody>
+</LI>\n
+
+<LI>
+<Lbl><b>• </b></Lbl>
+
+<LBody>L’indisponibilité technique de la connexion, qu’elle soit due notamment à un cas de force majeure, à une maintenance, à une mise à jour, à une modification, à une intervention de l’hébergeur, à une grève interne ou externe, à une panne de réseau, à une coupure d’alimentation électrique, ou encore à une mauvaise configuration ou utilisation du périphérique de l’Utilisateur. </LBody>
+</LI>\n
+</L>
+
+<P>La COMUBA ne pourra en aucun cas être tenue pour responsable : </P>\n
+
+<L>
+<LI>\n
+<Lbl><b>• </b></Lbl>
+
+<LBody>de tout dommage direct ou indirect, notamment en ce qui concerne les pertes de profits, le manque à gagner, les pertes de clientèle, de données pouvant entre autres résulter de l’utilisation de l’application, ou au contraire de l’impossibilité de son utilisation ; </LBody>
+</LI>\n
+
+<LI>
+<Lbl><b>• </b></Lbl>
+
+<LBody>d’un dysfonctionnement, d’une indisponibilité d’accès, d’une mauvaise utilisation, d’une mauvaise configuration du périphérique de l’Utilisateur, ou encore de l’emploi d’un périphérique peu usité ou obsolète par l’Utilisateur ; </LBody>
+</LI>\n
+
+<LI>
+<Lbl><b>• </b></Lbl>
+
+<LBody>du contenu des publicités et autres liens ou sources externes accessibles par l’utilisateur à partir de l’application. </LBody>
+</LI>\n
+</L>
+
+<P>Il appartient exclusivement à l’Utilisateur de protéger ses équipements techniques et informatiques contre toute forme d’intrusion ou de virus susceptible de les affecter, ce dont la COMUBA ne saurait être tenue pour responsable. Il est de la responsabilité exclusive de l’Utilisateur de protéger ses propres données recueillies et enregistrées dans l’application contre toute atteinte quelle qu’elle soit : virus, piratage sans que cette énumération ne soit exhaustive. L’utilisation de l’Application COMUBA Tontine Digitale est strictement personnelle à l’Utilisateur et engage sa responsabilité exclusive. L’Utilisateur est exclusivement responsable de l’installation, de l’exploitation et de la maintenance de son matériel informatique requis en vue de l’utilisation de l’Application COMUBA Tontine Digitale. Dans l’hypothèse ole matériel informatique de l’Utilisateur s’avèrerait être incompatible avec l’utilisation de l’Application COMUBA Tontine Digitale, la COMUBA ne saurait en être tenue responsable. La COMUBA ne saurait en aucun cas être tenue pour responsable du contenu des services, fonctionnalités, des documents techniques et juridiques mis à la disposition de l’Utilisateur par l’éditeur ou du contenu des formulaires renseignés conjointement par l’Utilisateur.  Les renseignements, commentaires et autres documents ajoutés par l’Utilisateur dans les champs à renseigner relèvent de sa responsabilité exclusive. </P>\n
+</Sect>
+
+<Sect>
+    <H4><b>4. Exclusion de garanties </b></H4>\n
+
+<P>LE SERVICE DE TONTINE DIGITALE COMUBA TONTINE DIGITALE EST FOURNI « EN L’ÉTAT » SANS AUCUNE GARANTIE. LA COMUBA ET SICMA &amp; ASSOCIES DÉCLINENT TOUTE GARANTIE, EXPRESSE, IMPLICITE OU STATUTAIRE, EN CE QUI CONCERNE TOUTES LES GARANTIES IMPLICITES DE QUALITÉ MARCHANDE, D’ADÉQUATION À UN USAGE PARTICULIER ET DE NON-VIOLATION DES DROITS DE TIERS. AUCUN RENSEIGNEMENT ORAL OU ÉCRIT OU AUCUN CONSEIL DONNÉ PAR SICMA &amp; ASSOCIES OU SES EMPLOYÉS OU REPRÉSENTANTS NE CONSTITUENT UNE GARANTIE OU AUCUNE AUTRE FAÇON D’AUGMENTER LA PORTÉE DES OBLIGATIONS DE LA COMUBA. </P>\n
+
+<P>Les parties reconnaissent que le service de paiement COMUBA Tontine Digitale est un service sécurisé basé sur une programmation informatique et un réseau de serveurs qui peuvent être sujet à des pannes et à des retards. À ce titre, SICMa &amp; Associés ne garantit pas un accès continu ou ininterrompu aux services de paiement de tontine COMUBA Tontine Digitale. Le marchand agréé par la COMUBA reconnaît en outre que l’accès aux plateformes de COMUBA Tontine Digitale ou aux services de paiement de tontine de COMUBA Tontine Digitale peut être restreint aux fins de maintenance. La COMUBA fera des efforts raisonnables pour veiller à ce que les transactions soient traitées en temps opportun. Cependant, la COMUBA ou SICMa &amp; Associés ne seront pas responsables de toute interruption, panne ou défaut de fournir les services de paiement COMUBA Tontine Digitale. </P>\n
+</Sect>
+
+<Sect>
+    <H4><b>5. Loi Applicable</b> </H4>\n
+
+<P>Le non-respect par l’utilisateur, quelle que soit sa localisation, de l’une quelconque des dispositions des présentes Conditions Générales d’Utilisation et/ou de leur exécution, interprétation ou validité, sont soumis à la loi et aux juridictions de la Cour Commune de Justice et d’Arbitrage de l’OHADA. </P>\n
+</Sect>
+
+<Sect>
+    <H4><b>6. Mise à jour des CGU</b> </H4>\n
+
+<P>L’éditeur se réserve la possibilité, à tout moment et sans préavis, de modifier et de mettre à jour les présentes CGU. </P>\n
+</Sect>
+</Part>
+    </string>
+    <string name="Powered_by">Powered by</string>
+    <string name="Appelez_nous">Appelez - nous</string>
+    <string name="Joignez_nous">Joignez - nous</string>
+    <string name="Ecrivez_nous">Ecrivez - nous</string>
+    <string name="Contactez_nous">Contactez - nous</string>
+    <string name="code_otp_saisit">Saisissez le code reçu</string>
+    <string name="help_msg_code_otp_saisit">Un code a été envoyé sur le +229 </string>
+    <string name="cgu_1">Les présentes conditions générales d’utilisation (ci-après dénommées «</string>
+    <string name="accueil">Accueil</string>
+    <string name="about">A propos</string>
+    <string name="about_us_text">Qui sommes-nous?</string>
+    <string name="qui_som_nous_"> SICMa &amp; Associés est apporteur de la solution de tontine digitale TonDi. Elle propose des solutions numérique intervenant dans le domaine des finances pour le compte d\'IMFs prêt a enclenché leur entré dans le numérique.</string>
+    <string name="version">Version &amp; Compatibilité de l\'application</string>
+    <string name="version_value">Version 1.0.0</string>
+    <string name="android_compatibility">Compatible à partir de android 4.4 kitkat</string>
+    <string name="share_text">Partager cette application</string>
+    <string name="button_for_record">Button for record</string>
+    <string name="title_dialog_new_plainte">Enrégistrer votre plainte</string>
+    <string name="warning_msg_audio_record">Attention : durée 2 min max</string>
+    <string name="comuba_desc">COMUBA est une Institution de Microfinance qui a pour mission de contribuer à l\'amélioration du bien être des femmes à faibles revenus. Afin d\'accomplir cette mission elle offre plusieurs services dont la tontine et l\'avance sur tontine. Dans la vision de faciliter l\'accès à son service de tontine, la COMUBA a fait appel à TONDi pour l\'aider à digitaliser sa tontine. Pour plus d\'information sur la COMUBA contacter le xxxxxxxx.</string>
+    <string name="copyright">- copyright 2021</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_home">Accueil</string>
+    <string name="title_retraits">Retraits</string>
+    <string name="title_tontines">Tontines</string>
+    <string name="title_avances">Avances</string>
+    <string name="title_plaintes">Plaintes</string>
+    <string name="bienvenue">Bienvenue,</string>
+    <string name="title_activity_main_drawer">MainActivityDrawer</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="tab_title_encours">En cours</string>
+
+</resources>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color_3">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/appbar_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    android:background="?attr/colorPrimary"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp"
+    tools:ignore="MissingConstraints">
+
+    <ImageView
+        android:id="@+id/user_avatar"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/profile"
+        android:background="@drawable/bg_avatar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        app:titleTextColor="@color/white"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        />
+
+    <ImageButton
+        android:id="@+id/refresh_db_btn"
+        android:background="@color/colorPrimary"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/baseline_sync_24"
+        app:tint="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/fab_deco"
+        app:layout_constraintLeft_toRightOf="@+id/my_toolbar"
+        />
+
+       <ImageButton
+           android:id="@+id/fab_deco"
+           android:background="@color/colorPrimary"
+           android:layout_width="32dp"
+           android:layout_height="32dp"
+           android:src="@drawable/outline_power_settings_new_white_24"
+           app:layout_constraintTop_toTopOf="parent"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintLeft_toRightOf="@+id/my_toolbar"
+           />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        app:labelVisibilityMode="labeled"
+        android:background="?android:attr/windowBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
+<!--    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
+<!--        android:id="@+id/swiperefresh"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:layout_marginTop="60dp"-->
+<!--        android:layout_marginBottom="60dp"-->
+<!--        app:layout_constraintHorizontal_bias="0.0"-->
+<!--        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--        app:layout_constraintRight_toRightOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/appbar_toolbar"-->
+<!--        app:layout_constraintBottom_toTopOf="@id/nav_view"-->
+<!--        app:layout_constraintVertical_bias="0.928">-->
+
+        <fragment
+        android:id="@+id/nav_host_fragment_activity_home"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:defaultNavHost="true"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appbar_toolbar"
+        app:layout_constraintBottom_toTopOf="@id/nav_view"
+        app:layout_constraintVertical_bias="0.928"
+        app:navGraph="@navigation/mobile_navigation" />
+
+
+<!--    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
+</androidx.constraintlayout.widget.ConstraintLayout>

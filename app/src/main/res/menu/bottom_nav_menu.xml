@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/ic_home_black_24dp"
+        android:title="@string/title_home" />
+
+    <item
+        android:id="@+id/navigation_retraits"
+        android:icon="@drawable/ic_mes_retraits_xml_1"
+        android:title="@string/title_retraits" />
+
+    <item
+        android:id="@+id/navigation_tontines"
+        android:icon="@drawable/ic_mes_tontines"
+        android:title="@string/title_tontines" />
+
+    <item
+        android:id="@+id/navigation_avances"
+        android:icon="@drawable/ic_loan_xml_1"
+        android:title="@string/title_avances" />
+    <item
+        android:id="@+id/navigation_plaintes"
+        android:icon="@drawable/ic_message"
+        android:title="@string/title_plaintes" />
+
+</menu>

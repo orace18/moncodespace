@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bg_color_3"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+
+            >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.sicmagroup.tondi.FButton
+                    android:id="@+id/back_to"
+                    android:layout_width="32dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="left"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:drawableLeft="@drawable/outline_arrow_back_black_24"
+                    android:drawableTint="@color/white"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="3dp"
+                    android:text=""
+                    android:textAllCaps="false"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:buttonColor="@color/colorPrimary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    fbutton:cornerRadius="4dp"
+                    fbutton:shadowColor="@color/colorPrimarylight"
+                    fbutton:shadowEnabled="false"
+                    fbutton:shadowHeight="2dp" />
+
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:text="A propos"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/back_to"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView6"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        app:layout_anchor="@+id/nestedScrollView6"
+        app:layout_anchorGravity="center"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+        app:layout_scrollFlags="scroll">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="24dp"
+                android:layout_weight="1"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/tondi"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView17" />
+
+            <TextView
+                android:id="@+id/textView13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/about_us_text"
+                android:textColor="@color/colorGrey4"
+                android:textSize="16sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+
+            <TextView
+                android:id="@+id/textView12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/qui_som_nous_"
+                android:textColor="@color/colorGrey4"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                fbutton:srcCompat="@drawable/logo_texte_comuba" />
+
+            <TextView
+                android:id="@+id/textView17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="24dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/comuba_desc"
+                android:textColor="@color/colorGrey4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+            <TextView
+                android:id="@+id/textView1466"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="+229 xxxxxxxx"
+                android:textColor="@color/colorGrey4"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/textView145"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView145" />
+
+            <TextView
+                android:id="@+id/textView145"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Contactez nous"
+                android:textColor="@color/colorGrey4"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView16" />
+
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/android_compatibility"
+                android:textColor="@color/colorGrey4"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView15" />
+
+            <TextView
+                android:id="@+id/textView15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@string/version_value"
+                android:textColor="@color/colorGrey4"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView14" />
+
+            <TextView
+                android:id="@+id/textView14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/version"
+                android:textColor="@color/colorGrey4"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+            <com.sicmagroup.tondi.FButton
+                android:id="@+id/btn_cgu"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_gravity="right"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:paddingHorizontal="16dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/cgu"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView1466"
+                fbutton:buttonColor="@color/colorPrimary"
+                fbutton:cornerRadius="4dp"
+                fbutton:shadowColor="@color/colorPrimarylight"
+                fbutton:shadowEnabled="false"
+                fbutton:shadowHeight="4dp"
+                android:visibility="gone"/>
+
+            <com.sicmagroup.tondi.FButton
+                android:id="@+id/btn_share"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_gravity="right"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
+                android:paddingHorizontal="16dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text="@string/share_text"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.501"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_cgu"
+                app:layout_constraintVertical_bias="0.0"
+                fbutton:buttonColor="@color/colorPrimary"
+                fbutton:cornerRadius="4dp"
+                fbutton:shadowColor="@color/colorPrimarylight"
+                fbutton:shadowEnabled="false"
+                android:visibility="gone"
+                fbutton:shadowHeight="4dp" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

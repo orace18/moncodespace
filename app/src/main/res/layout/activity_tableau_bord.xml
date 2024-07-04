@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".Inscription"
+    android:background="@color/colorWhite">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="4"
+        android:orientation="vertical">
+        <com.dd.ShadowLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            app:sl_shadowRadius="1dp"
+            app:sl_shadowColor="@color/white"
+            app:sl_dx="0dp"
+            app:sl_dy="2dp"
+            app:sl_cornerRadius="2dp">
+            <LinearLayout
+                android:id="@+id/bienvenue"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="2.5"
+                    android:paddingLeft="0dp"
+                    android:orientation="horizontal">
+                    <ImageView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/logo_texte_comuba"
+                        android:contentDescription="@string/app_name" />
+                <!--<LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="5dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tv_appname"
+                        android:text="@string/app_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:textColor="@color/colorGray"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:text="@string/tontine_digi"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:textColor="@color/colorGray"
+                        android:textSize="14sp"
+                        android:textStyle="italic"/>
+                </LinearLayout>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="60dp"
+                    android:src="@drawable/diagonal_line_prim"
+                    android:contentDescription="@string/app_name" />
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="-38dp"
+                    android:src="@drawable/diagonal_line"
+                    android:contentDescription="@string/app_name" />-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1.5"
+                        android:layout_gravity="center"
+                        android:gravity="right"
+                        android:paddingRight="20dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:layout_marginRight="8dp"
+                            android:src="@drawable/ic_home"
+                            android:tint="@color/colorPrimaryDark"
+                            android:contentDescription="@string/app_name" />
+                        <TextView
+                            android:text="@string/dashboard"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGray"
+                            android:textSize="22sp"
+                            android:textStyle="bold"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </com.dd.ShadowLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:paddingTop="0dp"
+            android:layout_height="0dp"
+            android:background="@color/colorPrimary"
+            android:layout_weight="0.5"
+            android:orientation="vertical"
+            android:gravity="center"
+            tools:ignore="MissingConstraints">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                tools:ignore="MissingConstraints">
+                <ImageView
+                    android:id="@+id/user_avatar"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginBottom="2dp"
+                    android:src="@drawable/ic_person"
+                    android:background="@drawable/bg_avatar"
+                    android:contentDescription="@string/app_name" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    tools:ignore="MissingConstraints">
+
+                    <TextView
+                        android:id="@+id/user_name"
+                        android:layout_width="match_parent"
+                        android:paddingTop="5dp"
+                        android:paddingLeft="10dp"
+                        android:layout_height="wrap_content"
+                        android:text="CODJO Cyrus Oswald"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="16sp"
+                        android:shadowColor="#000"
+                        android:shadowDx="0"
+                        android:shadowDy="0"
+                        android:shadowRadius="10"
+                        android:maxLines="1"
+                        android:textAllCaps="true" />
+                    <TextView
+                        android:id="@+id/user_last_connect"
+                        android:layout_width="match_parent"
+                        android:paddingLeft="10dp"
+                        android:paddingTop="2dp"
+                        android:layout_height="wrap_content"
+                        android:text="Connecté le : 30/01/2019 à 15H"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorWhite"
+                        android:textSize="14sp"
+                        android:shadowColor="#000"
+                        android:shadowDx="0"
+                        android:shadowDy="0"
+                        android:shadowRadius="10" />
+
+                </LinearLayout>
+            </LinearLayout>-->
+            <!--<ImageView
+                android:id="@+id/user_avatar"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@drawable/ic_person"
+                android:background="@drawable/bg_avatar"
+                android:contentDescription="@string/app_name" />
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="match_parent"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:layout_height="wrap_content"
+                android:text="CODJO Cyrus Oswald"
+                android:textStyle="bold"
+                android:textColor="@color/colorWhite"
+                android:textSize="15sp"
+                android:shadowColor="#000"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:textAllCaps="true" />
+            <TextView
+                android:id="@+id/user_last_connect"
+                android:layout_width="match_parent"
+                android:paddingLeft="20dp"
+                android:paddingTop="5dp"
+                android:layout_height="wrap_content"
+                android:text="Dernière connexion: 30/01/2019 à 15H"
+                android:textStyle="bold"
+                android:textColor="@color/colorWhite"
+                android:textSize="15sp"
+                android:shadowColor="#000"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="10"
+                android:textAllCaps="true" />-->
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layout_alert"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2.5"
+            android:paddingLeft="10dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/alerte"
+                android:text="@string/dashboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/red"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+        </LinearLayout>
+        <GridView
+            android:id="@+id/services_list"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2.6"
+            android:columnWidth="150dp"
+            android:gravity="center"
+            android:numColumns="2" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center"
+
+            >
+            <include layout="@layout/deconnexion" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

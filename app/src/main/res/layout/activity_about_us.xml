@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".About_us"
+    android:background="@color/colorWhite">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorGrey2"
+        android:weightSum="4"
+        android:orientation="vertical">
+
+        <com.dd.ShadowLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.8"
+        app:sl_shadowRadius="1dp"
+        app:sl_shadowColor="#f0f0f0"
+        app:sl_dx="0dp"
+        app:sl_dy="2dp"
+        app:sl_cornerRadius="2dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="10dp"
+                android:orientation="horizontal">
+                <com.sicmagroup.tondi.FButton
+                    android:id="@+id/back_to"
+                    android:textSize="15sp"
+                    fbutton:buttonColor="@color/colorWhite"
+                    fbutton:shadowColor="@color/fbutton_color_asbestos"
+                    fbutton:shadowEnabled="true"
+                    fbutton:shadowHeight="0dp"
+                    fbutton:cornerRadius="20dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="15dp"
+                    android:paddingLeft="-3dp"
+                    android:paddingRight="8dp"
+                    android:drawableLeft="@drawable/ic_chevron_back"
+                    android:layout_width="75dp"
+                    android:textColor="@color/colorBlack"
+                    android:text="Retour"
+                    android:layout_gravity="center"
+                    android:textAllCaps="false"/>
+
+            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingRight="10dp"
+                android:text="@string/about"
+                android:textColor="@color/colorGray"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </com.dd.ShadowLayout>
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="16dp">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center"
+                android:weightSum="2.5"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="50dp"
+                    android:src="@drawable/tondi"
+                    android:contentDescription="@string/app_name" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/about_us_text"
+                android:textSize="16sp"
+                android:textColor="@color/colorBlack"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/colorGray"
+                android:text="@string/qui_som_nous_"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="16dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/version"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorBlack"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorGray"
+                    android:text="@string/version_value"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/colorGray"
+                    android:text="@string/android_compatibility"/>
+            </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/btn_cgu"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:backgroundTint="@color/white"
+               android:textColor="@color/colorPrimary"
+               android:text="@string/cgu"
+               />
+            <Button
+                android:id="@+id/btn_share"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/share_text"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

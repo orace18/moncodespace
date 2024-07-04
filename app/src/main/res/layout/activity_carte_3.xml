@@ -1,0 +1,613 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:id="@+id/layout_cartemain"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context=".CarteMain"
+        android:background="@color/bg_color_3">
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/nav"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:elevation="4dp"
+
+            android:isScrollContainer="true"
+            android:nestedScrollingEnabled="true"
+            android:paddingVertical="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:sl_cornerRadius="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:sl_fillColor="@color/bg_color_3"
+
+                    app:sl_cornerRadius="0dp">
+                    <LinearLayout
+                        android:id="@+id/bienvenue"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/bg_color_3"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp"
+                            android:orientation="horizontal">
+
+                            <com.sicmagroup.tondi.FButton
+                                android:id="@+id/back_to"
+                                android:layout_width="32dp"
+                                android:layout_height="35dp"
+                                android:layout_gravity="top|left"
+                                android:layout_marginRight="15dp"
+                                android:drawableLeft="@drawable/outline_arrow_back_black_24"
+                                android:drawableTint="@color/colorPrimary"
+                                android:paddingLeft="3dp"
+                                android:paddingRight="8dp"
+                                android:text=""
+                                android:textAllCaps="false"
+                                android:textColor="@color/white"
+                                android:textSize="15sp"
+                                fbutton:buttonColor="@color/bg_color_3"
+                                fbutton:cornerRadius="4dp"
+                                fbutton:shadowColor="@color/colorPrimarylight"
+                                fbutton:shadowEnabled="false"
+                                fbutton:shadowHeight="0dp" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:gravity="top|right"
+                                android:orientation="horizontal">
+                                <com.sicmagroup.tondi.FButton
+                                    android:id="@+id/btn_terminer"
+                                    fbutton:buttonColor="@color/colorPrimary"
+                                    fbutton:shadowColor="@color/colorPrimarylight"
+                                    fbutton:shadowEnabled="false"
+                                    fbutton:shadowHeight="4dp"
+                                    fbutton:cornerRadius="4dp"
+                                    android:layout_height="35dp"
+                                    android:layout_width="150dp"
+                                    android:textColor="@color/colorWhite"
+                                    android:text="Arrêter la tontine"
+                                    android:layout_gravity="top|right"
+                                    android:textAllCaps="false"/>
+
+                                <com.sicmagroup.tondi.FButton
+                                    android:id="@+id/btn_voir_code"
+                                    android:layout_width="120dp"
+                                    android:layout_height="35dp"
+                                    android:layout_gravity="top|right"
+                                    android:text="Code retrait"
+                                    android:textAllCaps="false"
+                                    android:textColor="@color/colorWhite"
+                                    android:visibility="visible"
+                                    fbutton:buttonColor="@color/colorSecondaryDarkLigth"
+                                    fbutton:cornerRadius="4dp"
+                                    fbutton:shadowColor="@color/colorSecondaryDark"
+                                    fbutton:shadowEnabled="false"
+                                    fbutton:shadowHeight="4dp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="32dp"
+                    android:orientation="vertical"
+                    android:layout_gravity="center"
+
+                    android:elevation="2dp"
+
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Solde encaissable : "
+                        android:layout_gravity="center"
+                        android:textStyle="normal"
+                        android:textSize="13sp"
+                        android:textColor="@color/colorGray"/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginTop="5dp"
+
+                            app:tint="@color/fbutton_color_green_sea"
+                            android:src="@drawable/outline_account_balance_wallet_24"/>
+                        <TextView
+                            android:id="@+id/montant_a_encaisser"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="155000 FCFA"
+                            android:layout_marginLeft="8dp"
+                            android:textStyle="bold"
+                            android:textSize="24dp"
+                            android:textColor="@color/fbutton_color_green_sea"
+                            />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="64dp"
+            app:layout_constraintTop_toBottomOf="@id/nav"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/num_carte"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:text="Carte N° 1 sur 5"
+                    android:textColor="@color/colorGrey4"
+                    android:gravity="center"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="285dp"
+                    >
+                    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/swiperefresh"
+
+                        >
+                    <GridView
+                        android:layout_margin="16dp"
+                        android:paddingTop="0dp"
+                        android:paddingLeft = "8dp"
+                        android:paddingRight = "8dp"
+                        android:id="@+id/carte_tontine"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:columnWidth="48dp"
+                        android:stretchMode="columnWidth"
+                        android:horizontalSpacing="8dp"
+                        android:verticalSpacing="8dp"
+                        android:clickable="false"
+                        android:gravity="center"
+                        android:numColumns="6" />
+                    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="16dp"
+                    android:orientation="horizontal">
+
+
+                    <com.sicmagroup.tondi.FButton
+                        android:id="@+id/btn_nouveau_versement"
+                        fbutton:buttonColor="@color/colorPrimary"
+                        fbutton:shadowColor="@color/colorPrimarylight"
+                        fbutton:shadowEnabled="false"
+                        fbutton:shadowHeight="4dp"
+                        fbutton:cornerRadius="4dp"
+                        android:layout_height="40dp"
+                        android:layout_width="150dp"
+                        android:textColor="@color/colorWhite"
+                        android:text="@string/nouveau_versement"
+                        android:layout_gravity="center"
+                        android:textAllCaps="false"/>
+
+                    <com.sicmagroup.tondi.FButton
+                        android:id="@+id/btn_encaisser"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:text="Encaisser"
+                        android:textAllCaps="false"
+                        android:textColor="@color/colorWhite"
+                        fbutton:buttonColor="@color/fbutton_color_green_sea"
+                        fbutton:cornerRadius="4dp"
+                        fbutton:shadowColor="@color/fbutton_color_green_sea_dark"
+                        fbutton:shadowEnabled="false"
+                        fbutton:shadowHeight="4dp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:id="@+id/isBlocked"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/lock_48px"
+                            android:visibility="gone"
+                            android:layout_marginLeft="16dp"
+                            android:layout_gravity="center_vertical"
+                            app:tint="@color/colorPrimary"
+
+                            />
+                        <TextView
+                            android:id="@+id/carte_titre"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/colorGray"
+                            android:paddingTop="5dp"
+                            android:paddingBottom="5dp"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textAllCaps="true"
+                            android:text="Carte tontine journalière de mise 200 F"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/gray_custom"></LinearLayout>
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="visible"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:src="@drawable/outline_payments_24"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mise"
+                            android:layout_marginLeft="4dp"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/mise"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:paddingTop="8dp"
+                            android:paddingRight="16dp"
+                            android:text="100 F"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:src="@drawable/ic_date"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Démarrage"
+                            android:layout_marginLeft="4dp"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/creation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:paddingTop="8dp"
+                            android:paddingRight="16dp"
+                            android:text="12-02-2019"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp"
+                            android:textStyle="normal" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:src="@drawable/ic_date"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Fin"
+                            android:layout_marginLeft="4dp"
+
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/fin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:paddingTop="8dp"
+                            android:paddingRight="16dp"
+                            android:text="12-02-2019"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp"
+                            android:textStyle="normal" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/layout_deblocage_details"
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:src="@drawable/ic_date"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Déblocage"
+                            android:layout_marginLeft="4dp"
+
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/deblocage"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:paddingTop="8dp"
+                            android:paddingRight="16dp"
+                            android:text="12-02-2019"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp"
+                            android:textStyle="normal" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Nombre versements effectués "
+                            android:textColor="@color/colorGrey4"
+
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/versements"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:paddingTop="8dp"
+                            android:paddingRight="16dp"
+                            android:text="25 / 31"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:src="@drawable/savings_48px"/>
+                        <TextView
+                            android:id="@+id/lbl_total_cotis"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="4dp"
+                            android:text="Total du mois"
+
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/montant"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:paddingTop="8dp"
+                            android:paddingRight="16dp"
+                            android:text="100 000 F"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            android:src="@drawable/savings_48px"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cumulé des mises"
+                            android:textColor="@color/colorGrey4"
+                            android:layout_marginLeft="4dp"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/montant_cumule"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:paddingTop="8dp"
+                            android:paddingRight="16dp"
+                            android:text="100 000 F"
+                            android:textColor="@color/colorGrey4"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:paddingLeft="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
+                        android:orientation="horizontal">
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginTop="7dp"
+                            app:tint = "@color/red"
+                            android:src="@drawable/swap_vert_48px"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Commission (3,226%) "
+                            android:textColor="@color/colorGrey4"
+                            android:layout_marginLeft="4dp"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/commission"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="right"
+                            android:paddingTop="8dp"
+                            android:paddingRight="16dp"
+                            android:text="100 000 F"
+                            android:textColor="@color/red"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp">
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+        </ScrollView>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:id="@+id/btn_navs"
+                android:visibility="invisible"
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <com.sicmagroup.tondi.FButton
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentLeft="true"
+                    android:id="@+id/btn_prev"
+                    android:textSize="15sp"
+                    fbutton:buttonColor="@color/colorPrimary"
+                    fbutton:shadowColor="@color/colorPrimarylight"
+                    fbutton:shadowEnabled="true"
+                    fbutton:shadowHeight="4dp"
+                    fbutton:cornerRadius="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_height="40dp"
+                    android:paddingLeft="7dp"
+                    android:drawableLeft="@drawable/ic_chevron_back_w"
+                    android:layout_width="40dp"
+                    android:textColor="@color/colorWhite"
+                    android:layout_gravity="left"
+                    android:textAllCaps="true"/>
+
+                <com.sicmagroup.tondi.FButton
+                    android:layout_centerInParent="true"
+                    android:layout_alignParentRight="true"
+                    android:id="@+id/btn_next"
+                    android:textSize="15sp"
+                    fbutton:buttonColor="@color/colorPrimary"
+                    fbutton:shadowColor="@color/colorPrimarylight"
+                    fbutton:shadowEnabled="true"
+                    fbutton:shadowHeight="4dp"
+                    fbutton:cornerRadius="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_height="40dp"
+                    android:paddingLeft="7dp"
+                    android:drawableLeft="@drawable/ic_chevron_right"
+                    android:layout_width="40dp"
+                    android:textColor="@color/colorWhite"
+                    android:layout_gravity="right"
+                    android:textAllCaps="true"/>
+            </RelativeLayout>
+
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

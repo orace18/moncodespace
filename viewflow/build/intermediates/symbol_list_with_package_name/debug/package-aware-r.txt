@@ -1,0 +1,28 @@
+org.taptwo.android.widget.viewflow
+attr activeColor
+attr activeType
+attr centered
+attr clipPadding
+attr customTypeface
+attr fadeOut
+attr footerColor
+attr footerLineHeight
+attr footerTriangleHeight
+attr inactiveColor
+attr inactiveType
+attr radius
+attr selectedBold
+attr selectedColor
+attr selectedSize
+attr sidebuffer
+attr snap
+attr spacing
+attr textColor
+attr textSize
+attr titlePadding
+drawable icon
+string app_name
+string hello
+styleable CircleFlowIndicator activeColor activeType centered fadeOut inactiveColor inactiveType radius snap spacing
+styleable TitleFlowIndicator clipPadding customTypeface footerColor footerLineHeight footerTriangleHeight selectedBold selectedColor selectedSize textColor textSize titlePadding
+styleable ViewFlow sidebuffer

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_color_3"
+    tools:context=".SplashScreen">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="250dp"
+                android:layout_height="100dp"
+                android:src="@drawable/logo_comuba_tondi"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginRight="10dp"/>
+
+        </LinearLayout>
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Gagnez du temps! Gérez mieux votre épargne."
+            android:textStyle="italic"
+            android:textSize="16sp"
+            android:layout_marginHorizontal="16dp"
+            android:textColor="@color/colorGrey4"
+            />
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="bottom"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+        <TextView
+            android:id="@+id/powered_by_tondi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGrey4"
+            android:text="@string/Powered_by"
+            android:textSize="13sp"
+            android:layout_marginRight="20dp"
+            />
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:src="@drawable/tondi"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="@string/copyright" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

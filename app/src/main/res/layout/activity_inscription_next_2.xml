@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layout_inscription_next_2"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".Inscription"
+    android:background="@color/bg_color_3">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="4"
+        android:orientation="vertical">
+<!--        <com.dd.ShadowLayout-->
+
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_weight="0.5"-->
+<!--            app:sl_shadowRadius="1dp"-->
+<!--            app:sl_shadowColor="#f0f0f0"-->
+<!--            app:sl_dx="0dp"-->
+<!--            app:sl_dy="2dp"-->
+
+<!--            app:sl_cornerRadius="2dp">-->
+<!--            <LinearLayout-->
+<!--                android:id="@+id/bienvenue"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:orientation="vertical">-->
+
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:weightSum="2.5"-->
+<!--                    android:paddingLeft="10dp"-->
+<!--                    android:orientation="horizontal">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:src="@drawable/logo_comuba_tondi"-->
+<!--                        android:contentDescription="@string/app_name" />-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1.5"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:gravity="right"-->
+<!--                        android:paddingRight="20dp"-->
+<!--                        android:orientation="horizontal">-->
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="25dp"-->
+<!--                            android:layout_marginRight="8dp"-->
+<!--                            android:src="@drawable/ic_person"-->
+<!--                            android:contentDescription="@string/app_name" />-->
+<!--                        <TextView-->
+<!--                            android:text="@string/n_inscription"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textColor="@color/colorPrimary"-->
+<!--                            android:textSize="22sp"-->
+<!--                            android:textStyle="bold"/>-->
+<!--                    </LinearLayout>-->
+
+
+
+
+<!--                </LinearLayout>-->
+<!--            </LinearLayout>-->
+<!--        </com.dd.ShadowLayout>-->
+        <LinearLayout
+            android:id="@+id/bienvenue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="2"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="200dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/logo_comuba_tondi"
+                    android:contentDescription="@string/app_name" />
+                <TextView
+                    android:text="@string/n_inscription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_gravity="center"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_marginTop="8dp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="(3/3)"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+        </LinearLayout>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3.1">
+
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            tools:ignore="MissingConstraints">
+
+
+
+            <TextView
+                android:paddingTop="8dp"
+                android:paddingLeft="16dp"
+                android:textColor="@color/colorGrey4"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center"
+                android:textStyle="bold"
+                android:layout_height="wrap_content"
+                android:text="Veuillez envoyer la photo de votre carte national d'identité"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:orientation="horizontal"
+                android:gravity="center"
+                tools:ignore="MissingConstraints">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_warning"
+                    android:layout_gravity="center"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="10dp"
+                    android:paddingTop="5dp"
+                    android:text="Cher client, veillez a prendre une photo claire et nette de votre CNI. Il s'agit de la face contenant votre photo. Cette photo permettra aux marchands de COMUBA de vous identifiez pour vos retraits. Cette photo ne pourra être modifier que dans une agence de COMUBA."
+                    android:textColor="@color/colorGrey4"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/photo_cni"
+                android:layout_width="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_height="200dp"
+                android:src="@drawable/ic_camera"
+                android:layout_gravity="center"
+                android:onClick="onLoadImageClick"/>
+            <com.sicmagroup.tondi.FButton
+                android:id="@+id/btn_inscription_next_2"
+                fbutton:buttonColor="@color/colorPrimary"
+                fbutton:shadowColor="@color/colorPrimarylight"
+                android:layout_marginTop="35dp"
+                fbutton:shadowEnabled="false"
+                fbutton:shadowHeight="4dp"
+                fbutton:cornerRadius="4dp"
+                android:layout_height="40dp"
+                android:layout_width="200dp"
+                android:onClick="onLoadImageClick"
+
+
+                android:textColor="@color/colorWhite"
+                android:text="Prendre une photo de la CNI"
+                android:layout_gravity="center_horizontal"
+
+                android:textAllCaps="false"/>
+
+            <com.sicmagroup.tondi.FButton
+                android:id="@+id/btn_inscription_terminer_2"
+                fbutton:buttonColor="@color/colorPrimary"
+                fbutton:shadowColor="@color/colorPrimarylight"
+                android:layout_marginTop="15dp"
+                fbutton:shadowEnabled="false"
+                fbutton:shadowHeight="4dp"
+                fbutton:cornerRadius="4dp"
+                android:layout_height="40dp"
+                android:layout_width="150dp"
+                android:textColor="@color/colorWhite"
+                android:text="Terminer"
+                android:layout_gravity="center"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:visibility="gone"
+                android:textAllCaps="false"/>
+
+
+
+
+        </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="bottom"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+        <TextView
+            android:id="@+id/powered_by_tondi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGrey4"
+            android:text="@string/Powered_by"
+            android:textSize="13sp"
+            android:layout_marginRight="20dp"
+            />
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:src="@drawable/tondi"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="@string/copyright" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

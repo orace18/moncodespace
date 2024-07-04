@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".Accueil"
+    android:background="@color/bg_color_3">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="4"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/bienvenue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/logo_comuba_tondi" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+                <TextView
+                    android:paddingTop="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorGrey4"
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:text="Bienvenue sur la plateforme de tontine digitale"
+                    android:paddingHorizontal="16dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.8"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/bienvenue"
+            tools:ignore="MissingConstraints">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_clouds"
+                    android:contentDescription="@string/app_name" />
+
+                <ImageView
+                    android:padding="55dp"
+                    android:id="@+id/icon_mecoti"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_savings"
+                    android:contentDescription="@string/app_name"/>
+            </FrameLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.2"
+            android:orientation="vertical"
+            android:gravity="center"
+            >
+            <com.sicmagroup.tondi.FButton
+                android:id="@+id/btn_connecter"
+                fbutton:buttonColor="@color/colorPrimary"
+                fbutton:shadowColor="@color/colorPrimarylight"
+                fbutton:shadowEnabled="false"
+                fbutton:shadowHeight="4dp"
+                fbutton:cornerRadius="4dp"
+                android:layout_height="40dp"
+                android:layout_width="150dp"
+                android:textColor="@color/colorWhite"
+                android:text="@string/seconnecter"
+                android:textAllCaps="false"
+                android:layout_marginBottom="20dp"/>
+
+            <com.sicmagroup.tondi.FButton
+                android:id="@+id/btn_inscrire"
+                android:background="@drawable/border_btn_non"
+                fbutton:shadowColor="@color/colorPrimarylight"
+                android:textColor="@color/colorPrimary"
+                fbutton:shadowEnabled="false"
+                fbutton:shadowHeight="4dp"
+                fbutton:cornerRadius="4dp"
+                android:textAllCaps="false"
+                android:layout_height="40dp"
+                android:layout_width="150dp"
+                android:text="@string/sinscrire"/>
+
+                <TextView
+                    android:id="@+id/lien_cgu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:text="@string/cgu"
+                    android:gravity="center"
+                    android:textSize="13sp"
+                    android:paddingTop="15dp"
+                    android:paddingBottom="15dp"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="bottom"
+            >
+            <TextView
+                android:id="@+id/powered_by_tondi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorGrey4"
+                android:text="@string/Powered_by"
+                android:textSize="13sp"
+                android:layout_marginRight="20dp"
+                />
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:src="@drawable/tondi"
+                android:contentDescription="@string/app_name" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@string/copyright" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

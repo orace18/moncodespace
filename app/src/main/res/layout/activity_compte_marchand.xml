@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".Inscription"
+    android:background="@color/colorWhite">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="4"
+        android:orientation="vertical">
+        <com.dd.ShadowLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            app:sl_shadowRadius="1dp"
+            app:sl_shadowColor="#f0f0f0"
+            app:sl_dx="0dp"
+            app:sl_dy="2dp"
+
+            app:sl_cornerRadius="2dp">
+            <LinearLayout
+                android:id="@+id/bienvenue"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="10dp"
+                    android:orientation="horizontal">
+
+                    <!--<ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/diagonal_line_prim"
+                        android:contentDescription="@string/app_name" />
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="60dp"
+                        android:layout_marginLeft="-38dp"
+                        android:src="@drawable/diagonal_line"
+                        android:contentDescription="@string/app_name" />-->
+                    <com.sicmagroup.tondi.FButton
+                        android:id="@+id/back_to"
+                        android:textSize="15sp"
+                        fbutton:buttonColor="@color/colorWhite"
+                        fbutton:shadowColor="@color/fbutton_color_asbestos"
+                        fbutton:shadowEnabled="true"
+                        fbutton:shadowHeight="0dp"
+                        fbutton:cornerRadius="20dp"
+                        android:layout_height="35dp"
+                        android:layout_marginRight="15dp"
+                        android:paddingLeft="-3dp"
+                        android:paddingRight="8dp"
+                        android:drawableLeft="@drawable/ic_chevron_back"
+                        android:layout_width="75dp"
+                        android:textColor="@color/colorBlack"
+                        android:text="Retour"
+                        android:layout_gravity="center"
+                        android:textAllCaps="false"/>
+                    <TextView
+                        android:text="Opérations de retrait"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="right"
+                        android:paddingRight="10dp"
+                        android:textColor="@color/colorGray"
+                        android:textSize="20sp"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+            </LinearLayout>
+        </com.dd.ShadowLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3.1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:background="@color/colorGrey2"
+            tools:ignore="MissingConstraints">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp">
+
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
+                        android:id="@+id/btn_nouvelle_validation"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:layout_margin="16dp"
+                        android:backgroundTint="@color/colorWhite"
+                        android:src="@drawable/ic_add"
+                        app:borderWidth="0dp"
+                        app:elevation="6dp" />
+                </RelativeLayout>
+            </ScrollView>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_gravity="center"
+            >
+            <include layout="@layout/deconnexion" />
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

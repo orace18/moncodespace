@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.tontines.TontinesFragment">
+
+    <com.ogaclejapan.smarttablayout.SmartTabLayout
+        android:id="@+id/viewpagertab"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:elevation="4dp"
+        android:background="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:stl_clickable="true"
+        app:stl_defaultTabBackground="?attr/selectableItemBackground"
+        app:stl_defaultTabTextAllCaps="true"
+        app:stl_defaultTabTextColor="@color/white"
+        app:stl_defaultTabTextHorizontalPadding="20dp"
+        app:stl_defaultTabTextMinWidth="0dp"
+        app:stl_defaultTabTextSize="12sp"
+        app:stl_distributeEvenly="false"
+        app:stl_dividerColor="#4D000000"
+        app:stl_dividerThickness="0dp"
+        app:stl_drawDecorationAfterTab="true"
+        app:stl_indicatorAlwaysInCenter="false"
+        app:stl_indicatorColor="@color/colorPrimarylight"
+        app:stl_indicatorCornerRadius="2dp"
+        app:stl_indicatorGravity="bottom"
+        app:stl_indicatorInFront="true"
+        app:stl_indicatorInterpolation="smart"
+        app:stl_indicatorThickness="4dp"
+        app:stl_indicatorWidth="auto"
+        app:stl_indicatorWithoutPadding="false"
+        app:stl_overlineColor="#4D000000"
+        app:stl_titleOffset="24dp"
+        app:stl_underlineColor="@color/colorPrimaryDark"
+        app:stl_underlineThickness="1dp" />
+
+
+    <com.sicmagroup.tondi.WrapContentHeightViewPager
+        android:id="@+id/viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="170dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewpagertab"
+        >
+    </com.sicmagroup.tondi.WrapContentHeightViewPager>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_nouvelle_tontine"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/outline_add_white_24"
+        app:backgroundTint="@color/colorSecondaryDark"
+        android:layout_gravity="bottom|end"
+        app:borderWidth="0dp"
+        android:layout_margin="16dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        />
+
+    <!--    <TextView-->
+<!--        android:id="@+id/text_tontines"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="8dp"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:layout_marginEnd="8dp"-->
+<!--        android:textAlignment="center"-->
+<!--        android:textSize="20sp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+</androidx.constraintlayout.widget.ConstraintLayout>

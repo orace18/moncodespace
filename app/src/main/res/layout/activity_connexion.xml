@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".Inscription"
+    android:id="@+id/layout_connexion"
+    android:background="@color/bg_color_3">
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:weightSum="4">
+
+                    <LinearLayout
+                        android:id="@+id/bienvenue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:weightSum="2">
+
+                            <ImageView
+                                android:layout_marginTop="16dp"
+                                android:layout_width="250dp"
+                                android:layout_height="150dp"
+                                android:layout_gravity="center"
+                                android:contentDescription="@string/app_name"
+                                android:src="@drawable/logo_comuba_tondi" />
+
+
+                            <!--                    <ImageView-->
+                            <!--                        android:layout_width="wrap_content"-->
+                            <!--                        android:layout_height="30dp"-->
+                            <!--                        android:layout_marginRight="8dp"-->
+                            <!--                        android:src="@drawable/ic_lock"-->
+                            <!--                        android:contentDescription="@string/app_name" />-->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="@string/n_connexion"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="4"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:paddingTop="8dp"
+                        tools:ignore="MissingConstraints">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp">
+
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:background="@color/bg_color_3"
+                                android:descendantFocusability="beforeDescendants"
+                                android:orientation="vertical" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginHorizontal="16dp"
+                                android:layout_marginTop="16dp"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/mdp_forget"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="end"
+                                    android:text="@string/mot_de_passe_oubli"
+                                    android:textColor="@color/colorSecondaryDark" />
+                            </LinearLayout>
+                            <com.sicmagroup.tondi.FButton
+                                android:id="@+id/btn_connexion"
+                                android:layout_width="150dp"
+                                android:layout_height="40dp"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="32dp"
+                                android:text="@string/seconnecter"
+                                android:textAllCaps="false"
+                                android:textColor="@color/colorWhite"
+                                fbutton:buttonColor="@color/colorPrimary"
+                                fbutton:cornerRadius="4dp"
+                                fbutton:shadowColor="@color/colorPrimarylight"
+                                fbutton:shadowEnabled="false"
+                                fbutton:shadowHeight="1dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_marginBottom="32dp"
+                            android:layout_marginTop="32dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:gravity="bottom"
+                                android:paddingRight="7dp"
+                                android:paddingBottom="15dp"
+                                android:text="@string/pas_compte"
+                                android:textColor="@color/colorGray"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:id="@+id/lien_inscription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_gravity="center"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="bottom"
+                                android:paddingBottom="15dp"
+                                android:text="@string/inscrivez_v"
+                                android:textColor="@color/colorPrimary"
+                                android:textSize="13sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <TextView
+                android:id="@+id/powered_by_tondi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="20dp"
+                android:text="@string/Powered_by"
+                android:textColor="@color/colorPrimary"
+                android:textSize="13sp" />
+
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="30dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/tondi" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@string/copyright" />
+        </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

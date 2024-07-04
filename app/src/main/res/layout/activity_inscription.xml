@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layout_inscription"
+    xmlns:fbutton="http://schemas.android.com/apk/res-auto"
+    tools:context=".Inscription"
+    android:background="@color/bg_color_3">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="4"
+        android:orientation="vertical">
+<!--        <com.dd.ShadowLayout-->
+
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_weight="0.5"-->
+<!--            app:sl_shadowRadius="1dp"-->
+<!--            app:sl_shadowColor="#f0f0f0"-->
+<!--            app:sl_dx="0dp"-->
+<!--            app:sl_dy="2dp"-->
+
+<!--            app:sl_cornerRadius="2dp">-->
+<!--            <LinearLayout-->
+<!--                android:id="@+id/bienvenue"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:orientation="vertical">-->
+
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:weightSum="2.5"-->
+<!--                    android:paddingLeft="10dp"-->
+<!--                    android:orientation="horizontal">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:src="@drawable/logo_comuba_tondi"-->
+<!--                        android:contentDescription="@string/app_name" />-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="1.5"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:gravity="right"-->
+<!--                        android:paddingRight="20dp"-->
+<!--                        android:orientation="horizontal">-->
+<!--                        <ImageView-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="30dp"-->
+<!--                            android:layout_marginRight="8dp"-->
+<!--                            android:src="@drawable/ic_person"-->
+<!--                            android:contentDescription="@string/app_name" />-->
+<!--                        <TextView-->
+<!--                            android:text="@string/n_inscription"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textColor="@color/colorPrimary"-->
+<!--                            android:textSize="22sp"-->
+<!--                            android:textStyle="bold"/>-->
+<!--                    </LinearLayout>-->
+
+
+
+
+<!--                </LinearLayout>-->
+<!--            </LinearLayout>-->
+<!--        </com.dd.ShadowLayout>-->
+
+        <LinearLayout
+            android:id="@+id/bienvenue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="2"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="200dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/logo_comuba_tondi"
+                    android:contentDescription="@string/app_name" />
+                <TextView
+                    android:text="@string/n_inscription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_gravity="center"
+                    android:textSize="22sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_marginTop="8dp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="(1/2)"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="3.5">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                tools:ignore="MissingConstraints">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="16dp"
+                    android:orientation="vertical">
+
+<!--                    <androidx.recyclerview.widget.RecyclerView-->
+<!--                        android:id="@+id/recyclerView"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:background="@color/bg_color_3"-->
+<!--                        android:descendantFocusability="beforeDescendants"-->
+<!--                        android:orientation="vertical" />-->
+
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@color/bg_color_3"
+                            android:descendantFocusability="beforeDescendants"
+                            android:orientation="vertical" />
+
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:tools="http://schemas.android.com/tools"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:orientation="vertical"
+                        android:paddingTop="8dp"
+                        android:weightSum="2">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal"
+                            android:paddingTop="3dp"
+                            android:paddingRight="20dp">
+
+
+                            <CheckBox
+                                android:id="@+id/check_cgu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Accepter "
+                                android:textColor="@color/colorGrey4"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/txt_cgu"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingRight="8dp"
+                                android:text="@string/les_cgu"
+                                android:textColor="@color/colorPrimary"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal"
+                            android:paddingTop="3dp"
+                            android:paddingRight="20dp">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:paddingTop="3dp"
+                                android:paddingRight="20dp">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:layout_width="24dp"
+                                        android:layout_height="24dp"
+                                        android:src="@drawable/bj" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="-7dp"
+                                        android:text="1 mins"
+                                        android:textSize="10sp" />
+                                </LinearLayout>
+
+
+                                <FrameLayout
+                                    android:layout_width="34dp"
+                                    android:layout_height="wrap_content"
+                                    android:paddingLeft="2dp">
+
+                                    <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                                        android:id="@+id/circular_progress"
+                                        android:layout_width="30dp"
+                                        android:layout_height="34dp"
+                                        app:cpb_background_progressbar_color="@color/colorGrey"
+                                        app:cpb_background_progressbar_width="5dp"
+                                        app:cpb_progressbar_color="#F44336"
+                                        app:cpb_progressbar_width="10dp"></com.mikhaellopez.circularprogressbar.CircularProgressBar>
+
+                                    <com.sicmagroup.tondi.FButton
+                                        android:id="@+id/cgu_fon"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:layout_marginLeft="5dp"
+                                        android:layout_marginTop="5dp"
+                                        android:drawableLeft="@drawable/ic_play_arrow"
+                                        android:paddingLeft="-2dp"
+                                        android:textAllCaps="false"
+                                        fbutton:buttonColor="@color/bg_color_3"
+                                        fbutton:cornerRadius="10dp"
+                                        fbutton:shadowColor="@color/fbutton_color_silver"
+                                        fbutton:shadowEnabled="false"
+                                        fbutton:shadowHeight="0dp" />
+                                </FrameLayout>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal"
+                                android:paddingTop="3dp"
+                                android:paddingRight="0dp">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="vertical">
+
+                                    <ImageView
+                                        android:layout_width="24dp"
+                                        android:layout_height="24dp"
+                                        android:src="@drawable/fr" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="-7dp"
+                                        android:text="1 mins"
+                                        android:textSize="10sp" />
+                                </LinearLayout>
+
+
+                                <FrameLayout
+                                    android:layout_width="34dp"
+                                    android:layout_height="wrap_content"
+                                    android:paddingLeft="2dp">
+
+                                    <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                                        android:id="@+id/circular_progress1"
+                                        android:layout_width="30dp"
+                                        android:layout_height="34dp"
+                                        app:cpb_background_progressbar_color="@color/colorGrey"
+                                        app:cpb_background_progressbar_width="5dp"
+                                        app:cpb_progressbar_color="#F44336"
+                                        app:cpb_progressbar_width="10dp"></com.mikhaellopez.circularprogressbar.CircularProgressBar>
+
+                                    <com.sicmagroup.tondi.FButton
+                                        android:id="@+id/cgu_fr"
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:layout_marginLeft="5dp"
+                                        android:layout_marginTop="5dp"
+                                        android:drawableLeft="@drawable/ic_play_arrow"
+                                        android:paddingLeft="-2dp"
+                                        android:textAllCaps="false"
+                                        fbutton:buttonColor="@color/bg_color_3"
+                                        fbutton:cornerRadius="10dp"
+                                        fbutton:shadowColor="@color/fbutton_color_silver"
+                                        fbutton:shadowEnabled="false"
+                                        fbutton:shadowHeight="0dp" />
+                                </FrameLayout>
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!--<com.sicmagroup.mecoti.FButton
+=======
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal"
+                            android:paddingTop="3dp"
+                            android:paddingRight="0dp">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:src="@drawable/fr" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="-7dp"
+                                    android:text="1 mins"
+                                    android:textSize="10sp" />
+                            </LinearLayout>
+
+
+                            <FrameLayout
+                                android:layout_width="34dp"
+                                android:layout_height="wrap_content"
+                                android:paddingLeft="2dp">
+
+                                <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                                    android:id="@+id/circular_progress1"
+                                    android:layout_width="30dp"
+                                    android:layout_height="34dp"
+                                    app:cpb_background_progressbar_color="@color/colorGrey"
+                                    app:cpb_background_progressbar_width="5dp"
+                                    app:cpb_progressbar_color="#F44336"
+                                    app:cpb_progressbar_width="10dp"></com.mikhaellopez.circularprogressbar.CircularProgressBar>
+
+                                <com.sicmagroup.tondi.FButton
+                                    android:id="@+id/cgu_fr"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_marginTop="5dp"
+                                    android:drawableLeft="@drawable/ic_play_arrow"
+                                    android:paddingLeft="-2dp"
+                                    android:textAllCaps="false"
+                                    fbutton:buttonColor="@color/bg_color_3"
+                                    fbutton:cornerRadius="10dp"
+                                    fbutton:shadowColor="@color/fbutton_color_silver"
+                                    fbutton:shadowEnabled="false"
+                                    fbutton:shadowHeight="0dp" />
+                            </FrameLayout>
+
+                        </LinearLayout>
+                        </LinearLayout>
+
+                            <!-<com.sicmagroup.mecoti.FButton
+>>>>>>> origin/develop-version-spring
+                        android:id="@+id/cgu_fon"
+                        fbutton:buttonColor="@color/colorPrimaryDark"
+                        fbutton:shadowColor="@color/fbutton_color_asbestos"
+                        fbutton:shadowEnabled="false"
+                        fbutton:shadowHeight="4dp"
+                        fbutton:cornerRadius="20dp"
+                        android:layout_height="40dp"
+                        android:layout_width="40dp"
+                        android:textColor="@color/colorWhite"
+                        android:text="FON"
+                        android:textAllCaps="false"/>
+
+                        <com.sicmagroup.mecoti.FButton
+                            android:id="@+id/cgu_fr"
+                            fbutton:buttonColor="@color/colorPrimaryDark"
+                            fbutton:shadowColor="@color/fbutton_color_asbestos"
+                            fbutton:shadowEnabled="false"
+                            fbutton:shadowHeight="4dp"
+                            fbutton:cornerRadius="20dp"
+                            android:layout_height="40dp"
+                            android:layout_width="40dp"
+                            android:textColor="@color/colorWhite"
+                            android:text="FR"
+                            android:textAllCaps="false"/>-->
+                    </LinearLayout>
+                </LinearLayout>
+
+
+<!--                <com.sicmagroup.tondi.FButton-->
+<!--                    android:id="@+id/btn_inscription"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="40dp"-->
+<!--                    android:layout_gravity="center_horizontal"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:drawableRight="@drawable/ic_next"-->
+<!--                    android:drawablePadding="10dp"-->
+<!--                    android:paddingLeft="40dp"-->
+<!--                    android:paddingRight="25dp"-->
+<!--                    android:text="Suivant"-->
+<!--                    android:textAllCaps="false"-->
+<!--                    android:textColor="@color/colorWhite"-->
+<!--                    fbutton:buttonColor="@color/colorPrimary"-->
+<!--                    fbutton:cornerRadius="4dp"-->
+<!--                    fbutton:shadowColor="@color/colorPrimarylight"-->
+<!--                    fbutton:shadowEnabled="false"-->
+<!--                    fbutton:shadowHeight="4dp" />-->
+
+                <com.sicmagroup.tondi.FButton
+                    android:id="@+id/btn_inscription"
+                    fbutton:buttonColor="@color/colorPrimary"
+                    fbutton:shadowColor="@color/colorPrimarylight"
+                    android:layout_marginTop="8dp"
+                    fbutton:shadowEnabled="false"
+                    fbutton:shadowHeight="4dp"
+                    fbutton:cornerRadius="4dp"
+                    android:layout_height="40dp"
+                    android:layout_width="wrap_content"
+                    android:drawablePadding="10dp"
+                    android:paddingRight="25dp"
+                    android:paddingLeft="40dp"
+                    android:drawableRight="@drawable/ic_next"
+                    android:textColor="@color/colorWhite"
+                    android:text="Suivant"
+                    android:layout_gravity="center_horizontal"
+                    android:textAllCaps="false"/>
+
+
+
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.4"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="50dp"
+            >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorGrey4"
+                android:text="@string/compte_deja"
+                android:gravity="bottom"
+                android:paddingRight="7dp"
+                android:layout_gravity="center"
+                android:textSize="13sp"
+                android:paddingBottom="15dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/colorPrimary"
+                android:text="@string/connectez_v"
+                android:gravity="bottom"
+                android:layout_gravity="center"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:paddingBottom="15dp"
+                android:clickable="true"
+                android:id="@+id/lien_connexion"
+                android:focusable="true" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_gravity="bottom"
+        android:padding="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+        <TextView
+            android:id="@+id/powered_by_tondi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorGrey4"
+            android:text="@string/Powered_by"
+            android:textSize="13sp"
+            android:layout_marginRight="20dp"
+            />
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="30dp"
+            android:src="@drawable/tondi"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:id="@+id/textView18"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:text="@string/copyright" />
+    </LinearLayout>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

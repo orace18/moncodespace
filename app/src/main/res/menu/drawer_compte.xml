@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_compte"
+            android:icon="@drawable/ic_message"
+            android:title="Mon compte" />
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_home"
+            android:title="Parametre" />
+        <item
+            android:id="@+id/nav_contract"
+            android:icon="@drawable/ic_chat"
+            android:title="Contrat" />
+        <item
+            android:id="@+id/nav_apropos"
+            android:icon="@drawable/ic_accounting"
+            android:title="A propos" />
+    </group>
+    <item android:title="Partager">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/bg_avatar"
+                android:title="Partager" />
+            <item
+                android:id="@+id/nav_whatsapp"
+                android:icon="@drawable/ic_attachment"
+                android:title="Whatsapp" />
+
+        </menu>
+    </item>
+</menu>

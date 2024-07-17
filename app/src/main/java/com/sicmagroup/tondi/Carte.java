@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.android.volley.NoConnectionError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -403,31 +404,7 @@ public class Carte extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-//                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<String> task) {
-//                        if(!task.isSuccessful())
-//                        {
-//                            Log.e("testFirebase", "Fetching FCM registration token failed", task.getException());
-//                            return;
-//                        }
-//
-//                        // Get new FCM registration token
-//                        String token = task.getResult();
-//
-//                        //Save du token dans la bdd local
-//                        Utilisateur user = new Utilisateur();
-//                        user = new Utilisateur().getUser(Prefs.getString(TEL_KEY, ""));
-//                        Prefs.putString(FIREBASE_TOKEN, token);
-//                        user.setFirebaseToken(token);
-//                        user.save();
-////                        SendFirebaseToken(token, user.getNumero());
-//                        // Log and toast
-//                        @SuppressLint({"StringFormatInvalid", "LocalSuppress"}) String msg = getString(R.string.msg_token_fmt, token);
-//                        Log.e("testFirebase", msg);
-//                        //Toast.makeText(Dashboard.this, msg, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
+
                 ConstraintLayout mainLayout =  findViewById(R.id.layout_cartemain);
                 String id_tontines_concernes = null;
                 List<Tontine> tontines_concernes = Tontine.find(Tontine.class, "carnet = ? AND periode = ? AND mise = ? AND statut = ?", new String[]{tontine_main.getCarnet(), tontine_main.getPeriode(), String.valueOf(tontine_main.getMise()), TontineEnum.WAITING.toString()}, null, "id desc", null);
@@ -874,16 +851,6 @@ public class Carte extends AppCompatActivity {
                             non.setVisibility(View.GONE);
                             dialog.show();
 
-//                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(CarteMain.this);
-//                            dialog_recap.setTitle( "ATTENTION" )
-//                                    .setIcon(R.drawable.ic_warning)
-//                                    .setMessage(message)
-//                                    .setCancelable(false)
-//                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialoginterface, int i) {
-//                                            requete_retrait_2(id_tontine);
-//                                        }
-//                                    }).show();
 
                         } else if (volleyError instanceof ServerError) {
                             message = "Impossible de contacter le serveur! Patientez et réessayez.";
@@ -911,16 +878,6 @@ public class Carte extends AppCompatActivity {
                             non.setVisibility(View.GONE);
                             dialog.show();
 
-//                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(CarteMain.this);
-//                            dialog_recap.setTitle( "ATTENTION" )
-//                                    .setIcon(R.drawable.ic_warning)
-//                                    .setMessage(message)
-//                                    .setCancelable(false)
-//                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialoginterface, int i) {
-//                                            requete_retrait_2(id_tontine);
-//                                        }
-//                                    }).show();
                         }  else if (volleyError instanceof ParseError) {
                             message = "Une erreur est survenue! Patientez et réessayez.";
 
@@ -948,16 +905,7 @@ public class Carte extends AppCompatActivity {
                             non.setVisibility(View.GONE);
                             dialog.show();
 
-//                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(CarteMain.this);
-//                            dialog_recap.setTitle( "ATTENTION" )
-//                                    .setIcon(R.drawable.ic_warning)
-//                                    .setMessage(message)
-//                                    .setCancelable(false)
-//                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialoginterface, int i) {
-//                                            requete_retrait_2(id_tontine);
-//                                        }
-//                                    }).show();
+
                         }
                     }
                 }
@@ -3324,8 +3272,6 @@ public class Carte extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams()
             {
-
-
                 Map<String, String>  params = new HashMap<String, String>();
                 params.put("numero", numero);
                 params.put("montant", montant);
@@ -3565,304 +3511,56 @@ public class Carte extends AppCompatActivity {
 //                }).show();
     }
 
-    private void terminer_tontine(final String id_tontine_server)
-    {
+    private void terminer_tontine(final String id_tontine_server) {
         RequestQueue queue = Volley.newRequestQueue(Carte.this);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_COMPLETED_TONTINE,
-                new Response.Listener<String>()
-                {
-                    @SuppressLint("ResourceAsColor")
+
+        // Créer l'objet JSON à envoyer
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("customerNumber", Prefs.getString(TEL_KEY, ""));
+            jsonBody.put("idTontine", id_tontine_server);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_COMPLETED_TONTINE, jsonBody,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
-                        //progressDialog.dismiss();
-                        // response
-                        Log.d("ResponseTagP", response);
-                        Long id_tont = Long.valueOf(0);
+                    public void onResponse(JSONObject response) {
                         try {
+                            Log.d("ResponseTagP", response.toString());
 
-                            JSONObject result = new JSONObject(response);
-                            //final JSONArray array = result.getJSONArray("data");
-                            Log.d("success_op?", String.valueOf(result.getBoolean("success")));
-
-                            if (result.getInt("responseCode") == 0){
-                                // maj des dates
-                                Date currentTime = Calendar.getInstance().getTime();
-                                long output_creation=currentTime.getTime()/1000L;
-                                String str_creation=Long.toString(output_creation);
-                                long timestamp_creation = Long.parseLong(str_creation) * 1000;
-                                long output_maj=currentTime.getTime()/1000L;
-                                String str_maj=Long.toString(output_maj);
-                                long timestamp_maj = Long.parseLong(str_maj) * 1000;
-
-                                progressDialog.dismiss();
-
-                                JSONArray resultat = result.getJSONArray("body");
-                                String[] actionGroup = {};
-                                String action = "";
-                                String object = "";
-                                for (int i = 0; i < resultat.length(); i++)
-                                {
-                                    JSONObject content = new JSONObject(resultat.get(i).toString());
-                                    actionGroup =  content.getString("action").split("#");
-                                    action = actionGroup[0];
-                                    object = actionGroup[1];
-                                    JSONObject data = new JSONObject(content.getJSONObject("data").toString());
-                                    Utilisateur u = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY,null)).get(0);
-                                    if ("add".equals(action)) {
-                                        if (object.equals("tontines")) {
-                                            Tontine nouvelle_tontine = new Tontine();
-                                            nouvelle_tontine.setId_server(data.getString("id"));
-                                            Log.i("new_t_id", String.valueOf(nouvelle_tontine.getId_server()));
-
-                                            nouvelle_tontine.setId_utilisateur(Prefs.getString(ID_UTILISATEUR_KEY,null));
-                                            Log.i("new_t_idUser", String.valueOf(nouvelle_tontine.getId_utilisateur()));
-
-                                            nouvelle_tontine.setPeriode(data.getString("periode"));
-                                            Log.i("new_t_periode", String.valueOf(nouvelle_tontine.getPeriode()));
-
-                                            nouvelle_tontine.setMise(data.getInt("mise"));
-                                            Log.i("new_t_idMise", String.valueOf(nouvelle_tontine.getMise()));
-
-                                            nouvelle_tontine.setPrelevement_auto(data.getBoolean("isAutoPayment"));
-//                                            Log.i("new_t_idAuto", String.valueOf(nouvelle_tontine.getPrelevement_auto()));
-
-//                                            nouvelle_tontine.setIdSim(data.getString("id_sim"));
-//                                            Log.i("new_t_idSim", String.valueOf(nouvelle_tontine.getIdSim()));
-
-                                            if(!data.isNull("unBlockDate")){
-                                                nouvelle_tontine.setDateDeblocage(data.getString("unBlockDate"));
-                                            }
-
-
-                                            nouvelle_tontine.setCarnet(String.valueOf(data.getString("carnet")));
-                                            Log.i("new_t_Carnet", String.valueOf(nouvelle_tontine.getCarnet()));
-
-                                            nouvelle_tontine.setStatut(data.getString("state"));
-                                            Log.i("new_t_Statut", String.valueOf(nouvelle_tontine.getStatut()));
-
-                                            nouvelle_tontine.setCreation(timestamp_creation);
-                                            Log.i("new_t_crea", String.valueOf(nouvelle_tontine.getCreation()));
-
-                                            nouvelle_tontine.setMaj(timestamp_maj);
-                                            Log.i("new_t_Maj", String.valueOf(nouvelle_tontine.getMaj()));
-
-                                            nouvelle_tontine.setContinuer(data.getLong("carnet"));
-
-                                            nouvelle_tontine.save();
-                                            id_tont = nouvelle_tontine.getId();
-//                                                Tontine old = Tontine.findById(Tontine.class, id_tontine);
-//                                                Log.i("old_t", String.valueOf(old.getId()));
-                                            if (nouvelle_tontine.getPrelevement_auto()) {
-                                                // ajouter cotisations automatiques
-                                                Cotis_Auto cotis_auto = new Cotis_Auto();
-                                                cotis_auto.setTontine(nouvelle_tontine);
-                                                Utilisateur utilisateur = SugarRecord.findById(Utilisateur.class, Long.valueOf(Prefs.getString(ID_UTILISATEUR_KEY, null)));
-                                                cotis_auto.setUtilisateur(utilisateur);
-                                                // maj des dates
-                                                cotis_auto.setCreation(timestamp_creation);
-                                                cotis_auto.setMaj(timestamp_creation);
-                                                cotis_auto.save();
-                                            }
-                                        }
-                                    }
-                                    else if("update".equals(action))
-                                    {
-                                        if (object.equals("tontines")) {
-                                            List<Tontine> old = Tontine.find(Tontine.class, "id_server = ?", data.getString("id"));
-                                            Log.e("old_t_size", String.valueOf(old.size()));
-                                            if (old.size() > 0) {
-                                                if(data.has("statut")) {
-                                                    old.get(0).setStatut(data.getString("statut"));
-                                                    Log.e("old_t_stat", data.getString("statut"));
-                                                }
-                                                if(data.has("carnet")) {
-                                                    old.get(0).setCarnet(data.getString("carnet"));
-                                                    Log.e("old_t_carn", data.getString("carnet"));
-                                                }
-                                                old.get(0).setMaj(timestamp_maj);
-                                                old.get(0).save();
-                                                id_tont = old.get(0).getId();
-                                            }
-                                        }
-                                    }
-                                }
-
-                                Tontine tontine = SugarRecord.findById(Tontine.class, (long) id_tontine);
-                                tontine.terminer(Carte.this);
-                                String msg = "";
-                                if (tontine.getPeriode().equals(PeriodiciteEnum.JOURNALIERE.toString())){
-                                    msg="Votre tontine "+tontine.getPeriode().toLowerCase()+" du mois en cours a été arrêtée au montant cumulé total de "+tontine.getMontant()+" F. Vous pouvez encaisser le montant de "+tontine.getMontEncaisse()+" F" ;
-                                }else{
-                                    msg="Votre tontine "+tontine.getPeriode().toLowerCase()+" a été arrêtée au montant cumulé total de "+tontine.getMontant()+" F. Vous pouvez encaisser le montant de "+tontine.getMontEncaisse()+" F" ;
-                                }
-
-                                //synchronisation apres terminer
-
-
-                                Intent i = new Intent(Carte.this, Message_ok.class);
-                                i.putExtra("msg_desc",msg);
-                                i.putExtra("id_tontine", tontine_main.getId());
-                                i.putExtra("isNewTontine", true);
-                                i.putExtra("class","com.sicmagroup.tondi.MesTontines");
-                                startActivity(i);
-
-                            }else{
-                                progressDialog.dismiss();
-                                String msg=result.getString("body");
-                                Intent i = new Intent(Carte.this, Message_non.class);
-                                i.putExtra("msg_desc",msg);
-                                i.putExtra("id_tontine",tontine_main.getId());
-                                i.putExtra("class","com.sicmagroup.tondi.MesTontines");
-                                startActivity(i);
+                            if (response.getInt("responseCode") == 0) {
+                                // Process the response if successful
+                                processSuccessfulResponse(response);
+                            } else {
+                                // Handle the unsuccessful response
+                                handleUnsuccessfulResponse(response);
                             }
 
-
-                        } catch (Throwable t) {
-                            Log.d("errornscription",t.getMessage());
-                            //Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        } finally {
+                            progressDialog.dismiss();
                         }
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
-                        // error
-                        //Log.d("Error.Inscription", String.valueOf(error.getMessage()));
-                        ConstraintLayout mainLayout =  findViewById(R.id.layout_tontine);
-
-                        String message;
-                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
-                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                            //Log.d("VolleyError_Test",volleyError.getMessage());
-                            message = "Aucune connexion Internet! Patientez et réessayez.";
-                            Dialog dialog = new Dialog(Carte.this);
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
-                            dialog.setContentView(R.layout.dialog_attention);
-
-                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
-                            titre.setText("Attention");
-                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
-                            message_deco.setText(message);
-
-                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
-                            oui.setText("Réessayer");
-
-                            oui.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    terminer_tontine(tontine_main.getId_server());
-                                }
-                            });
-
-                            Button non = (Button) dialog.findViewById(R.id.btn_non);
-                            non.setVisibility(View.GONE);
-                            dialog.show();
-
-//                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(Carte.this);
-//                            dialog_recap.setTitle( "ATTENTION" )
-//                                    .setIcon(R.drawable.ic_warning)
-//                                    .setMessage(message)
-//                                    .setCancelable(false)
-//                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialoginterface, int i) {
-//                                            terminer_tontine(tontine_main.getId_server());
-//                                        }
-//                                    }).show();
-                        } else if (volleyError instanceof ServerError) {
-                            message = "Impossible de contacter le serveur! Patientez et réessayez";
-                            Dialog dialog = new Dialog(Carte.this);
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
-                            dialog.setContentView(R.layout.dialog_attention);
-
-                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
-                            titre.setText("Attention");
-                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
-                            message_deco.setText(message);
-
-                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
-                            oui.setText("Réessayer");
-
-                            oui.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    terminer_tontine(tontine_main.getId_server());
-                                }
-                            });
-
-                            Button non = (Button) dialog.findViewById(R.id.btn_non);
-                            non.setVisibility(View.GONE);
-                            dialog.show();
-//                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(Carte.this);
-//                            dialog_recap.setTitle( "ATTENTION" )
-//                                    .setIcon(R.drawable.ic_warning)
-//                                    .setMessage(message)
-//                                    .setCancelable(false)
-//                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialoginterface, int i) {
-//                                            terminer_tontine(tontine_main.getId_server());
-//                                        }
-//                                    }).show();
-//
-                        }  else if (volleyError instanceof ParseError) {
-                            //message = "Parsing error! Please try again later";
-                            message = "Une erreur est survenue! Patientez et réessayez.";
-                            Dialog dialog = new Dialog(Carte.this);
-                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
-                            dialog.setContentView(R.layout.dialog_attention);
-
-                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
-                            titre.setText("Attention");
-                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
-                            message_deco.setText(message);
-
-                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
-                            oui.setText("Réessayer");
-
-                            oui.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    terminer_tontine(tontine_main.getId_server());
-                                }
-                            });
-
-                            Button non = (Button) dialog.findViewById(R.id.btn_non);
-                            non.setVisibility(View.GONE);
-                            dialog.show();
-//                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(Carte.this);
-//                            dialog_recap.setTitle( "ATTENTION" )
-//                                    .setIcon(R.drawable.ic_warning)
-//                                    .setMessage(message)
-//                                    .setCancelable(false)
-//                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
-//                                        public void onClick(DialogInterface dialoginterface, int i) {
-//                                            terminer_tontine(tontine_main.getId_server());
-//                                        }
-//                                    }).show();
-                        }
+                        handleVolleyError(volleyError);
                     }
                 }
         ) {
             @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("customerNumber", Prefs.getString(TEL_KEY, ""));
-                params.put("idTontine", id_tontine_server);
-                return params;
-            }
-            @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
+                headers.put("Authorization", "Bearer " + accessToken);
                 return headers;
             }
-
         };
 
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
@@ -3876,6 +3574,456 @@ public class Carte extends AppCompatActivity {
         progressDialog.setMessage("Veuillez patienter SVP! \nL'arrêt de votre carte est en cours...");
         progressDialog.show();
     }
+
+    private void processSuccessfulResponse(JSONObject response) throws JSONException {
+        long id_tont = 0;
+        Date currentTime = Calendar.getInstance().getTime();
+        long timestamp_creation = currentTime.getTime() / 1000L;
+        long timestamp_maj = timestamp_creation;
+
+        JSONArray resultat = response.getJSONArray("body");
+        for (int i = 0; i < resultat.length(); i++) {
+            JSONObject content = resultat.getJSONObject(i);
+            String[] actionGroup = content.getString("action").split("#");
+            String action = actionGroup[0];
+            String object = actionGroup[1];
+            JSONObject data = content.getJSONObject("data");
+
+            if ("add".equals(action) && "tontines".equals(object)) {
+                Tontine nouvelle_tontine = createNewTontine(data, timestamp_creation, timestamp_maj);
+                id_tont = nouvelle_tontine.getId();
+
+                if (nouvelle_tontine.getPrelevement_auto()) {
+                    createCotisAuto(nouvelle_tontine, timestamp_creation);
+                }
+            } else if ("update".equals(action) && "tontines".equals(object)) {
+                updateTontine(data, timestamp_maj);
+            }
+        }
+
+        Tontine tontine = SugarRecord.findById(Tontine.class, id_tont);
+        tontine.terminer(Carte.this);
+        String msg = createSuccessMessage(tontine);
+
+        Intent i = new Intent(Carte.this, Message_ok.class);
+        i.putExtra("msg_desc", msg);
+        i.putExtra("id_tontine", tontine_main.getId());
+        i.putExtra("isNewTontine", true);
+        i.putExtra("class", "com.sicmagroup.tondi.MesTontines");
+        startActivity(i);
+    }
+
+    private void handleUnsuccessfulResponse(JSONObject response) throws JSONException {
+        String msg = response.getString("body");
+        Intent i = new Intent(Carte.this, Message_non.class);
+        i.putExtra("msg_desc", msg);
+        i.putExtra("id_tontine", tontine_main.getId());
+        i.putExtra("class", "com.sicmagroup.tondi.MesTontines");
+        startActivity(i);
+    }
+
+    private void handleVolleyError(VolleyError volleyError) {
+        String message;
+        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+            message = "Aucune connexion Internet! Patientez et réessayez.";
+        } else if (volleyError instanceof ServerError) {
+            message = "Impossible de contacter le serveur! Patientez et réessayez";
+        } else if (volleyError instanceof ParseError) {
+            message = "Une erreur est survenue! Patientez et réessayez.";
+        } else {
+            message = "Une erreur inconnue est survenue.";
+        }
+
+        Dialog dialog = new Dialog(Carte.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.dialog_attention);
+
+        TextView titre = dialog.findViewById(R.id.deco_title);
+        titre.setText("Attention");
+        TextView message_deco = dialog.findViewById(R.id.deco_message);
+        message_deco.setText(message);
+
+        Button oui = dialog.findViewById(R.id.btn_oui);
+        oui.setText("Réessayer");
+        oui.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                terminer_tontine(tontine_main.getId_server());
+            }
+        });
+
+        Button non = dialog.findViewById(R.id.btn_non);
+        non.setVisibility(View.GONE);
+        dialog.show();
+    }
+
+    private Tontine createNewTontine(JSONObject data, long timestamp_creation, long timestamp_maj) throws JSONException {
+        Tontine nouvelle_tontine = new Tontine();
+        nouvelle_tontine.setId_server(data.getString("id"));
+        nouvelle_tontine.setId_utilisateur(Prefs.getString(ID_UTILISATEUR_KEY, null));
+        nouvelle_tontine.setPeriode(data.getString("periode"));
+        nouvelle_tontine.setMise(data.getInt("mise"));
+        nouvelle_tontine.setPrelevement_auto(data.getBoolean("isAutoPayment"));
+
+        if (!data.isNull("unBlockDate")) {
+            nouvelle_tontine.setDateDeblocage(data.getString("unBlockDate"));
+        }
+
+        nouvelle_tontine.setCarnet(data.getString("carnet"));
+        nouvelle_tontine.setStatut(data.getString("state"));
+        nouvelle_tontine.setCreation(timestamp_creation);
+        nouvelle_tontine.setMaj(timestamp_maj);
+        nouvelle_tontine.setContinuer(data.getLong("carnet"));
+        nouvelle_tontine.save();
+        return nouvelle_tontine;
+    }
+
+    private void updateTontine(JSONObject data, long timestamp_maj) throws JSONException {
+        List<Tontine> old = Tontine.find(Tontine.class, "id_server = ?", data.getString("id"));
+        if (old.size() > 0) {
+            Tontine tontine = old.get(0);
+            if (data.has("statut")) {
+                tontine.setStatut(data.getString("statut"));
+            }
+            if (data.has("carnet")) {
+                tontine.setCarnet(data.getString("carnet"));
+            }
+            tontine.setMaj(timestamp_maj);
+            tontine.save();
+        }
+    }
+
+    private void createCotisAuto(Tontine nouvelle_tontine, long timestamp_creation) {
+        Cotis_Auto cotis_auto = new Cotis_Auto();
+        cotis_auto.setTontine(nouvelle_tontine);
+        Utilisateur utilisateur = SugarRecord.findById(Utilisateur.class, Long.valueOf(Prefs.getString(ID_UTILISATEUR_KEY, null)));
+        cotis_auto.setUtilisateur(utilisateur);
+        cotis_auto.setCreation(timestamp_creation);
+        cotis_auto.setMaj(timestamp_creation);
+        cotis_auto.save();
+    }
+
+    private String createSuccessMessage(Tontine tontine) {
+        if (tontine.getPeriode().equals(PeriodiciteEnum.JOURNALIERE.toString())) {
+            return "Votre tontine " + tontine.getPeriode().toLowerCase() + " du mois en cours a été arrêtée au montant cumulé total de " + tontine.getMontant() + " F. Vous pouvez encaisser le montant de " + tontine.getMontEncaisse() + " F";
+        } else {
+            return "Votre tontine " + tontine.getPeriode().toLowerCase() + " a été arrêtée au montant cumulé total de " + tontine.getMontant() + " F. Vous pouvez encaisser le montant de " + tontine.getMontEncaisse() + " F";
+        }
+    }
+
+
+//    private void terminer_tontine(final String id_tontine_server)
+//    {
+//        RequestQueue queue = Volley.newRequestQueue(Carte.this);
+//        StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_COMPLETED_TONTINE,
+//                new Response.Listener<String>()
+//                {
+//                    @SuppressLint("ResourceAsColor")
+//                    @Override
+//                    public void onResponse(String response) {
+//                        //progressDialog.dismiss();
+//                        // response
+//                        Log.d("ResponseTagP", response);
+//                        Long id_tont = Long.valueOf(0);
+//                        try {
+//
+//                            JSONObject result = new JSONObject(response);
+//                            //final JSONArray array = result.getJSONArray("data");
+//                            Log.d("success_op?", String.valueOf(result.getBoolean("success")));
+//
+//                            if (result.getInt("responseCode") == 0){
+//                                // maj des dates
+//                                Date currentTime = Calendar.getInstance().getTime();
+//                                long output_creation=currentTime.getTime()/1000L;
+//                                String str_creation=Long.toString(output_creation);
+//                                long timestamp_creation = Long.parseLong(str_creation) * 1000;
+//                                long output_maj=currentTime.getTime()/1000L;
+//                                String str_maj=Long.toString(output_maj);
+//                                long timestamp_maj = Long.parseLong(str_maj) * 1000;
+//
+//                                progressDialog.dismiss();
+//
+//                                JSONArray resultat = result.getJSONArray("body");
+//                                String[] actionGroup = {};
+//                                String action = "";
+//                                String object = "";
+//                                for (int i = 0; i < resultat.length(); i++)
+//                                {
+//                                    JSONObject content = new JSONObject(resultat.get(i).toString());
+//                                    actionGroup =  content.getString("action").split("#");
+//                                    action = actionGroup[0];
+//                                    object = actionGroup[1];
+//                                    JSONObject data = new JSONObject(content.getJSONObject("data").toString());
+//                                    Utilisateur u = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY,null)).get(0);
+//                                    if ("add".equals(action)) {
+//                                        if (object.equals("tontines")) {
+//                                            Tontine nouvelle_tontine = new Tontine();
+//                                            nouvelle_tontine.setId_server(data.getString("id"));
+//                                            Log.i("new_t_id", String.valueOf(nouvelle_tontine.getId_server()));
+//
+//                                            nouvelle_tontine.setId_utilisateur(Prefs.getString(ID_UTILISATEUR_KEY,null));
+//                                            Log.i("new_t_idUser", String.valueOf(nouvelle_tontine.getId_utilisateur()));
+//
+//                                            nouvelle_tontine.setPeriode(data.getString("periode"));
+//                                            Log.i("new_t_periode", String.valueOf(nouvelle_tontine.getPeriode()));
+//
+//                                            nouvelle_tontine.setMise(data.getInt("mise"));
+//                                            Log.i("new_t_idMise", String.valueOf(nouvelle_tontine.getMise()));
+//
+//                                            nouvelle_tontine.setPrelevement_auto(data.getBoolean("isAutoPayment"));
+////                                            Log.i("new_t_idAuto", String.valueOf(nouvelle_tontine.getPrelevement_auto()));
+//
+////                                            nouvelle_tontine.setIdSim(data.getString("id_sim"));
+////                                            Log.i("new_t_idSim", String.valueOf(nouvelle_tontine.getIdSim()));
+//
+//                                            if(!data.isNull("unBlockDate")){
+//                                                nouvelle_tontine.setDateDeblocage(data.getString("unBlockDate"));
+//                                            }
+//
+//
+//                                            nouvelle_tontine.setCarnet(String.valueOf(data.getString("carnet")));
+//                                            Log.i("new_t_Carnet", String.valueOf(nouvelle_tontine.getCarnet()));
+//
+//                                            nouvelle_tontine.setStatut(data.getString("state"));
+//                                            Log.i("new_t_Statut", String.valueOf(nouvelle_tontine.getStatut()));
+//
+//                                            nouvelle_tontine.setCreation(timestamp_creation);
+//                                            Log.i("new_t_crea", String.valueOf(nouvelle_tontine.getCreation()));
+//
+//                                            nouvelle_tontine.setMaj(timestamp_maj);
+//                                            Log.i("new_t_Maj", String.valueOf(nouvelle_tontine.getMaj()));
+//
+//                                            nouvelle_tontine.setContinuer(data.getLong("carnet"));
+//
+//                                            nouvelle_tontine.save();
+//                                            id_tont = nouvelle_tontine.getId();
+////                                                Tontine old = Tontine.findById(Tontine.class, id_tontine);
+////                                                Log.i("old_t", String.valueOf(old.getId()));
+//                                            if (nouvelle_tontine.getPrelevement_auto()) {
+//                                                // ajouter cotisations automatiques
+//                                                Cotis_Auto cotis_auto = new Cotis_Auto();
+//                                                cotis_auto.setTontine(nouvelle_tontine);
+//                                                Utilisateur utilisateur = SugarRecord.findById(Utilisateur.class, Long.valueOf(Prefs.getString(ID_UTILISATEUR_KEY, null)));
+//                                                cotis_auto.setUtilisateur(utilisateur);
+//                                                // maj des dates
+//                                                cotis_auto.setCreation(timestamp_creation);
+//                                                cotis_auto.setMaj(timestamp_creation);
+//                                                cotis_auto.save();
+//                                            }
+//                                        }
+//                                    }
+//                                    else if("update".equals(action))
+//                                    {
+//                                        if (object.equals("tontines")) {
+//                                            List<Tontine> old = Tontine.find(Tontine.class, "id_server = ?", data.getString("id"));
+//                                            Log.e("old_t_size", String.valueOf(old.size()));
+//                                            if (old.size() > 0) {
+//                                                if(data.has("statut")) {
+//                                                    old.get(0).setStatut(data.getString("statut"));
+//                                                    Log.e("old_t_stat", data.getString("statut"));
+//                                                }
+//                                                if(data.has("carnet")) {
+//                                                    old.get(0).setCarnet(data.getString("carnet"));
+//                                                    Log.e("old_t_carn", data.getString("carnet"));
+//                                                }
+//                                                old.get(0).setMaj(timestamp_maj);
+//                                                old.get(0).save();
+//                                                id_tont = old.get(0).getId();
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//
+//                                Tontine tontine = SugarRecord.findById(Tontine.class, (long) id_tontine);
+//                                tontine.terminer(Carte.this);
+//                                String msg = "";
+//                                if (tontine.getPeriode().equals(PeriodiciteEnum.JOURNALIERE.toString())){
+//                                    msg="Votre tontine "+tontine.getPeriode().toLowerCase()+" du mois en cours a été arrêtée au montant cumulé total de "+tontine.getMontant()+" F. Vous pouvez encaisser le montant de "+tontine.getMontEncaisse()+" F" ;
+//                                }else{
+//                                    msg="Votre tontine "+tontine.getPeriode().toLowerCase()+" a été arrêtée au montant cumulé total de "+tontine.getMontant()+" F. Vous pouvez encaisser le montant de "+tontine.getMontEncaisse()+" F" ;
+//                                }
+//
+//                                //synchronisation apres terminer
+//
+//
+//                                Intent i = new Intent(Carte.this, Message_ok.class);
+//                                i.putExtra("msg_desc",msg);
+//                                i.putExtra("id_tontine", tontine_main.getId());
+//                                i.putExtra("isNewTontine", true);
+//                                i.putExtra("class","com.sicmagroup.tondi.MesTontines");
+//                                startActivity(i);
+//
+//                            }else{
+//                                progressDialog.dismiss();
+//                                String msg=result.getString("body");
+//                                Intent i = new Intent(Carte.this, Message_non.class);
+//                                i.putExtra("msg_desc",msg);
+//                                i.putExtra("id_tontine",tontine_main.getId());
+//                                i.putExtra("class","com.sicmagroup.tondi.MesTontines");
+//                                startActivity(i);
+//                            }
+//
+//
+//                        } catch (Throwable t) {
+//                            Log.d("errornscription",t.getMessage());
+//                            //Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+//                        }
+//                    }
+//                },
+//                new Response.ErrorListener()
+//                {
+//                    @Override
+//                    public void onErrorResponse(VolleyError volleyError) {
+//                        progressDialog.dismiss();
+//                        // error
+//                        //Log.d("Error.Inscription", String.valueOf(error.getMessage()));
+//                        ConstraintLayout mainLayout =  findViewById(R.id.layout_tontine);
+//
+//                        String message;
+//                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+//                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+//                            //Log.d("VolleyError_Test",volleyError.getMessage());
+//                            message = "Aucune connexion Internet! Patientez et réessayez.";
+//                            Dialog dialog = new Dialog(Carte.this);
+//                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                            dialog.setCancelable(false);
+//                            dialog.setContentView(R.layout.dialog_attention);
+//
+//                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
+//                            titre.setText("Attention");
+//                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
+//                            message_deco.setText(message);
+//
+//                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
+//                            oui.setText("Réessayer");
+//
+//                            oui.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    terminer_tontine(tontine_main.getId_server());
+//                                }
+//                            });
+//
+//                            Button non = (Button) dialog.findViewById(R.id.btn_non);
+//                            non.setVisibility(View.GONE);
+//                            dialog.show();
+//
+////                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(Carte.this);
+////                            dialog_recap.setTitle( "ATTENTION" )
+////                                    .setIcon(R.drawable.ic_warning)
+////                                    .setMessage(message)
+////                                    .setCancelable(false)
+////                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
+////                                        public void onClick(DialogInterface dialoginterface, int i) {
+////                                            terminer_tontine(tontine_main.getId_server());
+////                                        }
+////                                    }).show();
+//                        } else if (volleyError instanceof ServerError) {
+//                            message = "Impossible de contacter le serveur! Patientez et réessayez";
+//                            Dialog dialog = new Dialog(Carte.this);
+//                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                            dialog.setCancelable(false);
+//                            dialog.setContentView(R.layout.dialog_attention);
+//
+//                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
+//                            titre.setText("Attention");
+//                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
+//                            message_deco.setText(message);
+//
+//                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
+//                            oui.setText("Réessayer");
+//
+//                            oui.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    terminer_tontine(tontine_main.getId_server());
+//                                }
+//                            });
+//
+//                            Button non = (Button) dialog.findViewById(R.id.btn_non);
+//                            non.setVisibility(View.GONE);
+//                            dialog.show();
+////                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(Carte.this);
+////                            dialog_recap.setTitle( "ATTENTION" )
+////                                    .setIcon(R.drawable.ic_warning)
+////                                    .setMessage(message)
+////                                    .setCancelable(false)
+////                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
+////                                        public void onClick(DialogInterface dialoginterface, int i) {
+////                                            terminer_tontine(tontine_main.getId_server());
+////                                        }
+////                                    }).show();
+////
+//                        }  else if (volleyError instanceof ParseError) {
+//                            //message = "Parsing error! Please try again later";
+//                            message = "Une erreur est survenue! Patientez et réessayez.";
+//                            Dialog dialog = new Dialog(Carte.this);
+//                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//                            dialog.setCancelable(false);
+//                            dialog.setContentView(R.layout.dialog_attention);
+//
+//                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
+//                            titre.setText("Attention");
+//                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
+//                            message_deco.setText(message);
+//
+//                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
+//                            oui.setText("Réessayer");
+//
+//                            oui.setOnClickListener(new View.OnClickListener() {
+//                                @Override
+//                                public void onClick(View v) {
+//                                    terminer_tontine(tontine_main.getId_server());
+//                                }
+//                            });
+//
+//                            Button non = (Button) dialog.findViewById(R.id.btn_non);
+//                            non.setVisibility(View.GONE);
+//                            dialog.show();
+////                            final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(Carte.this);
+////                            dialog_recap.setTitle( "ATTENTION" )
+////                                    .setIcon(R.drawable.ic_warning)
+////                                    .setMessage(message)
+////                                    .setCancelable(false)
+////                                    .setPositiveButton("REESSAYER", new DialogInterface.OnClickListener() {
+////                                        public void onClick(DialogInterface dialoginterface, int i) {
+////                                            terminer_tontine(tontine_main.getId_server());
+////                                        }
+////                                    }).show();
+//                        }
+//                    }
+//                }
+//        ) {
+//            @Override
+//            protected Map<String, String> getParams()
+//            {
+//                Map<String, String>  params = new HashMap<String, String>();
+//                params.put("customerNumber", Prefs.getString(TEL_KEY, ""));
+//                params.put("idTontine", id_tontine_server);
+//                return params;
+//            }
+//            @Override
+//            public Map<String, String> getHeaders() throws AuthFailureError {
+//                Map<String, String> headers = new HashMap<>();
+//                headers.put("Content-Type", "application/json");
+//                headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
+//                return headers;
+//            }
+//
+//        };
+//
+//        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+//                8000,
+//                -1,
+//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//        queue.add(postRequest);
+//
+//        progressDialog = new ProgressDialog(Carte.this);
+//        progressDialog.setCancelable(false);
+//        progressDialog.setMessage("Veuillez patienter SVP! \nL'arrêt de votre carte est en cours...");
+//        progressDialog.show();
+//    }
 
     private void terminer(final int id_tontine) {
         Tontine tontine = SugarRecord.findById(Tontine.class, (long) id_tontine);

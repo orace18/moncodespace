@@ -7,8 +7,10 @@ import static com.sicmagroup.tondi.Connexion.NMBR_PWD_TENTATIVE_FAILED;
 import static com.sicmagroup.tondi.Connexion.PASS_KEY;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
 import static com.sicmagroup.tondi.Connexion.url_desactiver_account;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
+import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -40,6 +42,7 @@ import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.pixplicity.easyprefs.library.Prefs;
@@ -56,6 +59,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -124,85 +128,125 @@ public class RetraitAdapter extends RecyclerView.Adapter<RetraitAdapter.MyViewHo
 
         }
     }
-    public void desactiver_account(Context context)
-    {
+    public void desactiver_account(Context context) {
+        sendDesactiverAccountRequest(context);
+    }
+
+    private void sendDesactiverAccountRequest(Context context) {
         RequestQueue queue = Volley.newRequestQueue(context);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, url_desactiver_account,
-                new Response.Listener<String>()
-                {
+        JSONObject params = new JSONObject();
+        try {
+            params.put("customerNumber", Prefs.getString(TEL_KEY, null));
+            Log.e("Le body de sendDesactiverAccountRequest" ,params.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url_desactiver_account, params,
+                new Response.Listener<JSONObject>() {
                     @SuppressLint("ResourceAsColor")
                     @Override
-                    public void onResponse(String response) {
-                        Log.e("ResponseTagMain", response);
-                        // if (!response.equals("Erreur")) {
+                    public void onResponse(JSONObject response) {
                         try {
-
-                            JSONObject result = new JSONObject(response);
-                            if(result.getBoolean("success"))
-                            {
-                                Prefs.putString(ID_UTILISATEUR_KEY,null);
+                            if (response.getBoolean("success")) {
+                                Prefs.putString(ID_UTILISATEUR_KEY, null);
                                 Prefs.putInt(NMBR_PWD_FAILED, 0);
                                 Prefs.putInt(NMBR_PWD_TENTATIVE_FAILED, 0);
-                                String msg="Vos identifiants sont incorrects. Votre compte a été désactivé, Merci de contacter le xxxxxxxx et suivez les instructions de réactivation de compte, Merci.";
+                                String msg = "Vos identifiants sont incorrects. Votre compte a été désactivé, Merci de contacter le xxxxxxxx et suivez les instructions de réactivation de compte, Merci.";
                                 Intent i = new Intent(context, Message_non.class);
-                                i.putExtra("msg_desc",msg);
-                                i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                                i.putExtra("msg_desc", msg);
+                                i.putExtra("class", "com.sicmagroup.tondi.Connexion");
                                 ((Activity) context).finish();
                                 context.startActivity(i);
-
-                            }
-                            else
-                            {
-                                Prefs.putString(ID_UTILISATEUR_KEY,null);
+                            } else {
+                                Prefs.putString(ID_UTILISATEUR_KEY, null);
                                 Prefs.putInt(NMBR_PWD_FAILED, 0);
                                 Prefs.putInt(NMBR_PWD_TENTATIVE_FAILED, 0);
-                                String msg="Vos identifiants sont incorrects. Veuillez réessayer SVP!";
+                                String msg = "Vos identifiants sont incorrects. Veuillez réessayer SVP!";
                                 Intent i = new Intent(context, Message_non.class);
-                                i.putExtra("msg_desc",msg);
-                                i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                                i.putExtra("msg_desc", msg);
+                                i.putExtra("class", "com.sicmagroup.tondi.Connexion");
                                 ((Activity) context).finish();
                                 context.startActivity(i);
                             }
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        Log.e("ResponseTagMain", String.valueOf(volleyError.getMessage()));
-                        Log.e("Stack", "Error StackTrace: \t" + volleyError.getStackTrace());
-                        String message;
-                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
-                            desactiver_account(context);
+                        if (volleyError.networkResponse != null && volleyError.networkResponse.statusCode == 401) {
+                            refreshAccessToken(context, new TokenRefreshListener() {
+                                @Override
+                                public void onTokenRefreshed(boolean success) {
+                                    if (success) {
+                                        sendDesactiverAccountRequest(context);
+                                    }
+                                }
+                            });
+                        } else {
+                            Log.e("", "");
+                            Log.e("ResponseTagMain", String.valueOf(volleyError.getMessage()));
 
-                        } else if (volleyError instanceof ServerError) {
-                            desactiver_account(context);
-                        }  else if (volleyError instanceof ParseError) {
-                            desactiver_account(context);
+                            Log.e("Stack", "Error StackTrace: \t" + Arrays.toString(volleyError.getStackTrace()));
                         }
                     }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("customerNumber", Prefs.getString(TEL_KEY, null));
-                return params;
-            }
+                }) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + accessToken);
+                headers.put("Authorization", "Bearer " + Prefs.getString(TOKEN, ""));
                 return headers;
             }
         };
+
         queue.add(postRequest);
     }
+
+    private void refreshAccessToken(Context context, TokenRefreshListener listener) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JSONObject params = new JSONObject();
+        try {
+            params.put("refreshToken", Prefs.getString(REFRESH_TOKEN, ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest refreshRequest = new JsonObjectRequest(Request.Method.POST, url_refresh_token, params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String newAccessToken = response.getString("token");
+                            String newRefreshToken = response.getString("refreshToken");
+                            Prefs.putString(TOKEN, newAccessToken);
+                            Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                            Prefs.putString(TOKEN, newAccessToken);
+                            listener.onTokenRefreshed(true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onTokenRefreshed(false);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.e("RefreshToken", "Error: " + volleyError.getMessage());
+                        listener.onTokenRefreshed(false);
+                    }
+                });
+
+        queue.add(refreshRequest);
+    }
+
+    private interface TokenRefreshListener {
+        void onTokenRefreshed(boolean success);
+    }
+
     void setupFrmPin(Dialog d, Context c){
         mRecyclerView =  d.findViewById(R.id.form_pin_access);
         frm_pin_acces = new FormBuilder(c, mRecyclerView);
@@ -228,7 +272,7 @@ public class RetraitAdapter extends RecyclerView.Adapter<RetraitAdapter.MyViewHo
                 }
                 else
                 {
-                    int tentative_restant =  3 - Prefs.getInt(NMBR_PWD_TENTATIVE_FAILED, 0);
+                    int tentative_restant =  10 - Prefs.getInt(NMBR_PWD_TENTATIVE_FAILED, 0);
                     msg_try_mdp.setVisibility(View.VISIBLE);
                     msg_try_mdp.setText("Il vous reste "+String.valueOf(tentative_restant)+" tentative(s)");
                 }
@@ -251,7 +295,7 @@ public class RetraitAdapter extends RecyclerView.Adapter<RetraitAdapter.MyViewHo
 
     private void pin_verifier(Intent intent, String pin, Context context) {
         Connexion.AeSimpleSHA1 AeSimpleSHA1 = new Connexion.AeSimpleSHA1();
-
+        Log.e("pin", Prefs.getString(PASS_KEY,""));
         try {
             pin = AeSimpleSHA1.md5(pin);
             pin = AeSimpleSHA1.SHA1(pin);
@@ -408,6 +452,7 @@ public class RetraitAdapter extends RecyclerView.Adapter<RetraitAdapter.MyViewHo
                                         public void onHide() {
                                             ((MesTontines) mContext).finish();
                                             mContext.startActivity(new Intent(mContext,MesTontines.class));
+
                                         }
                                     })
                                     .show();
@@ -528,6 +573,7 @@ public class RetraitAdapter extends RecyclerView.Adapter<RetraitAdapter.MyViewHo
                     public void onResponse(String response) {
                         // response
                         Log.d("Response", response);
+
                         //Toast.makeText(getApplicationContext(),String.valueOf(Integer.parseInt(montant)-(Integer.parseInt(montant)%mise)),Toast.LENGTH_LONG).show();
 
                         try {
@@ -576,8 +622,19 @@ public class RetraitAdapter extends RecyclerView.Adapter<RetraitAdapter.MyViewHo
                 {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // error
-                        //Log.d("Error.NouvelleTontine", error.getMessage());
+                        boolean tokenRefreshed = false;
+
+                        if (error instanceof AuthFailureError && !tokenRefreshed) {
+                            // Rafraîchir le token et réessayer
+                            refreshAccessToken(mContext, new RetraitAdapter.TokenRefreshListener() {
+                                @Override
+                                public void onTokenRefreshed(boolean success) {
+                                    if (success) {
+                                        requete_retrait(id_tontine);
+                                    }
+                                }
+                            });
+                        }
                     }
                 }
         ) {

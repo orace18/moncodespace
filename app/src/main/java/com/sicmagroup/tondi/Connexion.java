@@ -18,6 +18,7 @@ import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -106,8 +107,10 @@ import com.sicmagroup.formmaster.model.FormElementTextPassword;
 
 import static com.sicmagroup.tondi.Accueil.MOOV_DATA_SHARING;
 import static com.sicmagroup.tondi.utils.Constantes.CODE_MARCHAND_KEY;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 import static com.sicmagroup.tondi.utils.Constantes.STATUT_UTILISATEUR;
+import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
 
 public class Connexion extends AppCompatActivity {
     private static final String TAG = "service_";
@@ -116,7 +119,7 @@ public class Connexion extends AppCompatActivity {
     private FormBuilder mFormBuilder;
     private static final int TAG_TEL = 21;
     private static final int TAG_PASS = 22;
-//<<<<<<< HEAD
+
     String url_login = SERVEUR+"/api/v1/utilisateurs/login";
 
     String user_existe = SERVEUR + "/api/v1/utilisateurs/connecter";
@@ -199,7 +202,7 @@ public class Connexion extends AppCompatActivity {
 
     FormElementZero element0 = FormElementZero.createInstance().setTag(99);
 
-    FormElementTextPhone element2 = FormElementTextPhone.createInstance().setTag(TAG_TEL).setTitle("Téléphone").setHint("99999999").setRequired(true);
+    FormElementTextPhone element2 = FormElementTextPhone.createInstance().setTag(TAG_TEL).setTitle("Téléphone").setHint("Votre numéro MOOV").setRequired(true);
 
     FormElementTextPassword element1 = FormElementTextPassword.createInstance().setTag(TAG_PASS).setTitle("Mot de passe").setHint("Mot de passe").setRequired(true);
 
@@ -433,36 +436,17 @@ public class Connexion extends AppCompatActivity {
                 // TODO Auto-generated method stub
                 if (!mFormBuilder.isValidForm()){
                     if (getIntent().getExtras()!=null){
-                        //BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
 
-                        //String tel_value = tel.getValue();
                         Toast.makeText(Connexion.this, "t:"+element1.getValue()+"//"+"t:"+element2.getValue(), Toast.LENGTH_LONG).show();
-                        // verifier sim
-                        //verifier_sim(element2.getValue());
                     }else{
                         String msg = "> Veuillez remplir les champs SVP! ";
                         alertView("Erreurs dans le formulaire",msg);
                     }
                 }else{
-                    //Toast.makeText(getApplicationContext(),"auth_en_ligne"+"",Toast.LENGTH_LONG).show();
-                    //Log.d("medias___","auth_en_ligne");
-                    //connecter();
                     BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
                     String tel_value = tel.getValue();
                     Utilitaire utilitaire = new Utilitaire(Connexion.this);
-//                    if (utilitaire.getOperatorByNumber(tel_value).equals("MOOV"))
-                        auth();
-//                    else
-//                    {
-//                        String msg= "Seul les numéros MOOV sont acceptés";
-//                        Intent i = new Intent(Connexion.this, Message_non.class);
-//                        i.putExtra("msg_desc",msg);
-//                        i.putExtra("class","com.sicmagroup.tondi.Connexion");
-//                        startActivity(i);
-//                    }
-
-                    // verifier sim
-                    //verifier_sim(tel_value);
+                    auth();
                 }
             }
         });
@@ -481,19 +465,12 @@ public class Connexion extends AppCompatActivity {
     private void setupForm() {
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mFormBuilder = new FormBuilder(this, mRecyclerView);
-
-        /*password.setInputType(InputType.TYPE_CLASS_TEXT |
-                InputType.TYPE_TEXT_VARIATION_PASSWORD);*/
         List<BaseFormElement> formItems = new ArrayList<>();
         formItems.add(element0);
         formItems.add(element2);
         formItems.add(element1);
 
         mFormBuilder.addFormElements(formItems);
-        // mFormBuilder.refreshView();
-
-
-
     }
 
     @SuppressLint("ResourceAsColor")
@@ -516,78 +493,10 @@ public class Connexion extends AppCompatActivity {
         Utilisateur utilisateur = new Utilisateur();
 
         auth_en_ligne();
-//        if (utilisateur.auth(tel_value,mdp_value)>0){
-//            final Utilisateur user = utilisateur.getUser(tel_value);
-//            if (user.getStatut().equals("desactive"))
-//            {
-//                if (utilitaire.isConnected()) {
-//                    auth_en_ligne();
-//                }
-//                else
-//                {
-//                    String msg= "Votre compte est désactivé. Rapprochez vous de votre institutions.";
-//                    Intent i = new Intent(Connexion.this, Message_non.class);
-//                    i.putExtra("msg_desc",msg);
-//                    i.putExtra("class","com.sicmagroup.tondi.Connexion");
-//                    startActivity(i);
-//                }
-//            }
-//            else {
-//
-//                //Vérification en ligne des credentials client
-//                //auth_credential_online(user);
-//                auth_en_ligne();
-//            }
-//        }else{
-//            // si connecte
-//            if (utilitaire.isConnected()){
-//                auth_en_ligne();
-//                // si l'utilisateur existe en ligne
-//                // ajouter son compte en local
-//                // et rediriger sur tableau de bord
-//                // sinon
-//                // afficher le message identifiants incorrects
-//
-//            }
-//            // sinon
-//            else{
-//                Connexion.this.finish();
-//                String msg="Vos identifiants sont incorrects. Veuillez réessayer SVP!";
-//                Intent i = new Intent(Connexion.this, Message_non.class);
-//                i.putExtra("msg_desc",msg);
-//                i.putExtra("class","com.sicmagroup.tondi.Connexion");
-//                startActivity(i);
-//
-//                /*Alerter.create(Connexion.this)
-//                        .setTitle("Vos identifiants sont incorrects. Veuillez réessayer SVP!")
-//                        .setIcon(R.drawable.ic_warning)
-//                        .setTitleAppearance(R.style.TextAppearance_AppCompat_Large)
-//                        .setIconColorFilter(R.color.colorPrimaryDark)
-//                        //.setText("Vous pouvez maintenant vous connecter.")
-//                        .setBackgroundColorRes(R.color.colorWhite) // or setBackgroundColorInt(Color.CYAN)
-//                        .show();*/
-//            }
-//
-//        }
-
-
     }
 
 
     private void alertView( String title ,String message ) {
-//        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-//        dialog.setTitle( title )
-//                .setIcon(R.drawable.ic_warning)
-//                .setMessage(message)
-////     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-////      public void onClick(DialogInterface dialoginterface, int i) {
-////          dialoginterface.cancel();
-////          }})
-//                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialoginterface, int i) {
-//                    }
-//                }).show();
-
         Dialog dialog_alert = new Dialog(Connexion.this);
         dialog_alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog_alert.setCancelable(true);
@@ -611,17 +520,6 @@ public class Connexion extends AppCompatActivity {
 
         Button non = (Button) dialog_alert.findViewById(R.id.btn_non);
         non.setVisibility(View.GONE);
-//        non.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Prefs.putBoolean(MOOV_DATA_SHARING, false);
-//                Toast.makeText(Inscription.this, "TONDi a besoin de cette autorisation pour vous facilitez votre inscription sur l'application TONDi", Toast.LENGTH_SHORT).show();
-//                Inscription.this.finish();
-//                dialog.cancel();
-//
-//            }
-//        });
-
         dialog_alert.show();
 
     }
@@ -629,9 +527,6 @@ public class Connexion extends AppCompatActivity {
     public static boolean isTimeAutomatic(Context c) {
         return Settings.Global.getInt(c.getContentResolver(), Settings.Global.AUTO_TIME, 0) == 1;
     }
-
-
-
 
     public static class AeSimpleSHA1 {
         private String convertToHex(byte[] data) {
@@ -679,81 +574,135 @@ public class Connexion extends AppCompatActivity {
         }
     }
 
-    private void auth_en_ligne( ) {
+    @SuppressLint("LongLogTag")
+    private void auth_en_ligne() {
         RequestQueue queue = Volley.newRequestQueue(this);
+        Log.e("C'est dans la fonction auth en ligne", "Eh oui");
 
-        StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_LOGIN,
-                new Response.Listener<String>()
-                {
-                    @SuppressLint("ResourceAsColor")
+        JSONObject jsonBody = new JSONObject();
+
+
+        BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+        BaseFormElement mdp = mFormBuilder.getFormElement(TAG_PASS);
+
+        String tel_value = tel.getValue();
+        String mdp_value = mdp.getValue();
+
+        try {
+
+            jsonBody.put("numero", tel_value);
+            jsonBody.put("password", mdp_value);
+
+            Log.e("Le body de la connexion", jsonBody.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_LOGIN, jsonBody,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint({"ResourceAsColor", "LongLogTag"})
                     @Override
-                    public void onResponse(String response) {
-
-                        Log.d("medias_url_cy", "11111");
-                        Log.d("Response", response);
-
+                    public void onResponse(JSONObject response) {
+                        Log.d("Response", response.toString());
+                        Connexion.AeSimpleSHA1 AeSimpleSHA1 = new Connexion.AeSimpleSHA1();
                         try {
-                            JSONObject result = new JSONObject(response);
-                            int responseCode = result.getInt("responseCode");
-                            if (responseCode == 0){
-                                final JSONObject user = result.getJSONObject("body");
+                            JSONObject result = response;
+                            Log.e("Le résultat est de auth en ligne :", result.toString());
+                            //int responseCode = result.getInt("responseCode");
+                            if (result != null) {
+                                final JSONObject user = result.getJSONObject("userDTO");
                                 Long id = Long.valueOf(0);
                                 Utilisateur nouvel_utilisateur = null;
                                 @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                                Date creation = (Date)formatter.parse(user.getString("createdAt"));
-                                long output_creation=creation.getTime()/1000L;
-                                String str_creation=Long.toString(output_creation);
+                                Date creation = formatter.parse(user.getString("createdAt"));
+                                long output_creation = creation.getTime() / 1000L;
+                                String str_creation = Long.toString(output_creation);
                                 long timestamp_creation = Long.parseLong(str_creation) * 1000;
-                                Date maj = (Date)formatter.parse(user.getString("updatedAt"));
-                                long output_maj=maj.getTime()/1000L;
-                                String str_maj=Long.toString(output_maj);
+                                Date maj = formatter.parse(user.getString("updatedAt"));
+                                long output_maj = maj.getTime() / 1000L;
+                                String str_maj = Long.toString(output_maj);
                                 long timestamp_maj = Long.parseLong(str_maj) * 1000;
+                                String mot_de_passe = mdp_value;
+                                mot_de_passe = AeSimpleSHA1.md5(mot_de_passe);
+                                mot_de_passe = AeSimpleSHA1.SHA1(mot_de_passe);
                                 // enregistrer en local
-                                List<Utilisateur> userH = SugarRecord.find(Utilisateur.class, "numero = ?", user.getString("numero"));
-                                if(userH.size() == 0){
+                                List<Utilisateur> userH = SugarRecord.find(Utilisateur.class, "numero = ?", tel_value);
+                                if (userH.size() == 0) {
                                     nouvel_utilisateur = new Utilisateur();
                                     nouvel_utilisateur.setId_utilisateur(user.getString("id"));
-                                    nouvel_utilisateur.setNumero(user.getString("numero"));
-                                    nouvel_utilisateur.setNom(user.getString("firstName"));
-                                    nouvel_utilisateur.setPrenoms(user.getString("lastName"));
-//                                    nouvel_utilisateur.setPin_acces(user.getString("pin_acces"));
-                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
-                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
-                                    nouvel_utilisateur.setMdp(user.getString("password"));
+                                    nouvel_utilisateur.setNumero(tel_value);
+                                    if (user.getString("firstName").isEmpty() || user.has("firstName")) {
+                                        nouvel_utilisateur.setNom(user.getString("firstName"));
+                                    }else{
+                                        nouvel_utilisateur.setNom("");
+                                    }
+                                    if (user.getString("lastName").isEmpty() || user.has("lastName")) {
+                                        nouvel_utilisateur.setPrenoms(user.getString("lastName"));
+                                    }else{
+                                        nouvel_utilisateur.setPrenoms("");
+                                    }
+                                    if (user.getString("profilePicture").isEmpty() || user.has("profilePicture")) {
+                                        nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+                                    }else{
+                                        nouvel_utilisateur.setPhoto_identite("");
+                                    }
+                                    if (user.getString("cniPicture").isEmpty() || user.has("cniPicture")) {
+                                        nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+                                    }else{
+                                        nouvel_utilisateur.setcni_photo("");
+                                    }
+
+//                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+//                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+                                    nouvel_utilisateur.setMdp(mot_de_passe);
                                     nouvel_utilisateur.setStatut(user.getString("statut"));
                                     nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
-                                    if(user.isNull("referent"))
+                                    if (user.isNull("referent"))
                                         nouvel_utilisateur.setCodeMarchand("");
                                     else
                                         nouvel_utilisateur.setCodeMarchand(user.getString("referent"));
-
-                                    Log.d("connexion", "2connexion trying");
-
-                                    // maj des dates
 
                                     nouvel_utilisateur.setCreation(timestamp_creation);
                                     nouvel_utilisateur.setId_utilisateur(user.getString("id"));
                                     nouvel_utilisateur.setMaj(timestamp_maj);
                                     nouvel_utilisateur.setConnecter_le(timestamp_maj);
-
-                                    Log.e("connexion", "3connexion trying");
-
                                     nouvel_utilisateur.save();
-                                    Log.e("connexion", "4connexion trying");
-
                                     id = Long.parseLong(nouvel_utilisateur.getId_utilisateur());
-                                }else {
+                                } else {
+                                    Log.e("C'est dans le else","Size == 0 là");
                                     nouvel_utilisateur = userH.get(0);
                                     nouvel_utilisateur.setId_utilisateur(user.getString("id"));
-                                    nouvel_utilisateur.setNumero(user.getString("numero"));
-                                    nouvel_utilisateur.setNom(user.getString("firstName"));
-                                    nouvel_utilisateur.setPrenoms(user.getString("lastName"));
-                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
-                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
-                                    nouvel_utilisateur.setMdp(user.getString("password"));
-                                    nouvel_utilisateur.setStatut(user.getString("statut"));
-                                    nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
-                                    if(result.isNull("referent"))
+//                                    nouvel_utilisateur.setNumero(tel_value);
+//                                    nouvel_utilisateur.setNom(user.getString("firstName"));
+//                                    nouvel_utilisateur.setPrenoms(user.getString("lastName"));
+//                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+//                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+//                                    nouvel_utilisateur.setMdp(mot_de_passe);
+                                    nouvel_utilisateur.setNumero(tel_value);
+//                                    if (user.getString("firstName").isEmpty() || user.has("firstName")) {
+//                                        nouvel_utilisateur.setNom(user.getString("firstName"));
+//                                    }else{
+//                                        nouvel_utilisateur.setNom("");
+//                                    }
+//                                    if (user.getString("lastName").isEmpty() || user.has("lastName")) {
+//                                        nouvel_utilisateur.setPrenoms(user.getString("lastName"));
+//                                    }else{
+//                                        nouvel_utilisateur.setPrenoms("");
+//                                    }
+//                                    if (user.getString("profilePicture").isEmpty() || user.has("profilePicture")) {
+//                                        nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+//                                    }else{
+//                                        nouvel_utilisateur.setPhoto_identite("");
+//                                    }
+//                                    if (user.getString("cniPicture").isEmpty() || user.has("cniPicture")) {
+//                                        nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+//                                    }else{
+//                                        nouvel_utilisateur.setcni_photo("");
+//                                    }
+//
+//                                    nouvel_utilisateur.setStatut(user.getString("statut"));
+//                                    nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
+                                    if (result.isNull("referent"))
                                         nouvel_utilisateur.setCodeMarchand("");
                                     else
                                         nouvel_utilisateur.setCodeMarchand(result.getString("referent"));
@@ -762,61 +711,37 @@ public class Connexion extends AppCompatActivity {
                                     id = Long.parseLong(nouvel_utilisateur.getId_utilisateur());
                                 }
 
-                                //Log.d("nouvel_utilisateur_id", "id:"+String.valueOf(id));
-                                if (id!=null){
-
-                                    // Mettre à jour la préférence id utilisateur
+                                if (id != null) {
                                     Prefs.putString(ID_UTILISATEUR_KEY, String.valueOf(id));
-                                    // Mettre à jour la préférence nom
-                                    Prefs.putString(NOM_KEY, user.getString("firstName"));
-                                    // Mettre à jour la préférence prenoms
-                                    Prefs.putString(PRENOMS_KEY, user.getString("lastName"));
-                                    // Mettre à jour la préférence pin d'accès
-//                                    Prefs.putString(PIN_KEY, user.getString("pin_acces"));
-                                    // Mettre à jour la préférence pin d'accès
-                                    Prefs.putString(PASS_KEY, user.getString("password"));
+                                    Prefs.putString(NOM_KEY, "");
+                                    Prefs.putString(PRENOMS_KEY, "");
+                                    Prefs.putString(PASS_KEY, mot_de_passe);
                                     Prefs.putBoolean(MOOV_DATA_SHARING, true);
-                                    // Mettre à jour la préférence statut
-                                    Prefs.putString(STATUT_UTILISATEUR, user.getString("statut"));
-                                    //Mettre à jour la preference photo de la CNI
-                                    Prefs.putString(PHOTO_CNI_KEY, user.getString("cniPicture"));
-                                    //Mettre à jour la preference firebase token
-//                                    Prefs.putString(FIREBASE_TOKEN, user.getString("firebase_token"));
-                                    //Mettre à jour la preference sexe
+                                    Prefs.putString(STATUT_UTILISATEUR, user.getString("state"));
+                                    Prefs.putString(PHOTO_CNI_KEY, "");
                                     Prefs.putString(SEXE_KEY, user.getString("sexe"));
-                                    //Mettre à jour la préference numero compte
                                     Prefs.putString(NUMERO_COMPTE_KEY, user.getString("accountNumber"));
-                                    //Mettre à Jour le code marchand
-                                    if(user.isNull("referent"))
+                                    Prefs.putString(TOKEN, result.getString("accessToken"));
+                                    Prefs.putString(REFRESH_TOKEN, result.getString("refreshToken"));
+                                    if (user.isNull("referent"))
                                         Prefs.putString(CODE_MARCHAND_KEY, "");
                                     else
                                         Prefs.putString(CODE_MARCHAND_KEY, user.getString("referent"));
 
-                                    // Mettre à jour la préférence pin d'accès
                                     Date currentTime = Calendar.getInstance().getTime();
-                                    long output_current=currentTime.getTime()/1000L;
-                                    String str_current=Long.toString(output_current);
+                                    long output_current = currentTime.getTime() / 1000L;
+                                    String str_current = Long.toString(output_current);
                                     long timestamp_current = Long.parseLong(str_current) * 1000;
                                     Prefs.putString(CONNECTER_KEY, String.valueOf(timestamp_current));
-                                    // Mettre à jour la préférence pin d'accès
                                     Prefs.putString(PHOTO_KEY, user.getString("profilePicture"));
 
-
-
-                                    // recuperation de la photo ditentie
-                                    // recuperer l'url de l'image
-                                    /**/URL url_photo  = new URL(Constantes.URL_MEDIA_PP + Prefs.getString(PHOTO_KEY, null) + ".png");
-//                                    String src = Constantes.URL_MEDIA + Prefs.getString(PHOTO_KEY, null) + ".JPG";
+                                    URL url_photo = new URL(Constantes.URL_MEDIA_PP + Prefs.getString(PHOTO_KEY, null) + ".png");
                                     URL url_photo_cni = new URL(Constantes.URL_MEDIA_CNI + Prefs.getString(PHOTO_CNI_KEY, null) + ".png");
-
-                                    //Bitmap bitmap_photo =Utilitaire.getBitmapFromURL(src);
-
                                     Prefs.putString(TEL_KEY, String.valueOf(user.getString("numero")));
 
-                                    // enrgeistrer les tontines en local
-//                                    Log.e("user_data", result.get("tontines")+"");
+                                    // Traiter les tontines et historiques
+                                    // ...
                                     JSONArray tontines = user.getJSONArray("tontines");
-
                                     if(tontines.length()>0){
                                         Log.d("tontines_trouve","oui:"+tontines.length());
                                         List<Tontine> existeTontines = null;
@@ -978,13 +903,7 @@ public class Connexion extends AppCompatActivity {
                                                     retrait.setMaj(timestamp_maj_111);
                                                     retrait.save();
                                                 }
-
-
-
                                             }
-
-
-
                                         }
                                     }
                                     // enregistrer les historiques
@@ -1017,252 +936,114 @@ public class Connexion extends AppCompatActivity {
                                                     String str_creation_1 = Long.toString(output_creation_1);
                                                     long timestamp_creation_1 = Long.parseLong(str_creation_1) * 1000;
                                                     nouvelle_history.setCreation(timestamp_creation_1);
-
-
-
                                                     nouvelle_history.save();
                                                 }
                                             }
                                         }
                                     }
 
-
-
                                     new DownloadTask().execute(url_photo);
                                     new DownloadTaskCNI().execute(url_photo_cni);
-                                    Log.e("connexion", "9connexion trying");
 
-                                    //saveImage(src,Prefs.getString(PHOTO_KEY, null)+".JPG");
-
-                                    Log.d("medias_url_cy2", "k");
-                                    //utilitaire.saveImageUrl(url_photo,Prefs.getString(PHOTO_KEY, null));
                                     progressDialog.dismiss();
 
-                                /*try {
-                                    URL url = new URL("http://....");
-                                    Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                                } catch(IOException e) {
-                                    System.out.println(e);
-                                }*/
-
-//                                    FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-//                                        @Override
-//                                        public void onComplete(@NonNull Task<String> task) {
-//                                            if(!task.isSuccessful())
-//                                            {
-//                                                Log.e("testFirebase", "Fetching FCM registration token failed", task.getException());
-//                                                return;
-//                                            }
-//
-//                                            // Get new FCM registration token
-//                                            String token = task.getResult();
-//
-//                                            //Save du token dans la bdd local
-//                                            Utilisateur user_entity = null;
-//                                            try {
-//                                                user_entity = new Utilisateur().getUser(user.getString("numero"));
-//                                                user_entity.setFirebaseToken(token);
-//                                                user_entity.save();
-//                                                SendFirebaseToken(token, user.getString("numero"));
-//                                            } catch (JSONException e) {
-//                                                e.printStackTrace();
-//                                            }
-//
-//
-//                                            // Log and toast
-//                                            @SuppressLint({"StringFormatInvalid", "LocalSuppress"}) String msg = getString(R.string.msg_token_fmt, token);
-//                                            Log.d("testFirebase", msg);
-//                                            //Toast.makeText(Dashboard.this, msg, Toast.LENGTH_SHORT).show();
-//
-//
-//                                        }
-//                                    });
-
-
-                                    if(isFromCarteTontine){
+                                    if (isFromCarteTontine) {
+                                        Log.e("Redirection", "Vers CarteMain");
                                         Connexion.this.finish();
                                         Intent carteMainIntent = new Intent(Connexion.this, CarteMain.class);
                                         carteMainIntent.putExtra("id_tontine", idTontine);
                                         startActivity(carteMainIntent);
-                                    } else{
+                                    } else {
                                         isFromCarteTontine = false;
-                                        //add
-                                        if(user.getString("firstConnexion").equals("0") && user.getBoolean("addByMerchant")){
-                                            Log.e("test1","1success");
-                                            //rediriger vers l'interface de code OTP
-                                            //Demande d'envoyer code OTP
+                                        if (user.getString("firstConnexion").equals("0") && user.getBoolean("addByMerchant")) {
+                                            Log.e("test1", "1success");
                                             BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
                                             String tel_value = tel.getValue();
-
                                             askCodeOtpVerif(tel.getValue());
-
-                                        }else{
-                                            Log.e("firstConnexion",user.getString("firstConnexion"));
-                                            Log.e("addByMerchant",user.getString("addByMerchant"));
-                                            Log.e("test1","2echec");
-                                            startActivity(new Intent(Connexion.this,Home.class));
+                                        } else {
+                                            Log.e("firstConnexion", user.getString("firstConnexion"));
+                                            Log.e("addByMerchant", user.getString("addByMerchant"));
+                                            Log.e("test1", "2echec");
+                                            Log.e("Redirection", "Vers Home");
+                                            startActivity(new Intent(Connexion.this, Home.class));
                                             Connexion.this.finish();
                                         }
-                                        //end add
-                                        Log.e("Homeadvance","home2");
-//                                        startActivity(new Intent(Connexion.this,Dashboard.class));
-                                        //startActivity(new Intent(Connexion.this,Home.class));
                                     }
-
-
-
+                                    startActivity(new Intent(Connexion.this, Home.class));
+                                    Connexion.this.finish();
                                 }
-
-                            }else{
+                            } else {
                                 progressDialog.dismiss();
-                                String msg=result.getString("body");
+                                String msg = result.getString("body");
                                 Intent i = new Intent(Connexion.this, Message_non.class);
-                                i.putExtra("msg_desc",msg);
-                                i.putExtra("class","com.sicmagroup.tondi.Connexion");
+                                i.putExtra("msg_desc", msg);
+                                i.putExtra("class", "com.sicmagroup.tondi.Connexion");
                                 startActivity(i);
                             }
-
-
                         } catch (Throwable t) {
                             Log.d("errornscription", String.valueOf(t.getCause()));
-                            Log.e("My_App", response);
+                            Log.e("My_App", String.valueOf(response));
                             Log.e("Connexion", t.getMessage());
                         }
 
-
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
-                        // error
                         Log.d("Error.Inscription", String.valueOf(volleyError.getMessage()));
-                        ConstraintLayout mainLayout =  findViewById(R.id.layout_connexion);
+                        ConstraintLayout mainLayout = findViewById(R.id.layout_connexion);
 
                         String message;
                         if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError) {
-                            //Toast.makeText(Connexion.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
                             message = "Aucune connexion Internet!";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            auth_en_ligne();
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
-
                         } else if (volleyError instanceof TimeoutError) {
                             message = "Erreur de temporisation!";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            auth_en_ligne();
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
                         } else if (volleyError instanceof ServerError) {
                             message = "Impossible de contacter le serveur!";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            auth_en_ligne();
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
-                        }  else if (volleyError instanceof ParseError) {
-                            //message = "Parsing error! Please try again later";
+                        } else if (volleyError instanceof ParseError) {
                             message = "Une erreur est survenue!";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            auth_en_ligne();
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
+                        } else {
+                            message = "Erreur inconnue!";
                         }
+
+                        Snackbar snackbar = Snackbar
+                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                .setAction("REESSAYER", new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        auth_en_ligne();
+                                    }
+                                });
+                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
+                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                        View sbView = snackbar.getView();
+                        TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                        textView.setTextColor(Color.WHITE);
+                        snackbar.show();
                     }
                 }
-        ) {
-            @Override
-            protected Map<String, String> getParams()
-            {
-                BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
-                BaseFormElement mdp = mFormBuilder.getFormElement(TAG_PASS);
+        );
 
-                String tel_value = tel.getValue();
-                String mdp_value = mdp.getValue();
-
-                Map<String, String>  params = new HashMap<String, String>();
-
-                params.put("numero", tel_value);
-                params.put("password", mdp_value);
-
-                return params;
-            }
-        };
-        /*postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
-        //DefaultRetryPolicy  retryPolicy = new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        //postRequest.setRetryPolicy(new DefaultRetryPolicy(0, -1, 0));
-        //postRequest.setRetryPolicy(retryPolicy);
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                30000,
+                50000,
                 -1,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(postRequest);
 
-        //initialize the progress dialog and show it
         progressDialog = new ProgressDialog(Connexion.this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Veuillez patienter SVP! La récupération de votre compte est en cours ...");
         progressDialog.show();
     }
 
+
     public void askCodeOtpVerif(String tel){
         RequestQueue queue = Volley.newRequestQueue(Connexion.this);
         StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_GENERATE_OTP,
                 new Response.Listener<String>() {
-                    @SuppressLint("ResourceAsColor")
+                    @SuppressLint({"ResourceAsColor", "LongLogTag"})
                     @Override
                     public void onResponse(String response) {
                         Log.d("ResponseTagMain", response);
@@ -1270,6 +1051,7 @@ public class Connexion extends AppCompatActivity {
                         try {
 
                             JSONObject result = new JSONObject(response);
+                            Log.e("La reponse de la connexion", result.toString());
                             if (result.getInt("responseCode") == 0) {
                                 progressDialog.dismiss();
                                 Intent codeOtpVer = new Intent(Connexion.this, CodeOtpVerification.class);
@@ -1396,26 +1178,26 @@ public class Connexion extends AppCompatActivity {
                                 String str_maj = Long.toString(output_maj);
                                 long timestamp_maj = Long.parseLong(str_maj) * 1000;
                                 user.setConnecter_le(timestamp_maj);
-                                // Mettre à jour la préférence id utilisateur
+
                                 Prefs.putString(ID_UTILISATEUR_KEY, String.valueOf(user.getId()));
-                                // Mettre à jour la préférence nom
+
                                 Prefs.putString(NOM_KEY, user.getNom());
-                                // Mettre à jour la préférence prenoms
+
                                 Prefs.putString(PRENOMS_KEY, user.getPrenoms());
 
                                 Prefs.putString(PHOTO_KEY, user_servData.getString("photo_identite"));
-                                // Mettre à jour la préférence pin d'accès
+
                                 Prefs.putString(CONNECTER_KEY, String.valueOf(user.getConnecter_le()));
-                                // Mettre à jour la préférence pin d'accès
+
                                 Prefs.putString(TEL_KEY, user_servData.getString("numero"));
                                 Prefs.putBoolean(MOOV_DATA_SHARING, true);
-                                // Mettre à jour la préférence statut
+
                                 Prefs.putString(STATUT_UTILISATEUR, user.getStatut());
-                                //Mettre à jour la photo de la CNI
+
                                 Prefs.putString(PHOTO_CNI_KEY, user_servData.getString("photo_cni"));
-                                //Mettre à jour la preference token firebase
+
                                 Prefs.putString(FIREBASE_TOKEN, user.getFirebaseToken());
-                                //Mettre à jour la preference sexe
+
                                 Prefs.putString(SEXE_KEY, user_servData.getString("sexe"));
 
                                 //Mettre à jour la préference numero de compte
@@ -1428,36 +1210,6 @@ public class Connexion extends AppCompatActivity {
                                 URL url_photo_cni = new URL(medias_url + Prefs.getString(PHOTO_CNI_KEY, null) + ".JPG");
                                 new DownloadTaskCNI().execute(url_photo_cni);
                                 Log.e("photo",  Prefs.getString(PHOTO_CNI_KEY, null));
-
-//                                FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-//                                    @Override
-//                                    public void onComplete(@NonNull Task<String> task) {
-//                                        if(!task.isSuccessful())
-//                                        {
-//                                            Log.e("testFirebase", "Fetching FCM registration token failed", task.getException());
-//                                            return;
-//                                        }
-//
-//                                        // Get new FCM registration token
-//                                        String token = task.getResult();
-//
-//                                        //Save du token dans la bdd local
-//                                        Utilisateur user = new Utilisateur();
-//                                        user = new Utilisateur().getUser(Prefs.getString(TEL_KEY, ""));
-//                                        Prefs.putString(FIREBASE_TOKEN, token);
-//
-//                                        user.setFirebaseToken(token);
-//                                        user.save();
-////                                        SendFirebaseToken(token, user.getNumero());
-//                                        // Log and toast
-//                                        @SuppressLint({"StringFormatInvalid", "LocalSuppress"}) String msg = getString(R.string.msg_token_fmt, token);
-//                                        Log.d("testFirebase", msg);
-//                                        //Toast.makeText(Dashboard.this, msg, Toast.LENGTH_SHORT).show();
-//
-//
-//                                    }
-//                                });
-
 
                                 Connexion.this.finish();
 //                                startActivity(new Intent(Connexion.this, Dashboard.class));
@@ -1494,9 +1246,8 @@ public class Connexion extends AppCompatActivity {
 
                         // volleyError.getMessage() == null
                         String message;
-                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
-                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                            //Log.d("VolleyError_Test",volleyError.getMessage());
+                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {//Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+
                             message = "Aucune connexion Internet! Patientez et réessayez.";
                             final Snackbar snackbar = Snackbar
                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
@@ -1619,15 +1370,7 @@ public class Connexion extends AppCompatActivity {
                     public void onErrorResponse(VolleyError volleyError) {
                         Log.e("ResponseTag", "Erreur");
                         String message;
-//                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
-//                            SendFirebaseToken(token, numero);
-//
-//                        } else if (volleyError instanceof ServerError) {
-//                            SendFirebaseToken(token, numero);
-//                            //snackbar.show();
-//                        }  else if (volleyError instanceof ParseError) {
-//                            SendFirebaseToken(token, numero);
-//                        }
+
                     }
                 }
         ) {
@@ -1686,33 +1429,7 @@ public class Connexion extends AppCompatActivity {
                 // Get the input stream from http url connection
                 InputStream inputStream = connection.getInputStream();
 
-                /*
-                    BufferedInputStream
-                        A BufferedInputStream adds functionality to another input stream-namely,
-                        the ability to buffer the input and to support the mark and reset methods.
-                */
-                /*
-                    BufferedInputStream(InputStream in)
-                        Creates a BufferedInputStream and saves its argument,
-                        the input stream in, for later use.
-                */
-                // Initialize a new BufferedInputStream from InputStream
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-
-                /*
-                    decodeStream
-                        Bitmap decodeStream (InputStream is)
-                            Decode an input stream into a bitmap. If the input stream is null, or
-                            cannot be used to decode a bitmap, the function returns null. The stream's
-                            position will be where ever it was after the encoded data was read.
-
-                        Parameters
-                            is InputStream : The input stream that holds the raw data
-                                              to be decoded into a bitmap.
-                        Returns
-                            Bitmap : The decoded bitmap, or null if the image data could not be decoded.
-                */
-                // Convert BufferedInputStream to Bitmap object
                 Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
 
                 // Return the downloaded bitmap
@@ -1730,12 +1447,9 @@ public class Connexion extends AppCompatActivity {
         // When all async task done
         protected void onPostExecute(Bitmap result){
             // Hide the progress dialog
-
-
             if(result!=null){
                 // Save bitmap to internal storage
                 utilitaire.saveToInternalStorage(result,Prefs.getString(PHOTO_KEY, null));
-
             }else {
                 // Notify user that an error occurred while downloading image
                 Toast.makeText(getApplicationContext(),"Erreur, photo de profile introuvable",Toast.LENGTH_LONG).show();
@@ -1765,33 +1479,8 @@ public class Connexion extends AppCompatActivity {
                 // Get the input stream from http url connection
                 InputStream inputStream = connection.getInputStream();
 
-                /*
-                    BufferedInputStream
-                        A BufferedInputStream adds functionality to another input stream-namely,
-                        the ability to buffer the input and to support the mark and reset methods.
-                */
-                /*
-                    BufferedInputStream(InputStream in)
-                        Creates a BufferedInputStream and saves its argument,
-                        the input stream in, for later use.
-                */
-                // Initialize a new BufferedInputStream from InputStream
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
 
-                /*
-                    decodeStream
-                        Bitmap decodeStream (InputStream is)
-                            Decode an input stream into a bitmap. If the input stream is null, or
-                            cannot be used to decode a bitmap, the function returns null. The stream's
-                            position will be where ever it was after the encoded data was read.
-
-                        Parameters
-                            is InputStream : The input stream that holds the raw data
-                                              to be decoded into a bitmap.
-                        Returns
-                            Bitmap : The decoded bitmap, or null if the image data could not be decoded.
-                */
-                // Convert BufferedInputStream to Bitmap object
                 Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
 
                 // Return the downloaded bitmap
@@ -1932,8 +1621,7 @@ public class Connexion extends AppCompatActivity {
                         i.putExtra("class","com.sicmagroup.tondi.Connexion");
                         startActivity(i);
                     }else if(matcher_connexion_2.find() || matcher_connexion_3.find()){
-                        // afficher Message_non
-                        //Connexion.this.finish();
+
                         String msg="Problème de connexion ou MMI non valide. Veuillez réessayer SVP!";
                         Intent i = new Intent(Connexion.this, Message_non.class);
                         i.putExtra("mmi","1");
@@ -1943,9 +1631,7 @@ public class Connexion extends AppCompatActivity {
                         i.putExtra("class","com.sicmagroup.tondi.Connexion");
                         startActivity(i);
                     }else{
-                        // si non verifiéee
-                        // afficher Message_non
-                        //Connexion.this.finish();
+
                         String msg="Tondi rencontre des difficultés réseau. Veuillez réessayer plustard SVP!";
                         Intent i = new Intent(Connexion.this, Message_non.class);
                         i.putExtra("mmi","1");
@@ -1958,36 +1644,12 @@ public class Connexion extends AppCompatActivity {
 
                 }
 
-                /*if(message.equals(message_ok)){
-
-                }*/
-
             }
         });
-        //Log.d("APPUSSpp12", "drtdrq");
     }
 
     @Override
     public void onBackPressed() {
-        // your code.
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(Connexion.this);
-//        builder.setTitle("Quitter l'application");
-//        builder.setMessage("Êtes vous sûr de vouloir quitter Tondi ?");
-//        builder.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                Connexion.this.finishAffinity();
-//            }
-//        });
-//	    builder.setNegativeButton("Pas maintenant", new DialogInterface.OnClickListener() {
-//        @Override
-//        public void onClick(DialogInterface dialogInterface, int i){
-//                dialogInterface.dismiss();
-//            }
-//        });
-//
-//        AlertDialog dialog = builder.create();
-//        dialog.show();
 
         Dialog dialog_alert = new Dialog(Connexion.this);
         dialog_alert.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -1998,8 +1660,6 @@ public class Connexion extends AppCompatActivity {
         titre.setText("Quitter l'application");
         TextView message_deco = (TextView) dialog_alert.findViewById(R.id.deco_message);
         message_deco.setText("Êtes vous sûr de vouloir quitter Tondi ?");
-
-
 
         Button oui = (Button) dialog_alert.findViewById(R.id.btn_oui);
         oui.setText("Oui");
@@ -2088,8 +1748,7 @@ public class Connexion extends AppCompatActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode==KeyEvent.KEYCODE_HOME){
             Log.e("home key pressed", "****");
-            //Toast.makeText(Connexion.this,"Home via",Toast.LENGTH_LONG).show();
-            // write your code here to stop the activity
+
         }
         return super.onKeyDown(keyCode, event);
     }

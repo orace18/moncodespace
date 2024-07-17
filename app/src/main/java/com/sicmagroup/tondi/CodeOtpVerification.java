@@ -73,7 +73,9 @@ import static com.sicmagroup.tondi.Connexion.PRENOMS_KEY;
 import static com.sicmagroup.tondi.Connexion.SEXE_KEY;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
 import static com.sicmagroup.tondi.Connexion.url_disable_code_otp;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
+import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.accessToken;
 
 public class CodeOtpVerification extends AppCompatActivity {
@@ -269,23 +271,37 @@ public class CodeOtpVerification extends AppCompatActivity {
                                    progressDialog.dismiss();
                                    // error
                                    //Log.e("Error.inscription", String.valueOf(error.getMessage()));
-                                   String message = "Une erreur est survenue! Veuillez réessayer svp.";
-                                   Snackbar snackbar = Snackbar
-                                           .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                           .setAction("OK", new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View view) {
+                                   boolean tokenRefreshed = false;
+                                   if (error instanceof AuthFailureError && !tokenRefreshed) {
+                                       // Rafraîchir le token et réessayer
+                                       refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                           @Override
+                                           public void onTokenRefreshed(boolean success) {
+                                               if (success) {
 
                                                }
-                                           });
-                                   snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
-                                   // Changing message text color
-                                   snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                                   // Changing action button text color
-                                   View sbView = snackbar.getView();
-                                   TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                                   textView.setTextColor(Color.WHITE);
-                                   snackbar.show();
+                                           }
+                                       });
+                                   }else {
+                                       String message = "Une erreur est survenue! Veuillez réessayer svp.";
+                                       Snackbar snackbar = Snackbar
+                                               .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                               .setAction("OK", new View.OnClickListener() {
+                                                   @Override
+                                                   public void onClick(View view) {
+
+                                                   }
+                                               });
+                                       snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
+                                       // Changing message text color
+                                       snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                                       // Changing action button text color
+                                       View sbView = snackbar.getView();
+                                       TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                                       textView.setTextColor(Color.WHITE);
+                                       snackbar.show();
+
+                                   }
                                }
                            }
                    ) {
@@ -294,6 +310,8 @@ public class CodeOtpVerification extends AppCompatActivity {
                            //Date currentDate = new Date();
                            Map<String, String> params = new HashMap<String, String>();
                            params.put("number", numero);
+                           params.put("merchantNumber","");
+                           params.put("token", accessToken);
                            params.put("type_operation", OperationTypeEnum.INSCRIPTION.toString());
                            return params;
                        }
@@ -399,8 +417,14 @@ public class CodeOtpVerification extends AppCompatActivity {
                                                .setAction("Ok", new View.OnClickListener() {
                                                    @Override
                                                    public void onClick(View view) {
-
-                                                       //retrait_mmo(numero,montant);
+                                                       refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                           @Override
+                                                           public void onTokenRefreshed(boolean success) {
+                                                               if (success) {
+                                                                   Log.e("Token mise à jour", "On peut réessayer");
+                                                               }
+                                                           }
+                                                       });
                                                    }
                                                });
                                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
@@ -419,7 +443,8 @@ public class CodeOtpVerification extends AppCompatActivity {
                                                .setAction("REESSAYER", new View.OnClickListener() {
                                                    @Override
                                                    public void onClick(View view) {
-                                                       //retrait_mmo(numero,montant);
+                                                       Log.e("Le code d'erreur", volleyError.getCause().toString());
+                                                       retrait_mmo(numero,montant);
                                                    }
                                                });
                                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
@@ -599,6 +624,7 @@ public class CodeOtpVerification extends AppCompatActivity {
 
 
 
+
         button_annulerCodeOtp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -768,7 +794,14 @@ public class CodeOtpVerification extends AppCompatActivity {
                                                     .setAction("OK", new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
+                                                            refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                                @Override
+                                                                public void onTokenRefreshed(boolean success) {
+                                                                    if (success) {
 
+                                                                    }
+                                                                }
+                                                            });
                                                         }
                                                     });
                                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
@@ -789,7 +822,7 @@ public class CodeOtpVerification extends AppCompatActivity {
                                     params.put("code", codeSaisit);
                                     params.put("type_operation", OperationTypeEnum.WITHDRAW_FROM_CUSTOMER.toString());
 
-                                    params.put("number_client", Prefs.getString(TEL_KEY, ""));
+                                    params.put("numberClient", Prefs.getString(TEL_KEY, ""));
                                     // params.put("verification_date", android.text.format.DateFormat.format("yyyy-MM-dd H:i:m", currentDate.getTime()).toString());
                                     return params;
                                 }
@@ -855,7 +888,14 @@ public class CodeOtpVerification extends AppCompatActivity {
                                                     .setAction("REESSAYER", new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
-                                                            //inscrire();
+                                                            refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                                @Override
+                                                                public void onTokenRefreshed(boolean success) {
+                                                                    if (success) {
+
+                                                                    }
+                                                                }
+                                                            });
                                                         }
                                                     });
                                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
@@ -875,8 +915,8 @@ public class CodeOtpVerification extends AppCompatActivity {
                                     Map<String, String> params = new HashMap<String, String>();
                                     params.put("code", codeSaisit);
                                     params.put("token", token);
-                                    params.put("number_merchant", numero_marchand);
-                                    params.put("number_client", numero);
+                                    params.put("numberMerchant", numero_marchand);
+                                    params.put("numberClient", numero);
                                     params.put("type_operation", OperationTypeEnum.WITHDRAW_FROM_CUSTOMER.toString());
                                     // params.put("verification_date", android.text.format.DateFormat.format("yyyy-MM-dd H:i:m", currentDate.getTime()).toString());
                                     return params;
@@ -962,7 +1002,7 @@ public class CodeOtpVerification extends AppCompatActivity {
                                     //Date currentDate = new Date();
                                     Map<String, String> params = new HashMap<String, String>();
                                     params.put("code", codeSaisit);
-                                    params.put("number_client", numero);
+                                    params.put("numberClient", numero);
                                     params.put(Constantes.TYPE_OP_KEY, OperationTypeEnum.INSCRIPTION.toString());
 
                                     return params;
@@ -1032,7 +1072,14 @@ public class CodeOtpVerification extends AppCompatActivity {
                                                     .setAction("OK", new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
+                                                            refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                                @Override
+                                                                public void onTokenRefreshed(boolean success) {
+                                                                    if (success) {
 
+                                                                    }
+                                                                }
+                                                            });
                                                         }
                                                     });
                                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
@@ -1051,7 +1098,7 @@ public class CodeOtpVerification extends AppCompatActivity {
                                     //Date currentDate = new Date();
                                     Map<String, String> params = new HashMap<String, String>();
                                     params.put("code", codeSaisit);
-                                    params.put("number_client", numero);
+                                    params.put("numberClient", numero);
                                     params.put("type_operation", OperationTypeEnum.ACCES.toString());
                                     return params;
                                 }
@@ -1084,7 +1131,14 @@ public class CodeOtpVerification extends AppCompatActivity {
                             .setAction("OK", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+                                    refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                        @Override
+                                        public void onTokenRefreshed(boolean success) {
+                                            if (success) {
 
+                                            }
+                                        }
+                                    });
                                 }
                             });
                     snackbar.show();
@@ -1305,6 +1359,49 @@ public class CodeOtpVerification extends AppCompatActivity {
         progressDialog.show();
     }
 
+    private void refreshAccessToken(Context context, TokenRefreshListener listener) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JSONObject params = new JSONObject();
+        try {
+            params.put("refreshToken", Prefs.getString(REFRESH_TOKEN, ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest refreshRequest = new JsonObjectRequest(Request.Method.POST, Constantes.url_refresh_token, params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e("C'est dans le refresh token", "Oui");
+                        try {
+                            Log.e("La réponse du refresh token est:", response.toString());
+                            String newAccessToken = response.getString("token");
+                            String newRefreshToken = response.getString("refreshToken");
+                            Prefs.putString(TOKEN, newAccessToken);
+                            Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                            Log.d("RefreshToken", "New Token: " + newAccessToken);
+                            listener.onTokenRefreshed(true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onTokenRefreshed(false);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.e("RefreshToken", "Error: " + volleyError.getMessage());
+                        listener.onTokenRefreshed(false);
+                    }
+                });
+
+        queue.add(refreshRequest);
+    }
+
+    public interface TokenRefreshListener {
+        void onTokenRefreshed(boolean refreshed);
+    }
+
     private void inscrire() {
 
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -1436,13 +1533,22 @@ public class CodeOtpVerification extends AppCompatActivity {
                         if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
                             //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
                             //Log.d("VolleyError_Test",volleyError.getMessage());
+
                             message = "Aucune connexion Internet!";
                             Snackbar snackbar = Snackbar
                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
                                     .setAction("REESSAYER", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            inscrire();
+                                            refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                @Override
+                                                public void onTokenRefreshed(boolean success) {
+                                                    if (success) {
+                                                        inscrire();
+                                                    }
+                                                }
+                                            });
+
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
@@ -1672,15 +1778,11 @@ public class CodeOtpVerification extends AppCompatActivity {
                                     }
                                 }
 
-
-
                                 Utilitaire utilitaire = new Utilitaire(CodeOtpVerification.this);
                                 // si internet, appeler synchroniser_en_ligne
                                 if (utilitaire.isConnected()) {
                                     utilitaire.synchroniser_en_ligne();
                                 }
-
-
 
                                 Intent j = new Intent(CodeOtpVerification.this, Message_ok.class);
                                 j.putExtra("class", "com.sicmagroup.tondi.MesTontines");
@@ -1706,7 +1808,15 @@ public class CodeOtpVerification extends AppCompatActivity {
                                     .setAction("REESSAYER", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            retrait_mmo(numero,montant);
+
+                                            refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                @Override
+                                                public void onTokenRefreshed(boolean success) {
+                                                    if (success) {
+                                                        retrait_mmo(numero,montant);
+                                                    }
+                                                }
+                                            });
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
@@ -1765,9 +1875,9 @@ public class CodeOtpVerification extends AppCompatActivity {
 
 
                 Map<String, String>  params = new HashMap<String, String>();
-                params.put("number", numero);
+                params.put("customerNumber", numero);
 //              params.put("montant", montant);
-                params.put("id_tontine_serveur", String.valueOf(id_tontine));
+                params.put("idTontine", String.valueOf(id_tontine));
 //                params.put("periode", t.getPeriode());
 //                params.put("carnet", t.getCarnet());
 //                params.put("mise", String.valueOf(t.getMise()));
@@ -1851,87 +1961,13 @@ public class CodeOtpVerification extends AppCompatActivity {
                             intent1.putExtra("code_otp", code_otp2);
                             Log.d("code_otp", code_otp2);
 
-//                            Dialog dialog = new Dialog((Activity) context);
-//                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//                            dialog.setCancelable(false);
-//                            dialog.setContentView(R.layout.dialog_attention);
-//
-//                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
-//                            titre.setText("Information");
-//                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
-//                            message_deco.setText("Comuniquer ce code secret "+code_otp2+" au marchand si vous désirez poursuivre l'opération.");
-//
-//                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
-//                            oui.setText("Ok");
-//
-//                            oui.setOnClickListener(new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View v) {
-//                                   dialog.dismiss();
-//                                }
-//                            });
-//
-//                            Button non = (Button) dialog.findViewById(R.id.btn_non);
-//                            non.setVisibility(View.GONE);
-//                            dialog.show();
                             Toast.makeText(context, "Code OTP reçu! Consulter vos messages", Toast.LENGTH_LONG).show();
 
-//                            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-////                            context.startActivity(intent1);
-//                            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-//                                    .setSmallIcon(R.drawable.icon_logo)
-//                                    .setContentTitle("Retrait en espèce - Code OTP")
-//                                    .setContentText("Votre code secret OTP reçu par sms de COMUBA TONDi est : "+code_otp2+". Ne communiquez pas ce code si vous ne souahitez pas poursuivre l'opération")
-//                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//                            NotificationManager mNotificationManager =
-//                                    (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//                            mNotificationManager.notify(NOTIF_CHANNEL, builder.build());
-//                            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-//                            notificationManagerCompat.notify(NOTIF_CHANNEL, builder.build());
 
                         }
                         else if(message.contains("Merci de faire confiance a TONDi") && !message.contains("Rappel"))
                         {
-//                            String[] parts = message.split(",");
-//                            String token = "";
-//                            Retrait r = new Retrait();
-//
-//                            token = parts[0].replace("<#>Token de retrait : ", "").trim();
-//                            //token = "396060151943";
-//                            Log.e("token_last_get", token);
-//                            List<Retrait> liste_retrait = Select.from(Retrait.class)
-//                                    .where(Condition.prop("token").eq(token))
-//                                    .list();
-//                            r = liste_retrait.get(0);
-//                            r.setStatut("valide");
-//                            r.save();
-////                            Gson gson = new Gson();
-////                            Utilisateur u = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY,null)).get(0);
-//                            Date currentTime = Calendar.getInstance().getTime();
-//                            long output_maj = currentTime.getTime() / 1000L;
-//                            String str_maj = Long.toString(output_maj);
-//                            long timestamp_maj = Long.parseLong(str_maj) * 1000;
-//
-//                            List<Tontine> tontines = r.getTontine().getIdForMontCumuleNow(r.getTontine().getId(), r.getTontine().getStatut());
-//                            for (Tontine to:tontines)
-//                            {
-//                                to.setStatut("encaissee");
-//                                to.setMaj(timestamp_maj);
-//                                to.save();
-//                            }
-//                            if(!tontines.isEmpty())
-//                            {
-//                                Intent j = new Intent(context, Message_ok.class);
-//                                j.putExtra("class", "com.sicmagroup.tondi.MesTontines");
-//                                j.putExtra("msg_desc", "Opération de retrait en espèce réussie.");
-//                                j.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                context.startActivity(j);
-//                            }
-//                            else{
-//                                Intent i = new Intent(context, Message_non.class);
-//                                i.putExtra("msg_desc", "Une erreur est survenue. Contactez le support technique");
-//                                context.startActivity(i);
-//                            }
+
                         }
                         break;
                     case CommonStatusCodes.TIMEOUT:
@@ -1970,146 +2006,6 @@ public class CodeOtpVerification extends AppCompatActivity {
             else
                 Toast.makeText(context, "Un bug est survenu. Réessayez svp", Toast.LENGTH_SHORT).show();
 
-//            String auteur = "", msg = "", plateform="";
-//            mcontext = context;
-//            Bundle extras = intent.getExtras();
-
-//            if (extras != null) {
-//                Object[] pdus = (Object[]) extras.get("pdus");
-//                if (pdus != null) {
-//
-//                    for (Object pdu : pdus) {
-//                        SmsMessage smsMessage = getIncomingMessage(pdu, extras);
-//                        auteur = smsMessage.getOriginatingAddress();
-//                        msg = smsMessage.getDisplayMessageBody();
-//                        plateform = smsMessage.getDisplayOriginatingAddress();
-//
-//                        //msg = msg.replace(" ","");
-//                    }
-//                    // si auteur est bien mobile money
-//                    assert auteur != null;
-//                    if(auteur.equals("TONDi") || auteur.equals("LAM") || auteur.equals("COMUBATONDi"))
-//                    {
-//                        // Toast.makeText(mcontext, msg, Toast.LENGTH_SHORT).show();
-//                        if(!msg.contains("Opération reussie") && !msg.contains("Rappel") && !msg.contains("succes") && msg.contains("Numero Marchand"))
-//                        {
-//                            Intent intent1 = new Intent(mcontext, CodeOtpVerification.class);
-//                            intent1.putExtra("caller_activity", "smsReceiver");
-//                            String[] parts = msg.split(",");
-//
-//                            intent1.putExtra("numero_marchand", parts[0].replace("Numero Marchand : ", "").trim());
-//                            Log.e("num_marchand", parts[0].replace("Numero Marchand : ", ""));
-//
-//                            intent1.putExtra("token", parts[1].replace("Token de retrait : ", "").trim());
-//                            Log.e("token", parts[1].replace("Token de retrait : ", ""));
-//
-//                            intent1.putExtra("code_otp", parts[2].replace("Votre pass de validation de retrait COMUBA Tontine Digitale est ", "").trim());
-//
-//                            intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                            mcontext.startActivity(intent1);
-//
-//
-//                        }
-//                        else if(msg.contains("Merci de faire confiance a TONDi") && !msg.contains("Rappel"))
-//                        {
-//                            String[] parts = msg.split(",");
-//                            String token = "";
-//                            Retrait r = new Retrait();
-//
-//                            token = parts[0].replace("token de retrait : ", "").trim();
-//                            //token = "396060151943";
-//                            Log.e("token_last_get", token);
-//                            List<Retrait> liste_retrait = Select.from(Retrait.class)
-//                                    .where(Condition.prop("token").eq(token))
-//                                    .list();
-//                            r = liste_retrait.get(0);
-//                            r.setStatut("valide");
-//                            r.save();
-//                            Gson gson = new Gson();
-//                            Utilisateur u = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY,null)).get(0);
-//                            Date currentTime = Calendar.getInstance().getTime();
-//                            long output_maj = currentTime.getTime() / 1000L;
-//                            String str_maj = Long.toString(output_maj);
-//                            long timestamp_maj = Long.parseLong(str_maj) * 1000;
-//
-//                            List<Tontine> tontines = r.getTontine().getIdForMontCumuleNow(r.getTontine().getId(), r.getTontine().getStatut());
-//                            for (Tontine to:tontines)
-//                            {
-//                                to.setStatut("encaissee");
-//                                to.save();
-//                            }
-//                            if(!tontines.isEmpty())
-//                            {
-//                                Intent j = new Intent(mcontext, Message_ok.class);
-//                                j.putExtra("class", "com.sicmagroup.tondi.MesTontines");
-//                                j.putExtra("msg_desc", "Opération de retrait en espèce réussie.");
-//                                j.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                                mcontext.startActivity(j);
-//                            }
-//                        }
-//                        else if(msg.contains("E0dcFHj5c"))//inscription
-//                        {
-//                            String codeOtpRecu1 = msg.substring(13, 19);
-//                            if(editText_codeOtp != null) {
-//                                editText_codeOtp.setText(codeOtpRecu1.trim());
-//                                button_validerCodeOtp.performClick();
-//                            }
-////                            Prefs.putString(CODE_OTP_RECU, codeOtpRecu1.trim());
-////                            Intent intent1 = new Intent(mcontext, CodeOtpVerification.class);
-////                            intent1.putExtra("code_otp", codeOtpRecu1);
-////                            intent1.putExtra("caller_activity", "inscription");
-////                            Log.d("num", Prefs.getString(TEL_INSC_ENCOURS, ""));
-//
-////                            if(Prefs.contains(TEL_INSC_ENCOURS) && Prefs.contains(NOM_INSC_ENCOURS) && Prefs.contains(PRENOM_INSC_ENCOURS)
-////                                    && Prefs.contains(MDP_INSC_ENCOURS) && Prefs.contains(SEXE_INSC_ENCOURS))
-////                            {
-////                                intent1.putExtra("numero", Prefs.getString(TEL_INSC_ENCOURS, ""));
-////                                intent1.putExtra("nom", Prefs.getString(NOM_INSC_ENCOURS, ""));
-////                                intent1.putExtra("prenoms", Prefs.getString(PRENOM_INSC_ENCOURS, ""));
-////                                intent1.putExtra("mdp", Prefs.getString(MDP_INSC_ENCOURS, ""));
-////                                intent1.putExtra("sexe", Prefs.getString(SEXE_INSC_ENCOURS, ""));
-////
-////                                mcontext.startActivity(intent1);
-////                            }
-////                            else{
-////                                Intent intent2 = new Intent(mcontext, Message_non.class);
-////                                intent2.putExtra("msg_desc", "Une erreur est survenue. Veuillez réessayer s'il vous plaît.");
-////                                intent2.putExtra("class", "com.sicmagroup.tondi.Inscription");
-////                                mcontext.startActivity(intent2);
-////                            }
-//                        }
-//                        else if(msg.contains("Votre pass de validation de retrait COMUBA Tontine Digitale :") &&
-//                                !msg.contains("Numero Marchand") && msg.contains("Si vous etes initiateur de la requete "))
-//                        {
-//                          //  String[] parts = msg.split(".");
-//                            String codeOtpRecu1 = msg.substring(62, 68);
-//                            Log.e("code_top", codeOtpRecu1);
-//                            if(editText_codeOtp != null) {
-//                                editText_codeOtp.setText(codeOtpRecu1);
-//                                button_validerCodeOtp.performClick();
-//                            }
-////                            Intent intent1 = new Intent(mcontext, CodeOtpVerification.class);
-////                            intent1.putExtra("code_otp", parts[0].replace("Votre pass de validation de retrait COMUBA Tontine Digitale : ", "").trim());
-////                            intent1.putExtra("caller_activity", "carteMain");
-////                            if(Prefs.contains(ID_TONTINE_OP_ENCOURS) && Prefs.contains(TEL_CLIENT_OP_ENCOURS) && Prefs.contains(MONTANT_OP_ENCOURS))
-////                            {
-////                                intent1.putExtra("id_tontine", Prefs.getString(ID_TONTINE_OP_ENCOURS, ""));
-////                                intent1.putExtra("numero", Prefs.getString(TEL_CLIENT_OP_ENCOURS, ""));
-////                                intent1.putExtra("montant", Prefs.getString(MONTANT_OP_ENCOURS, ""));
-////                                mcontext.startActivity(intent1);
-////                            }
-////                            else
-////                            {
-////                                Intent intent2 = new Intent(mcontext, Message_non.class);
-////                                intent2.putExtra("msg_desc", "Une erreur est survenue. Veuillez réessayer s'il vous plaît.");
-////                                intent2.putExtra("class", "com.sicmagroup.tondi.MesTontines");
-////                                mcontext.startActivity(intent2);
-////                            }
-
-//                        }
-//                    }
-//                }
-//            }
         }
     }
     private static SmsMessage getIncomingMessage(Object object, Bundle bundle) {
@@ -2164,6 +2060,38 @@ public class CodeOtpVerification extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         // error
                         //Log.d("Error.NouvelleTontine", error.getMessage());
+                        if (error instanceof NetworkError || error instanceof AuthFailureError || error instanceof TimeoutError) {
+                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                            //Log.d("VolleyError_Test",volleyError.getMessage());
+                            String message;
+                            progressDialog.dismiss();
+                            message = "Aucune connexion Internet!";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+
+                                            refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                @Override
+                                                public void onTokenRefreshed(boolean success) {
+                                                    if (success) {
+                                                        valider();
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+
+                        }
                     }
                 }
         ) {

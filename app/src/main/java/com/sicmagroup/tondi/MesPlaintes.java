@@ -187,32 +187,7 @@ public class MesPlaintes extends AppCompatActivity {
             }
         });
 
-        //button deconnexion
-//        Button btn_deconnexion = (Button) findViewById(R.id.btn_deconnexion);
-//        btn_deconnexion.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                alertView("Déconnexion","Êtes vous sûr de vouloir vous déconnecter?");
-//            }
-//        });
 
-//        Button btn_accueil = findViewById(R.id.btn_accueil);
-//        btn_accueil.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                MesPlaintes.this.finish();
-//                startActivity(new Intent(MesPlaintes.this, Dashboard.class));
-//            }
-//        });
-
-//        Button btn_about = findViewById(R.id.btn_about);
-//        btn_about.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                MesPlaintes.this.finish();
-//                startActivity(new Intent(MesPlaintes.this, About_us.class));
-//            }
-//        });
 
         FloatingActionButton btn_nouvelle_plainte = (FloatingActionButton)  findViewById(R.id.btn_nouvelle_plainte);
         btn_nouvelle_plainte.setOnClickListener(new View.OnClickListener() {
@@ -503,7 +478,7 @@ public class MesPlaintes extends AppCompatActivity {
                             Log.e("My App", "Could not parse malformed JSON: \"" + result.toString() + "\"");
                         }
                     }
-                }, new Response.ErrorListener() {
+                }, new Response.ErrorListener() { // 58884748
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 progressDialog.dismiss();

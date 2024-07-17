@@ -106,20 +106,6 @@ public class TontineAdapter extends RecyclerView.Adapter<TontineAdapter.MyViewHo
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.tontine_row, parent, false);
 
-        // on item click
-        /*itemView.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                int position = parent.getChildAdapterPosition(v);
-                int pos = position;
-
-                // check if item still exists
-                if(pos != RecyclerView.NO_POSITION){
-                    carte(tontineList.get(pos).getId());
-                }
-
-            }
-        });*/
 
         return new MyViewHolder(itemView);
     }
@@ -203,86 +189,14 @@ public class TontineAdapter extends RecyclerView.Adapter<TontineAdapter.MyViewHo
             tontine.setDenomination("Ma tontine "+tontine.getCarnet());
             tontine.save();
         }
-
-        // loading album cover using Glide library
-        //Glide.with(mContext).load(album.getThumbnail()).into(holder.thumbnail);
-        /*holder.overflow.setTag(tontine.getId());
-        holder.overflow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPopupMenu(holder.overflow, Integer.parseInt(String.valueOf(holder.overflow.getTag())) );
-            }
-        });*/
-
-
     }
 
     /**
      * Showing popup menu when tapping on 3 dots
      */
-//    private void showPopupMenu(View view, int id_tontine) {
-//        // inflate menu
-//        PopupMenu popup = new PopupMenu(mContext, view);
-//        MenuInflater inflater = popup.getMenuInflater();
-//        inflater.inflate(R.menu.tontine, popup.getMenu());
-//        // si tab actuelle différente de en cours
-//        if (position!=0){
-//            // désactiver le menu terminer la tontine
-//            MenuItem action_terminer_tontine = popup.getMenu().findItem(R.id.action_terminer_tontine);
-//            action_terminer_tontine.setVisible(false);
-//        }
-//        if (position==1){
-//            MenuItem action_encaisser_tontine = popup.getMenu().findItem(R.id.action_encaisser_tontine);
-//            action_encaisser_tontine.setVisible(true);
-//            action_encaisser_tontine.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-//                @Override
-//                public boolean onMenuItemClick(MenuItem item) {
-//                    /*Toast.makeText(mContext,
-//                            "Montoasr", Toast.LENGTH_SHORT).show();*/
-//                    ViewDialog alert = new ViewDialog();
-//                    //alert.showDialog(mContext,new Intent(mContext, MesTontines.class));
-//                    alert.showDialog(mContext);
-//                    return false;
-//                }
-//            });
-//            //addListenerOnButton();
-//        }
-//
-//        popup.setOnMenuItemClickListener(new MyMenuItemClickListener(id_tontine));
-//        popup.show();
-//    }
-
     /**
      * Click listener for popup menu items
      */
-//    class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
-//        int id_tontine;
-//        public MyMenuItemClickListener(int id_tontine) {
-//            this.id_tontine=id_tontine;
-//            TontineAdapter.this.id_tontine=id_tontine;
-//        }
-//
-//        @Override
-//        public boolean onMenuItemClick(MenuItem menuItem) {
-//
-//
-//            switch (menuItem.getItemId()) {
-//                case R.id.action_carte_tontine:
-//                    carte((long) id_tontine);
-//                return true;
-//                case R.id.action_terminer_tontine:
-//                    //Toast.makeText(mContext, "Play next", Toast.LENGTH_SHORT).show();
-//                    alertView("Terminer la tontine","Êtes vous sûr de vouloir vous arrêter cette tontine?",id_tontine);
-//                    return true;
-//
-//                /*case R.id.action_encaisser_tontine:
-//                    carte(id_tontine);
-//                    return true;*/
-//                default:
-//            }
-//            return false;
-//        }
-//    }
 
     @Override
     public int getItemCount() {

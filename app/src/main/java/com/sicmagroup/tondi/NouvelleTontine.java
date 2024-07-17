@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
 
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -94,8 +96,11 @@ import static com.sicmagroup.tondi.Connexion.MOOV_TEST;
 import static com.sicmagroup.tondi.Connexion.MTN_MECOTI;
 import static com.sicmagroup.tondi.Connexion.MTN_TEST;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
+import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.accessToken;
+import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
 public class NouvelleTontine extends AppCompatActivity  {
     TextView textView;
@@ -261,21 +266,6 @@ public class NouvelleTontine extends AppCompatActivity  {
 
             dialog.show();
 
-            // your code.
-//            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-//            dialog.setTitle( "Attention" )
-//                    .setIcon(R.drawable.ic_warning)
-//                    .setMessage("Êtes-vous sur d'annuler la création de cette tontine?")
-//                    .setNegativeButton("Non", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialoginterface, int i) {
-//                            dialoginterface.cancel();
-//                        }})
-//                    .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-//                        public void onClick(DialogInterface dialoginterface, int i) {
-//                            NouvelleTontine.this.finish();
-//                            startActivity(new Intent(NouvelleTontine.this, MesTontines.class));
-//                        }
-//                    }).show();
         }
         else
         {
@@ -312,8 +302,6 @@ public class NouvelleTontine extends AppCompatActivity  {
 //            Toast.makeText(this, "Vous devez finalisez votre inscription avant de continuer.", Toast.LENGTH_SHORT).show();
         }
 
-       /* NouvelleTontine.this.finish();
-        startActivity(new Intent(NouvelleTontine.this,MesTontines.class));*/
     }
 
     public class ViewDialog {
@@ -447,20 +435,7 @@ public class NouvelleTontine extends AppCompatActivity  {
                 //Toast.makeText(NouvelleTontine.this, baseFormElement.getValue(), Toast.LENGTH_LONG).show();
                 if (baseFormElement.getTag()==TAG_MODE_COTISATION){
                     if (baseFormElement.getValue().equals("Oui")){
-                        /*new LovelyInfoDialog(NouvelleTontine.this)
-                                .setTopColorRes(R.color.darkBlueGrey)
-                                .setIcon(R.drawable.ic_dots)
-                                //This will add Don't show again checkbox to the dialog. You can pass any ID as argument
-                                //.setNotShowAgainOptionEnabled(0)
-                                //.setNotShowAgainOptionChecked(true)
-                                .setTitle("Cotisations Automatiques")
-                                .setMessage("Lorem Ipsum")
-                                .show();
-                        new LovelyCustomDialog(NouvelleTontine.this)
-                                .setTopColorRes(R.color.colorPrimary)
-                                .setTitle("Cotisations Automatiques")
-                                .setView(R.layout.cotisation_auto_infos)
-                                .show();*/
+
                         // si préférence ne pas afficher cette fenetre n'est pas defini
                         if (Prefs.getInt(COTIS_INFO__KEY,0)!=1){
                             // afficher la fenetre d'infos
@@ -535,20 +510,7 @@ public class NouvelleTontine extends AppCompatActivity  {
                     });
 
                     dialog.show();
-//                    AlertDialog.Builder dialog = new AlertDialog.Builder(NouvelleTontine.this);
-//                    dialog.setTitle( "Attention" )
-//                            .setIcon(R.drawable.ic_warning)
-//                            .setMessage("Êtes-vous sur d'annuler la création de cette tontine?")
-//                            .setNegativeButton("Non", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialoginterface, int i) {
-//                                    dialoginterface.cancel();
-//                                }})
-//                            .setPositiveButton("Oui", new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialoginterface, int i) {
-//                                    NouvelleTontine.this.finish();
-//                                    startActivity(new Intent(NouvelleTontine.this, MesTontines.class));
-//                                }
-//                            }).show();
+
                 }
                 else
                 {
@@ -592,47 +554,6 @@ public class NouvelleTontine extends AppCompatActivity  {
                 startActivity(new Intent(NouvelleTontine.this,MesTontines.class));*/
             }
         });
-
-//        Button btn_deconnexion = (Button)findViewById(R.id.btn_deconnexion);
-//        btn_deconnexion.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // TODO Auto-generated method stub
-//                alertView("Déconnexion","Êtes vous sûr de vouloir vous déconnecter?");
-//            }
-//        });
-//
-//        Button btn_accueil = findViewById(R.id.btn_accueil);
-//        btn_accueil.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(!getIntent().hasExtra("first_versement"))
-//                {
-//                    NouvelleTontine.this.finish();
-//                    startActivity(new Intent(NouvelleTontine.this, Dashboard.class));
-//                }
-//                else
-//                {
-//                    Toast.makeText(NouvelleTontine.this, "Vous devez finalisez votre inscription avant de continuer.", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//
-//        Button btn_about = findViewById(R.id.btn_about);
-//        btn_about.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(!getIntent().hasExtra("first_versement"))
-//                {
-//                    NouvelleTontine.this.finish();
-//                    startActivity(new Intent(NouvelleTontine.this, About_us.class));
-//                }
-//                else
-//                {
-//                    Toast.makeText(NouvelleTontine.this, "Vous devez finalisez votre inscription avant de continuer.", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
 
         Button btn_enregistrer_tontine = (Button)findViewById(R.id.btn_enregistrer_tontine);
         btn_enregistrer_tontine.setOnClickListener(new View.OnClickListener() {
@@ -722,14 +643,11 @@ public class NouvelleTontine extends AppCompatActivity  {
         //Vérifier si la mise est un Entier et si elle est positive strictement
         try {
             Integer.parseInt(mise_value);
-            if(Integer.parseInt(mise_value) < 0 /*500*/)
+            if(Integer.parseInt(mise_value) < 0 )
                 alert_error("Erreur dans le formulaire", "Veuillez taper un montant entre 500 FCFA et 100000FCFA");
             else {
                 final Dialog diag = dialog;
-//                final String tg = tag;
-//                final String reso = reseau;
-//                final AlertDialog.Builder dialog_recap = new AlertDialog.Builder(this);
-//                final int finalPrelevement_auto_int = prelevement_auto_int;
+
                 final int finalPrelevement_auto_int = 0;
 
                 Dialog dialog_recapitulatif = new Dialog(NouvelleTontine.this);
@@ -835,24 +753,9 @@ public class NouvelleTontine extends AppCompatActivity  {
 
         Button non = (Button) dialog.findViewById(R.id.btn_non);
         non.setVisibility(View.GONE);
-//        non.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                dialog.cancel();
-//            }
-//        });
 
         dialog.show();
 
-//        final AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-//        dialog.setTitle( title )
-//                .setIcon(R.drawable.ic_warning)
-//                .setMessage(message)
-//                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialoginterface, int i) {
-//
-//                    }
-//                }).show();
     }
 
 
@@ -919,41 +822,9 @@ public class NouvelleTontine extends AppCompatActivity  {
                         rb_flash.setChecked(true);
                     }*/
                     rb_flash.setTextColor(Color.BLACK);
-                    /*rb_flash.setSupportButtonTintList(
-                            ContextCompat.getColorStateList(NouvelleTontine.this,
-                                    R.color.colorPrimaryDark2));*/
-
-                    //AppCompatRadioButton radioButton;
-                    // now use following methods to set tint colour
-                    //rb_flash.setSupportButtonTintMode(Color.BLACK);
-                    //radioButton.setSupportButtonTintList();
-
-                    /*AppCompatRadioButton rb;
-                    rb = new AppCompatRadioButton(NouvelleTontine.this);
-
-                    ColorStateList colorStateList = new ColorStateList(
-                            new int[][]{
-                                    new int[]{-android.R.attr.state_checked},
-                                    new int[]{android.R.attr.state_checked}
-                            },
-                            new int[]{
-
-                                    Color.DKGRAY
-                                    , Color.rgb (242,81,112),
-                            }
-                    );
-                    rb.setSupportButtonTintList(colorStateList);*/
-
-                    // Finally, add the new RadioButton to the RadioGroup
                     sims_radio.addView(rb_flash);
                 }
 
-//                souscrire(String.valueOf(array.get(0).getId()),dialog);
-//                if (array.size()==1){
-//
-//                }else{
-////                    dialog.show();
-//                }
 
             }
 
@@ -1001,32 +872,62 @@ public class NouvelleTontine extends AppCompatActivity  {
 
     }
 
+    private void refreshAccessToken(Context context, NouvelleTontine.TokenRefreshListener listener) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JSONObject params = new JSONObject();
+        try {
+            params.put("refreshToken", Prefs.getString(REFRESH_TOKEN, ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest refreshRequest = new JsonObjectRequest(Request.Method.POST, url_refresh_token, params,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("LongLogTag")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.e("La réponse du refresh token est:",response.toString());
+                            String newAccessToken = response.getString("token");
+                            String newRefreshToken = response.getString("refreshToken");
+                            Prefs.putString(TOKEN, newAccessToken);
+                            Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                            Log.d("RefreshToken", "New Token: " + newAccessToken); // Log the new token
+                            listener.onTokenRefreshed(true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onTokenRefreshed(false);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.e("RefreshToken", "Error: " + volleyError.getMessage());
+                        listener.onTokenRefreshed(false);
+                    }
+                });
+
+        queue.add(refreshRequest);
+    }
+
     //payer une tontine normale via internet  : appel a l'api
-    private void payer(final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value ) {
+    private void payer(final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value) {
         RequestQueue queue = Volley.newRequestQueue(this);
         final String[] resultat = {""};
         Log.e("ResponseTagP", "testPayer");
-
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_NEW_TONTINE,
                 new Response.Listener<String>(){
                     @SuppressLint("ResourceAsColor")
                     @Override
                     public void onResponse(String response) {
-                        //progressDialog.dismiss();
-                        // response
                         Log.e("ResponseTagP", response);
-                        if(response == null)
-                        {
-                            progressDialog.dismiss();
-                            String msg="Erreur, le serveur ne réponds pas. Patientez un instant puis réessayer svp.";
-                            Intent i = new Intent(NouvelleTontine.this, Message_non.class);
-                            i.putExtra("msg_desc", msg);
-                            i.putExtra("class","com.sicmagroup.tondi.NouvelleTontine");
-                            startActivity(i);
-                        }
-                        else {
-                            Log.e("La reponse:",resultat[0]);
+                        if (response == null) {
+                            handleServerError();
+                        } else {
+                            //handleResponse(response);
+                            Log.e("La reponse:", resultat[0]);
 
                             resultat[0] = response;
                             try {
@@ -1038,26 +939,25 @@ public class NouvelleTontine extends AppCompatActivity  {
                                 int responseCode = result.getInt("responseCode");
                                 if (responseCode == 0) {
                                     Date currentTime = Calendar.getInstance().getTime();
-                                    long output_creation=currentTime.getTime()/1000L;
-                                    String str_creation=Long.toString(output_creation);
+                                    long output_creation = currentTime.getTime() / 1000L;
+                                    String str_creation = Long.toString(output_creation);
                                     long timestamp_creation = Long.parseLong(str_creation) * 1000;
-                                    long output_maj=currentTime.getTime()/1000L;
-                                    String str_maj=Long.toString(output_maj);
+                                    long output_maj = currentTime.getTime() / 1000L;
+                                    String str_maj = Long.toString(output_maj);
                                     long timestamp_maj = Long.parseLong(str_maj) * 1000;
 
-                                    Utilisateur u = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY,null)).get(0);
+                                    Utilisateur u = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY, null)).get(0);
                                     Log.e("test U", u.getId_utilisateur());
                                     progressDialog.dismiss();
                                     Long id_tontine = Long.valueOf(0);
-                                    if (result.has("body"))
-                                    {
+                                    if (result.has("body")) {
                                         JSONObject tontineJson = result.getJSONObject("body");
                                         JSONArray resultat = tontineJson.getJSONArray("payments");
                                         Tontine nouvelle_tontine = new Tontine();
                                         nouvelle_tontine.setId_server(tontineJson.getString("id"));
 //                                        Log.i("new_t_id", String.valueOf(nouvelle_tontine.getId_server()));
 
-                                        nouvelle_tontine.setId_utilisateur(Prefs.getString(ID_UTILISATEUR_KEY,null));
+                                        nouvelle_tontine.setId_utilisateur(Prefs.getString(ID_UTILISATEUR_KEY, null));
 //                                        Log.i("new_t_idUser", String.valueOf(nouvelle_tontine.getId_utilisateur()));
 
                                         nouvelle_tontine.setDenomination(tontineJson.getString("denomination"));
@@ -1106,8 +1006,7 @@ public class NouvelleTontine extends AppCompatActivity  {
                                             cotis_auto.save();
                                         }
 
-                                        for (int i = 0; i < resultat.length(); i++)
-                                        {
+                                        for (int i = 0; i < resultat.length(); i++) {
                                             JSONObject data = new JSONObject(resultat.get(i).toString());
 
                                             Versement n_versement = new Versement();
@@ -1131,7 +1030,7 @@ public class NouvelleTontine extends AppCompatActivity  {
                                         }
 
                                     }
-                                    if (id_tontine!=0){
+                                    if (id_tontine != 0) {
                                         Log.i("id_tontine", String.valueOf(id_tontine));
                                         //alertView("souscription ok","ok");
                                         NouvelleTontine.ViewOk alert = new NouvelleTontine.ViewOk();
@@ -1140,40 +1039,40 @@ public class NouvelleTontine extends AppCompatActivity  {
                                         int nb_tontine_terminees = 0;
                                         int nb_tontine_encaissees = 0;
                                         List<Tontine> liste_tontines = Select.from(Tontine.class)
-                                                .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY,null)) )
+                                                .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY, null)))
                                                 .groupBy("carnet")
                                                 .list();
                                         nb_tontine = liste_tontines.size();
                                         List<Tontine> liste_tontines_encours = Select.from(Tontine.class)
-                                                .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY,null)) )
-                                                .where(Condition.prop("statut").eq(TontineEnum.IN_PROGRESS.toString()) )
+                                                .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY, null)))
+                                                .where(Condition.prop("statut").eq(TontineEnum.IN_PROGRESS.toString()))
                                                 .list();
-                                        nb_tontine_encours= liste_tontines_encours.size();
+                                        nb_tontine_encours = liste_tontines_encours.size();
                                         List<Tontine> liste_tontines_terminees = Select.from(Tontine.class)
-                                                .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY,null)) )
-                                                .where(Condition.prop("statut").eq(TontineEnum.COMPLETED.toString()) )
+                                                .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY, null)))
+                                                .where(Condition.prop("statut").eq(TontineEnum.COMPLETED.toString()))
                                                 .list();
-                                        nb_tontine_terminees= liste_tontines_terminees.size();
+                                        nb_tontine_terminees = liste_tontines_terminees.size();
                                         List<Tontine> liste_tontines_encaissees = Select.from(Tontine.class)
-                                                .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY,null)) )
-                                                .where(Condition.prop("statut").eq(TontineEnum.COLLECTED.toString()) )
+                                                .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY, null)))
+                                                .where(Condition.prop("statut").eq(TontineEnum.COLLECTED.toString()))
                                                 .list();
-                                        nb_tontine_encaissees= liste_tontines_encaissees.size();
-                                        String to_tontine_user = nb_tontine+" tontine";
-                                        String to_tontine_encours = nb_tontine_encours+" tontine";
-                                        String to_tontine_terminees = nb_tontine_terminees+" carte";
-                                        String to_tontine_encaissees = nb_tontine_encaissees+" carte";
-                                        if (nb_tontine>1){
-                                            to_tontine_user =nb_tontine+" tontines";
+                                        nb_tontine_encaissees = liste_tontines_encaissees.size();
+                                        String to_tontine_user = nb_tontine + " tontine";
+                                        String to_tontine_encours = nb_tontine_encours + " tontine";
+                                        String to_tontine_terminees = nb_tontine_terminees + " carte";
+                                        String to_tontine_encaissees = nb_tontine_encaissees + " carte";
+                                        if (nb_tontine > 1) {
+                                            to_tontine_user = nb_tontine + " tontines";
                                         }
-                                        if (nb_tontine_encours>1){
-                                            to_tontine_encours =nb_tontine_encours+" tontines";
+                                        if (nb_tontine_encours > 1) {
+                                            to_tontine_encours = nb_tontine_encours + " tontines";
                                         }
-                                        if (nb_tontine_terminees>1){
-                                            to_tontine_terminees =nb_tontine_terminees+" cartes";
+                                        if (nb_tontine_terminees > 1) {
+                                            to_tontine_terminees = nb_tontine_terminees + " cartes";
                                         }
-                                        if (nb_tontine_encaissees>1){
-                                            to_tontine_encaissees =nb_tontine_encaissees+" cartes";
+                                        if (nb_tontine_encaissees > 1) {
+                                            to_tontine_encaissees = nb_tontine_encaissees + " cartes";
                                         }
                                         //ussdApi.destroyInstance();
                                         //Log.d("monde","zz:"+id);
@@ -1182,23 +1081,23 @@ public class NouvelleTontine extends AppCompatActivity  {
                                         isNewTontine = true;
                                         //ajout fin
 
-                                        String msg="Votre tontiner a été correctement enregistrée. Vous avez maintenant au total "+to_tontine_user
-                                                +" dont :\n\n • "+to_tontine_encours+" en cours; \n • "+to_tontine_terminees+" terminé(e)s et \n • "+to_tontine_encaissees+" encaissé(e)s";
+                                        String msg = "Votre tontiner a été correctement enregistrée. Vous avez maintenant au total " + to_tontine_user
+                                                + " dont :\n\n • " + to_tontine_encours + " en cours; \n • " + to_tontine_terminees + " terminé(e)s et \n • " + to_tontine_encaissees + " encaissé(e)s";
                                         Intent i = new Intent(NouvelleTontine.this, Connexion.class);
-                                        i.putExtra("msg_desc",msg);
+                                        i.putExtra("msg_desc", msg);
                                         //i.putExtra("id_tontine",Integer.parseInt(String.valueOf(id)));
-                                        i.putExtra("id_tontine",id_tontine);
-                                        i.putExtra("isNewTontine",isNewTontine);
+                                        i.putExtra("id_tontine", id_tontine);
+                                        i.putExtra("isNewTontine", isNewTontine);
 //                                        i.putExtra("class","com.sicmagroup.tondi.CarteMain");
                                         startActivity(i);
 
                                         dialog.dismiss();
-                                    }else{
+                                    } else {
 
-                                        String msg="Une erreur s'est produite. Veuillez réessayer SVP!";
+                                        String msg = "Une erreur s'est produite. Veuillez réessayer SVP!";
                                         Intent i = new Intent(NouvelleTontine.this, Message_ok.class);
-                                        i.putExtra("msg_desc",msg);
-                                        i.putExtra("class","com.sicmagroup.tondi.NouvelleTontine");
+                                        i.putExtra("msg_desc", msg);
+                                        i.putExtra("class", "com.sicmagroup.tondi.NouvelleTontine");
                                         startActivity(i);
                                     }
 
@@ -1212,141 +1111,49 @@ public class NouvelleTontine extends AppCompatActivity  {
                                     startActivity(i);
                                 }
 
-
-                            } catch (Throwable t) {
-                                Log.d("errornscription", t.getMessage());
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
                             }
                         }
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
+                    private boolean tokenRefreshed = false;
+
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
-                        // error
-                        Log.e("Error.Inscription", String.valueOf(volleyError.getMessage()));
-                        CoordinatorLayout mainLayout = (CoordinatorLayout)  findViewById(R.id.layout_tontine);
-
-                        String message;
-                        if (volleyError instanceof NetworkError) {
-                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                            //Log.d("VolleyError_Test",volleyError.getMessage());
-                            message = "Aucune connexion Internet!";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            payer(numero,montant,dialog, heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value);
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
-
-                        }
-                        else if (volleyError instanceof AuthFailureError) {
-                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                            //Log.d("VolleyError_Test",volleyError.getMessage());
-                            message = "Erreur de temporisation !";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            payer(numero,montant,dialog, heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value);
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
-
-                        }else if (volleyError instanceof TimeoutError) {
-                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                            //Log.d("VolleyError_Test",volleyError.getMessage());
-                            message = "Erreur de temporisation !";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            payer(numero,montant,dialog, heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value);
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
-
-                        }else if (volleyError instanceof ServerError) {
-                            message = "Impossible de contacter le serveur!";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            payer(numero,montant,dialog, heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value);
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
-                        }  else if (volleyError instanceof ParseError) {
-                            //message = "Parsing error! Please try again later";
-                            message = "Une erreur est survenue! Contactez le service client.";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            payer(numero,montant,dialog,heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value);
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
+                        if (volleyError instanceof AuthFailureError && !tokenRefreshed) {
+                            // Rafraîchir le token et réessayer
+                            refreshAccessToken(NouvelleTontine.this, new TokenRefreshListener() {
+                                @Override
+                                public void onTokenRefreshed(boolean success) {
+                                    if (success) {
+                                        tokenRefreshed = true;
+                                        payer(numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value);
+                                    } else {
+                                        handleAuthError();
+                                    }
+                                }
+                            });
+                        } else {
+                            handleError(volleyError, numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value);
                         }
                     }
-                }
-        ) {
+                }) {
 
             @Override
             protected Map<String, String> getParams() {
                 return null; // This method is not used when sending JSON body
             }
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
-                headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
+                headers.put("Authorization", "Bearer " + Prefs.getString(TOKEN, "")); // Ajoute le token ici
                 return headers;
             }
-
             @Override
             public byte[] getBody() {
                 PeriodiciteEnum periodiciteEnum = PeriodiciteEnum.JOURNALIERE;
@@ -1366,13 +1173,12 @@ public class NouvelleTontine extends AppCompatActivity  {
                 try {
                     jsonParams.put("denomination", denomination_value);
                     jsonParams.put("periode", periodiciteEnum.name());
-                    jsonParams.put("mise", Integer.parseInt(mise_val)); // Assuming mise_val is a string representing an integer
+                    jsonParams.put("mise", Integer.parseInt(mise_val));
                     jsonParams.put("customerNumber", numero);
-                   // jsonParams.put("dateDeblocage", dateDeblocage); // Add this field if it's available
-                    jsonParams.put("autoPayment", true);
+                    jsonParams.put("autoPayment", "true");
 
                     Log.e("Le body", jsonParams.toString());
-                    return jsonParams.toString().getBytes(StandardCharsets.UTF_8);
+                    return jsonParams.toString().getBytes();
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return null;
@@ -1383,63 +1189,76 @@ public class NouvelleTontine extends AppCompatActivity  {
             public String getBodyContentType() {
                 return "application/json; charset=utf-8";
             }
-
         };
-//            @Override
-//            protected Map<String, String> getParams()
-//            {
-//                PeriodiciteEnum periodiciteEnum = PeriodiciteEnum.JOURNALIERE;
-//                switch (periode){
-//                    case "Journalière":
-//                        periodiciteEnum = PeriodiciteEnum.JOURNALIERE;
-//                        break;
-//                    case "Mensuelle":
-//                        periodiciteEnum = PeriodiciteEnum.MENSUELLE;
-//                        break;
-//                    case "Hebdomadaire":
-//                        periodiciteEnum = PeriodiciteEnum.HEBDOMADAIRE;
-//                        break;
-//                }
-//                Map<String, String>  params = new HashMap<String, String>();
-//                Log.e("Le numero est:", numero);
-//                Log.e("La denomination", denomination_value);
-//                Log.e("Periode", periodiciteEnum.name().toString());
-//                Log.e("Mise", mise_val);
-//                params.put("customerNumber", numero);
-////                params.put("montant", montant);
-////                params.put("heure_transaction", String.valueOf(heure_transaction));
-//                params.put("denomination", denomination_value);
-////                params.put("origine", "nouvelle tontine");
-//                params.put("periode", periodiciteEnum.name());
-//                params.put("mise", mise_val);
-//                params.put("autoPayment", "true");
-////                params.put("id_sim", id_sim);
-////                params.put("isAutoPayment", String.valueOf(prelevement_auto));
-//                Log.e("denomination", denomination_value);
-//                Log.e("Le body",params.toString());
-//                return params;
-//            }
-//        };
-        /*postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
-        //DefaultRetryPolicy  retryPolicy = new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        //postRequest.setRetryPolicy(new DefaultRetryPolicy(0, -1, 0));
-        //postRequest.setRetryPolicy(retryPolicy);
+
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
                 80000,
                 -1,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(postRequest);
 
-        //initialize the progress dialog and show it
         progressDialog = new ProgressDialog(NouvelleTontine.this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Veuillez patienter SVP! \n La souscription à la tontine est en cours...");
         progressDialog.show();
     }
 
+    private void handleServerError() {
+        progressDialog.dismiss();
+        String msg = "Erreur, le serveur ne réponds pas. Patientez un instant puis réessayer svp.";
+        Intent i = new Intent(NouvelleTontine.this, Message_non.class);
+        i.putExtra("msg_desc", msg);
+        i.putExtra("class", "com.sicmagroup.tondi.NouvelleTontine");
+        startActivity(i);
+    }
+
+    private void handleAuthError() {
+        String msg = "Erreur de rafraîchissement du token. Veuillez réessayer.";
+        Intent i = new Intent(NouvelleTontine.this, Message_non.class);
+        i.putExtra("msg_desc", msg);
+        i.putExtra("class", "com.sicmagroup.tondi.NouvelleTontine");
+        startActivity(i);
+    }
+
+    private void handleError(VolleyError volleyError, final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value) {
+        String message;
+        CoordinatorLayout mainLayout = findViewById(R.id.layout_tontine);
+        if (volleyError instanceof NetworkError) {
+            message = "Aucune connexion Internet!";
+            showErrorSnackbar(mainLayout, message, numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value);
+        } else if (volleyError instanceof TimeoutError) {
+            message = "Erreur de temporisation !";
+            showErrorSnackbar(mainLayout, message, numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value);
+        } else if (volleyError instanceof ServerError) {
+            message = "Impossible de contacter le serveur!";
+            showErrorSnackbar(mainLayout, message, numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value);
+        } else if (volleyError instanceof ParseError) {
+            message = "Une erreur est survenue! Contactez le service client.";
+            showErrorSnackbar(mainLayout, message, numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value);
+        } else {
+            Log.e("Error.Inscription", volleyError.getMessage());
+        }
+    }
+
+
+    private void showErrorSnackbar(CoordinatorLayout layout, String message, final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value) {
+        Snackbar snackbar = Snackbar.make(layout, message, Snackbar.LENGTH_INDEFINITE)
+                .setAction("REESSAYER", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        payer(numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value);
+                    }
+                });
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        TextView textView = snackbar.getView().findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+    private interface TokenRefreshListener {
+        void onTokenRefreshed(boolean success);
+    }
 
     //payer une tontine bloquée via internet : appel a la method de payment
     private void payViaInternetTontineBloque(final Dialog dialog, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value, final String dateDeblocageValue){
@@ -1451,7 +1270,7 @@ public class NouvelleTontine extends AppCompatActivity  {
         payerTontineBloque(Prefs.getString(TEL_KEY, ""), montant_value, dialog, heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value, dateDeblocageValue);
     }
     //payer une tontine bloquée : appel a l'API
-    private void payerTontineBloque(final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value, final String dateDeblocageValue ) {
+   /* private void payerTontineBloque(final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value, final String dateDeblocageValue ) {
         RequestQueue queue = Volley.newRequestQueue(this);
         final String[] resultat = {""};
         Log.d("ResponseTagP", "testPayer");
@@ -1671,25 +1490,13 @@ public class NouvelleTontine extends AppCompatActivity  {
 
                         String message;
                         if (volleyError instanceof NetworkError) {
-                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                            //Log.d("VolleyError_Test",volleyError.getMessage());
-                            message = "Aucune connexion Internet!";
-                            Snackbar snackbar = Snackbar
-                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                    .setAction("REESSAYER", new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            payer(numero,montant,dialog, heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value);
-                                        }
-                                    });
-                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
-                            // Changing message text color
-                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                            // Changing action button text color
-                            View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                            textView.setTextColor(Color.WHITE);
-                            snackbar.show();
+
+                            if (volleyError.networkResponse != null && volleyError.networkResponse.statusCode == 401) {
+                                refreshTokenAndRetry(numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value, dateDeblocageValue);
+                            } else {
+                                progressDialog.dismiss();
+                                // other error handling code...
+                            }
 
                         }
                         else if (volleyError instanceof AuthFailureError) {
@@ -1701,7 +1508,8 @@ public class NouvelleTontine extends AppCompatActivity  {
                                     .setAction("REESSAYER", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            payer(numero,montant,dialog, heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value);
+                                            refreshTokenAndRetry(numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value, dateDeblocageValue);
+                                           // payer(numero,montant,dialog, heure_transaction_global, periode, prelevement_auto, mise_val, denomination_value);
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
@@ -1775,6 +1583,7 @@ public class NouvelleTontine extends AppCompatActivity  {
                     }
                 }
         ) {
+            @SuppressLint("LongLogTag")
             @Override
             protected Map<String, String> getParams()
             {
@@ -1791,17 +1600,14 @@ public class NouvelleTontine extends AppCompatActivity  {
                         break;
                 }
                 Map<String, String>  params = new HashMap<String, String>();
-                params.put("customer_number", numero);
-                params.put("montant", montant);
-               // params.put("heure_transaction", String.valueOf(heure_transaction));
+                params.put("customerNumber", numero);
                 params.put("denomination", denomination_value);
-                //params.put("origine", "nouvelle tontine");
                 params.put("periode", periodiciteEnum.name());
                 params.put("mise", mise_val);
-//                params.put("id_sim", id_sim);
-                params.put("isAutoPayment", String.valueOf(prelevement_auto));
-                params.put("date_deblocage", dateDeblocageValue);
+                params.put("autoPayment", "true");
+                params.put("dateDeblocage", dateDeblocageValue);
                 Log.e("denonciation", denomination_value);
+                Log.e("Le body de Tontine bloqué", params.toString());
 
                 return params;
             }
@@ -1813,13 +1619,7 @@ public class NouvelleTontine extends AppCompatActivity  {
                 return headers;
             }
         };
-        /*postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));*/
-        //DefaultRetryPolicy  retryPolicy = new DefaultRetryPolicy(0, DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT);
-        //postRequest.setRetryPolicy(new DefaultRetryPolicy(0, -1, 0));
-        //postRequest.setRetryPolicy(retryPolicy);
+
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
                 80000,
                 -1,
@@ -1831,10 +1631,305 @@ public class NouvelleTontine extends AppCompatActivity  {
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Veuillez patienter SVP! \n La souscription à la tontine est en cours...");
         progressDialog.show();
+    }*/
+
+    @SuppressLint("LongLogTag")
+    private void payerTontineBloque(final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value, final String dateDeblocageValue ) {
+        RequestQueue queue = Volley.newRequestQueue(this);
+        final String[] resultat = {""};
+        Log.d("ResponseTagP", "testPayer");
+        Log.e("Le token est:", accessToken);
+
+        JSONObject params = new JSONObject();
+        try {
+            PeriodiciteEnum periodiciteEnum = PeriodiciteEnum.JOURNALIERE;
+            switch (periode){
+                case "Journalière":
+                    periodiciteEnum = PeriodiciteEnum.JOURNALIERE;
+                    break;
+                case "Mensuelle":
+                    periodiciteEnum = PeriodiciteEnum.MENSUELLE;
+                    break;
+                case "Hebdomadaire":
+                    periodiciteEnum = PeriodiciteEnum.HEBDOMADAIRE;
+                    break;
+            }
+            params.put("customerNumber", numero);
+            params.put("denomination", denomination_value);
+            params.put("periode", periodiciteEnum.name());
+            params.put("mise", mise_val);
+            params.put("autoPayment", prelevement_auto == 1);
+            params.put("dateDeblocage", dateDeblocageValue);
+            Log.e("Le body de tontine bloqué", params.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_NEW_TONTINE, params,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("ResponseTagP", response.toString());
+                        progressDialog.dismiss();
+                        try {
+                            int responseCode = response.getInt("responseCode");
+                            if (responseCode == 0) {
+                                Date currentTime = Calendar.getInstance().getTime();
+                                long timestamp_creation = currentTime.getTime();
+                                long timestamp_maj = currentTime.getTime();
+                                Utilisateur u = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY, null)).get(0);
+
+                              /*  JSONObject tontineJson = response.getJSONObject("body");
+                                JSONArray versements = tontineJson.getJSONArray("payments");
+                                Tontine nouvelle_tontine = new Tontine();
+                                nouvelle_tontine.setId_server(tontineJson.getString("id"));
+                                nouvelle_tontine.setId_utilisateur(Prefs.getString(ID_UTILISATEUR_KEY, null));
+                                nouvelle_tontine.setDenomination(tontineJson.getString("denomination"));
+                                nouvelle_tontine.setPeriode(tontineJson.getString("periode"));
+                                nouvelle_tontine.setMise(tontineJson.getInt("mise"));
+                                nouvelle_tontine.setPrelevement_auto(tontineJson.getBoolean("isAutoPayment"));
+                                nouvelle_tontine.setCarnet(String.valueOf(tontineJson.getString("carnet")));
+                                nouvelle_tontine.setStatut(tontineJson.getString("isValide"));
+                                nouvelle_tontine.setDateDeblocage(tontineJson.getString("unBlockDate"));
+                                nouvelle_tontine.setCreation(timestamp_creation);
+                                nouvelle_tontine.setMaj(timestamp_maj);
+                                nouvelle_tontine.setContinuer(tontineJson.getLong("carnet"));
+                                nouvelle_tontine.save();*/
+                                JSONObject tontineJson = response.getJSONObject("body");
+                                JSONArray versements = tontineJson.getJSONArray("payments");
+
+                                Tontine nouvelle_tontine = new Tontine();
+                                nouvelle_tontine.setId_server(tontineJson.getString("id"));
+                                nouvelle_tontine.setId_utilisateur(Prefs.getString(ID_UTILISATEUR_KEY, null));
+                                nouvelle_tontine.setDenomination(tontineJson.getString("denomination"));
+                                nouvelle_tontine.setPeriode(tontineJson.getString("periode"));
+                                nouvelle_tontine.setMise(tontineJson.getInt("mise"));
+                                nouvelle_tontine.setPrelevement_auto(tontineJson.getBoolean("isAutoPayment"));
+                                nouvelle_tontine.setCarnet(String.valueOf(tontineJson.getString("carnet")));
+                                nouvelle_tontine.setStatut(tontineJson.getString("state"));
+
+                                // Gestion de la date de déblocage
+                                JSONArray unBlockDateArray = tontineJson.getJSONArray("unBlockDate");
+                                String unBlockDate = unBlockDateArray.getInt(0) + "-" +
+                                        String.format("%02d", unBlockDateArray.getInt(1)) + "-" +
+                                        String.format("%02d", unBlockDateArray.getInt(2));
+                                nouvelle_tontine.setDateDeblocage(unBlockDate);
+
+                                // Timestamps de création et de mise à jour
+
+                                nouvelle_tontine.setCreation(timestamp_creation);
+                                nouvelle_tontine.setMaj(timestamp_maj);
+
+                                // Valeur continue
+                                nouvelle_tontine.setContinuer(tontineJson.getLong("carnet"));
+                                nouvelle_tontine.save();
+
+
+                                Long id_tontine = nouvelle_tontine.getId();
+
+                                if (nouvelle_tontine.getPrelevement_auto()) {
+                                    Cotis_Auto cotis_auto = new Cotis_Auto();
+                                    cotis_auto.setTontine(nouvelle_tontine);
+                                    cotis_auto.setUtilisateur(u);
+                                    cotis_auto.setCreation(timestamp_creation);
+                                    cotis_auto.setMaj(timestamp_creation);
+                                    cotis_auto.save();
+                                }
+
+                                for (int i = 0; i < versements.length(); i++) {
+                                    JSONObject data = versements.getJSONObject(i);
+                                    Versement n_versement = new Versement();
+                                    n_versement.setFractionne(data.getString("isFractioned"));
+                                    n_versement.setIdVersement(data.getString("idVersement"));
+                                    n_versement.setMontant(data.getString("amount"));
+                                    n_versement.setIdVersServ(data.getString("id"));
+                                    n_versement.setCreation(timestamp_creation);
+                                    n_versement.setMaj(timestamp_maj);
+                                    n_versement.setUtilisateur(u);
+                                    n_versement.setTontine(nouvelle_tontine);
+                                    n_versement.save();
+                                }
+
+                                // Rest of your code to handle the response and start new activity
+                                if (id_tontine!=0){
+                                    Log.i("id_tontine", String.valueOf(id_tontine));
+                                    //alertView("souscription ok","ok");
+                                    NouvelleTontine.ViewOk alert = new NouvelleTontine.ViewOk();
+                                    int nb_tontine = 0;
+                                    int nb_tontine_encours = 0;
+                                    int nb_tontine_terminees = 0;
+                                    int nb_tontine_encaissees = 0;
+                                    List<Tontine> liste_tontines = Select.from(Tontine.class)
+                                            .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY,null)) )
+                                            .groupBy("carnet")
+                                            .list();
+                                    nb_tontine = liste_tontines.size();
+                                    List<Tontine> liste_tontines_encours = Select.from(Tontine.class)
+                                            .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY,null)) )
+                                            .where(Condition.prop("statut").eq(TontineEnum.IN_PROGRESS.toString()) )
+                                            .list();
+                                    nb_tontine_encours= liste_tontines_encours.size();
+                                    List<Tontine> liste_tontines_terminees = Select.from(Tontine.class)
+                                            .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY,null)) )
+                                            .where(Condition.prop("statut").eq(TontineEnum.COMPLETED.toString()) )
+                                            .list();
+                                    nb_tontine_terminees= liste_tontines_terminees.size();
+                                    List<Tontine> liste_tontines_encaissees = Select.from(Tontine.class)
+                                            .where(Condition.prop("id_utilisateur").eq(Prefs.getString(ID_UTILISATEUR_KEY,null)) )
+                                            .where(Condition.prop("statut").eq(TontineEnum.COLLECTED.toString()) )
+                                            .list();
+
+                                    nb_tontine_encaissees= liste_tontines_encaissees.size();
+                                    String to_tontine_user = nb_tontine+" tontine";
+                                    String to_tontine_encours = nb_tontine_encours+" tontine";
+                                    String to_tontine_terminees = nb_tontine_terminees+" carte";
+                                    String to_tontine_encaissees = nb_tontine_encaissees+" carte";
+                                    if (nb_tontine>1){
+                                        to_tontine_user =nb_tontine+" tontines";
+                                    }
+                                    if (nb_tontine_encours>1){
+                                        to_tontine_encours =nb_tontine_encours+" tontines";
+                                    }
+                                    if (nb_tontine_terminees>1){
+                                        to_tontine_terminees =nb_tontine_terminees+" cartes";
+                                    }
+                                    if (nb_tontine_encaissees>1){
+                                        to_tontine_encaissees =nb_tontine_encaissees+" cartes";
+                                    }
+
+                                    //ussdApi.destroyInstance();
+                                    //Log.d("monde","zz:"+id);
+
+                                    //ajout
+                                    isNewTontine = true;
+                                    //ajout fin
+
+                                    String msg="Votre tontiner a été correctement enregistrée. Vous avez maintenant au total "+to_tontine_user
+                                            +" dont :\n\n • "+to_tontine_encours+" en cours; \n • "+to_tontine_terminees+" terminé(e)s; \n • "+to_tontine_encaissees+" encaissé(e)s \n";
+                                    Intent i = new Intent(NouvelleTontine.this, Message_ok.class);
+                                    i.putExtra("msg_desc",msg);
+                                    //i.putExtra("id_tontine",Integer.parseInt(String.valueOf(id)));
+                                    i.putExtra("id_tontine",id_tontine);
+                                    i.putExtra("isNewTontine",isNewTontine);
+//                                        i.putExtra("class","com.sicmagroup.tondi.CarteMain");
+                                    startActivity(i);
+
+                                    dialog.dismiss();
+                                }else{
+
+                                    String msg="Une erreur s'est produite. Veuillez réessayer SVP!";
+                                    Intent i = new Intent(NouvelleTontine.this, Message_ok.class);
+                                    i.putExtra("msg_desc",msg);
+                                    i.putExtra("class","com.sicmagroup.tondi.NouvelleTontine");
+                                    startActivity(i);
+                                }
+
+
+                            } else {
+                                progressDialog.dismiss();
+                                String msg = response.getString("body");
+                                Intent i = new Intent(NouvelleTontine.this, Message_non.class);
+                                i.putExtra("msg_desc", msg);
+                                i.putExtra("class", "com.sicmagroup.tondi.NouvelleTontine");
+                                startActivity(i);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        progressDialog.dismiss();
+                        Log.e("Error.Inscription", String.valueOf(volleyError.getMessage()));
+                        CoordinatorLayout mainLayout = (CoordinatorLayout) findViewById(R.id.layout_tontine);
+                        String message = "Une erreur est survenue!";
+                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError) {
+                            refreshTokenAndRetry(numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value, dateDeblocageValue);
+                        } else {
+                            Snackbar snackbar = Snackbar.make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            payerTontineBloque(numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value, dateDeblocageValue);
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(NouvelleTontine.this, R.color.colorGray));
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                            View sbView = snackbar.getView();
+                            TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+                        }
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + accessToken);
+                return headers;
+            }
+        };
+
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                80000,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(postRequest);
+
+        progressDialog = new ProgressDialog(NouvelleTontine.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Veuillez patienter SVP! \n La souscription à la tontine est en cours...");
+        progressDialog.show();
     }
 
+    private void refreshTokenAndRetry(final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value, final String dateDeblocageValue) {
+        String refreshToken = Prefs.getString(REFRESH_TOKEN, "");
+        StringRequest refreshTokenRequest = new StringRequest(Request.Method.POST, Constantes.url_refresh_token,
+                new Response.Listener<String>() {
+                    @SuppressLint("LongLogTag")
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonResponse = new JSONObject(response);
+                            Log.e("LA réponse du refresh token", jsonResponse.toString());
 
-
+                            String newAccessToken = jsonResponse.getString("token");
+                            String newRefreshToken = jsonResponse.getString("refreshToken");
+                            Prefs.putString(TOKEN, newAccessToken);
+                            Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                            accessToken = newAccessToken;
+                            payerTontineBloque(numero, montant, dialog, heure_transaction, periode, prelevement_auto, mise_val, denomination_value, dateDeblocageValue);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        progressDialog.dismiss();
+                        // handle the error for refreshing token
+                        Log.e("Error.RefreshToken", String.valueOf(volleyError.getMessage()));
+                        // Show error message to the user
+                    }
+                }) {
+            @SuppressLint("LongLogTag")
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                params.put("refreshToken", refreshToken);
+                Log.e("Le body du refresh Token", params.toString());
+                return params;
+            }
+        };
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(refreshTokenRequest);
+    }
 
     private void check_transaction_statut(final String numero, final long heure_transaction, final Dialog dialog, final String id_sim, final String periode, final int prelevement_auto, final String mise_val)
     {

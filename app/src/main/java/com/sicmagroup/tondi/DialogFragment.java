@@ -2,6 +2,9 @@ package com.sicmagroup.tondi;
 import static com.sicmagroup.tondi.Connexion.ID_UTILISATEUR_KEY;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
 import static com.sicmagroup.tondi.Connexion.url_save_plainte;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
+import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
+import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -374,199 +377,134 @@ public class DialogFragment extends androidx.fragment.app.DialogFragment {
 //        mediaPlayer.start();
 //    }
 
-    public void uploadPlainte(Plainte plainte)
-    {
-
+    public void uploadPlainte(Plainte plainte) {
         ContextWrapper cw = new ContextWrapper(getContext());
         File directory = cw.getDir("tontine_plaintes", Context.MODE_PRIVATE);
-        File sourceFile=new File(directory,plainte.getFile_name());
+        File sourceFile = new File(directory, plainte.getFile_name());
         if (!sourceFile.isFile()) {
-
             progressDialog.dismiss();
-
-            Log.e("uploadFile", "Source File not exist :" + audioFilePath);
-            //Afficher un msg pour dire que le fichier n'existe pas
-        }
-        else
-        {
+            Log.e("uploadFile", "Source File not exist :" + sourceFile.getAbsolutePath());
+            // Afficher un msg pour dire que le fichier n'existe pas
+        } else {
             OkHttpClient okHttpClient = new OkHttpClient();
 
-            RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("audio", sourceFile.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), sourceFile))
-                    .addFormDataPart("id", Prefs.getString(ID_UTILISATEUR_KEY, ""))
-                    .addFormDataPart("duration", String.valueOf(plainte.getDuration()))
-                    .build();
-            FutureTask<Boolean> task = new FutureTask<Boolean>(()->{
-                try {
-                    ResponseBody responseBody = okHttpClient.newCall(new okhttp3.Request.Builder().url(Constantes.URL_PLAINTE_NEW).post(body).build()).execute().body();
-                    if(responseBody != null){
-                        String responseString = responseBody.string();
-                        JSONObject response = new JSONObject(responseString);
-                        Log.e("La réponse de envoie de plainte", response.get("responseCode").toString());
+            // Créez l'objet JSON
+            JSONObject jsonObject = new JSONObject();
+            try {
+                JSONObject dataObject = new JSONObject();
+                dataObject.put("audio", sourceFile.getName());
+                dataObject.put("duration", plainte.getDuration());
 
-                        int responseCode = response.getInt("responseCode");
-                        if(responseCode == 0){
-                            progressDialog.dismiss();
-//                            Toast.makeText(getContext(), "Plainte bien envoyée", Toast.LENGTH_SHORT).show();
-                            return true;
+                jsonObject.put("data", dataObject);
+                jsonObject.put("audio", sourceFile.getName());
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            // Créez le RequestBody multipart/form-data
+            RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+                    .addFormDataPart("file", sourceFile.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), sourceFile))
+                    .addFormDataPart("data", jsonObject.toString())
+                    .build();
+
+            FutureTask<Boolean> task = new FutureTask<>(() -> {
+                try {
+                    okhttp3.Response response = okHttpClient.newCall(
+                            new okhttp3.Request.Builder()
+                                    .url(Constantes.URL_PLAINTE_NEW)
+                                    .addHeader("Authorization", "Bearer " + Prefs.getString(TOKEN, ""))
+                                    .post(body)
+                                    .build()
+                    ).execute();
+
+                    if (response.isSuccessful()) {
+                        ResponseBody responseBody = response.body();
+                        if (responseBody != null) {
+                            String responseString = responseBody.string();
+                            JSONObject responseObject = new JSONObject(responseString);
+                            Log.e("La réponse de envoie de plainte", responseObject.get("responseCode").toString());
+
+                            int responseCode = responseObject.getInt("responseCode");
+                            if (responseCode == 0) {
+                                progressDialog.dismiss();
+                                return true;
+                            } else {
+                                return false;
+                            }
                         } else {
-//                            Toast.makeText(getContext(), "Plainte non-envoyée", Toast.LENGTH_SHORT).show();
                             return false;
                         }
+                    } else if (response.code() == 401) {
+                        refreshAccessToken(getContext(), refreshed -> {
+                            if (refreshed) {
+                                uploadPlainte(plainte);
+                            } else {
+                                progressDialog.dismiss();
+                                Toast.makeText(getContext(), "Token non actualisé, plainte non envoyée", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        return false;
                     } else {
-//                        Toast.makeText(getContext(), "Plainte non-envoyée, une erreur est survenue", Toast.LENGTH_SHORT).show();
                         return false;
                     }
-                } catch (IOException e){
-//                    Toast.makeText(getContext(), "Plainte non-envoyée, une erreur est survenue", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
                     return false;
                 }
             });
+
             try {
                 new Thread(task).start();
-
                 task.get();
-            } catch (ExecutionException e) {
+            } catch (ExecutionException | InterruptedException e) {
                 Toast.makeText(getContext(), "Plainte non-envoyée, une erreur est survenue", Toast.LENGTH_SHORT).show();
-
                 Log.e("task", "intask else");
                 progressDialog.dismiss();
-                Log.e("task", "intask catch 2");
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                Toast.makeText(getContext(), "Plainte non-envoyée, une erreur est survenue", Toast.LENGTH_SHORT).show();
-
-                Log.e("task", "intask else");
-                progressDialog.dismiss();
-                Log.e("task", "intask catch 3");
                 e.printStackTrace();
             }
+        }
+    }
 
-//            try {
-//                jsonObject = new JSONObject();
-//                String imgname = String.valueOf(Calendar.getInstance().getTimeInMillis());
-//                jsonObject.put("id_utilisateur", plainte.getAuteur());
-//                jsonObject.put("duration", plainte.getDuration());
-//                //  Log.e("Image name", etxtUpload.getText().toString().trim());
-//                jsonObject.put("audio_plainte", encodedAudio);
-//                jsonObject.put("filename", plainte.getFile_name());
-//
-//                // jsonObject.put("aa", "aa");
-//            } catch (JSONException e) {
-//                //Log.e("JSONObject Here", e.toString());
-//            }
-//            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url_save_plainte, jsonObject,
-//                    new Response.Listener<JSONObject>() {
-//                        @SuppressLint("ResourceAsColor")
-//                        @Override
-//                        public void onResponse(JSONObject result) {
-//                            progressDialog.dismiss();
-//                            Log.e("Response", result.toString());
-//                            try {
-//                                //JSONObject result = new JSONObject(response);
-//                                //Log.d("My App", obj.toString());
-//                                if (result.getBoolean("success")){
-//                                    JSONObject resultat = result.getJSONObject("data");
-//                                    progressDialog.dismiss();
-//                                    Toast.makeText(getContext(), "Plainte bien envoyée", Toast.LENGTH_SHORT).show();
-//
-//                                }else{
-//                                    progressDialog.dismiss();
-//
-////                                    Alerter.create(MesPlaintes.this)
-////                                            .setTitle(result.getString("message"))
-////                                            .setIcon(R.drawable.ic_warning)
-////                                            .setTitleAppearance(R.style.TextAppearance_AppCompat_Large)
-////                                            .setIconColorFilter(R.color.colorPrimaryDark)
-////                                            //.setText("Vous pouvez maintenant vous connecter.")
-////                                            .setBackgroundColorRes(R.color.colorWhite) // or setBackgroundColorInt(Color.CYAN)
-////                                            .show();
-//                                }
-//
-//
-//                            } catch (Throwable t) {
-//                                //Log.d("Inscript_next", String.valueOf(t.getCause()));
-//                                //Log.e("My App", "Could not parse malformed JSON: \"" + result.toString() + "\"");
-//                            }
-//                        }
-//                    }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError volleyError) {
-//                    progressDialog.dismiss();
-//                    androidx.coordinatorlayout.widget.CoordinatorLayout mainLayout = (androidx.coordinatorlayout.widget.CoordinatorLayout) getActivity().findViewById(R.id.layout_plainte);
-//
-//                    String message;
-//                    if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
-//                        //Toast.makeText(Inscription_next.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-//                        message = "Aucune connexion Internet!";
-//                        Snackbar snackbar = Snackbar
-//                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-//                                .setAction("REESSAYER", new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View view) {
-//                                        uploadPlainte(plainte);
-//                                    }
-//                                });
-//                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorGray));
-//                        // Changing message text color
-//                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-//                        // Changing action button text color
-//                        View sbView = snackbar.getView();
-//                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-//                        textView.setTextColor(Color.WHITE);
-//                        snackbar.show();
-//
-//                    } else if (volleyError instanceof ServerError) {
-//                        message = "Impossible de contacter le serveur!";
-//                        Snackbar snackbar = Snackbar
-//                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-//                                .setAction("REESSAYER", new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View view) {
-//                                        uploadPlainte(plainte);
-//                                    }
-//                                });
-//                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorGray));
-//                        // Changing message text color
-//                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-//                        // Changing action button text color
-//                        View sbView = snackbar.getView();
-//                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-//                        textView.setTextColor(Color.WHITE);
-//                        snackbar.show();
-//                    }  else if (volleyError instanceof ParseError) {
-//                        //message = "Parsing error! Please try again later";
-//                        message = "Une erreur est survenue!";
-//                        Snackbar snackbar = Snackbar
-//                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-//                                .setAction("REESSAYER", new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View view) {
-//                                        uploadPlainte(plainte);
-//                                    }
-//                                });
-//                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(getContext(), R.color.colorGray));
-//                        // Changing message text color
-//                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-//                        // Changing action button text color
-//                        View sbView = snackbar.getView();
-//                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-//                        textView.setTextColor(Color.WHITE);
-//                        snackbar.show();
-//                    }
-//
-//                }
-//            });
-//
-//            rQueue = Volley.newRequestQueue(getContext());
-//            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-//                    25000,
-//                    -1,
-//                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//            rQueue.add(jsonObjectRequest);
+    private void refreshAccessToken(Context context, TokenRefreshListener listener) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JSONObject params = new JSONObject();
+        try {
+            params.put("refreshToken", Prefs.getString(REFRESH_TOKEN, ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        } // End else block
+        JsonObjectRequest refreshRequest = new JsonObjectRequest(Request.Method.POST, Constantes.url_refresh_token, params,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.e("La réponse du refresh token est:", response.toString());
+                            String newAccessToken = response.getString("token");
+                            String newRefreshToken = response.getString("refreshToken");
+                            Prefs.putString(TOKEN, newAccessToken);
+                            Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                            Log.d("RefreshToken", "New Token: " + newAccessToken);
+                            listener.onTokenRefreshed(true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onTokenRefreshed(false);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.e("RefreshToken", "Error: " + volleyError.getMessage());
+                        listener.onTokenRefreshed(false);
+                    }
+                });
 
+        queue.add(refreshRequest);
+    }
+
+    public interface TokenRefreshListener {
+        void onTokenRefreshed(boolean refreshed);
     }
 
 }

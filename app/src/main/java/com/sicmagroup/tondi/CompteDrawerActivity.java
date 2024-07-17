@@ -97,7 +97,7 @@ public class CompteDrawerActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        String medias_url = "http://" + SERVEUR + "/medias/";
+        String medias_url =  SERVEUR + "/medias/";
         ImageView user_avatar = findViewById(R.id.user_avatar);
 //        Log.e( "onCreate: ",Prefs.getString(PHOTO_KEY,null)+".JPG" );
 //        Picasso.get().load(medias_url+ Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);

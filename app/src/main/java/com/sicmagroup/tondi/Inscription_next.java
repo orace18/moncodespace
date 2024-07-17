@@ -487,224 +487,6 @@ public class Inscription_next extends AppCompatActivity {
     }
 
 
-    //Recuperation du token de l'utilisateur
-//        final String[] token = {""};
-//        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-//            @Override
-//            public void onComplete(@NonNull Task<String> task) {
-//                if(!task.isSuccessful())
-//                {
-//                    Log.e("testFirebase", "Fetching FCM registration token failed", task.getException());
-//                    return;
-//                }
-//
-//                // Get new FCM registration token
-//                token[0] =  task.getResult();
-//                // Log and toast
-//                @SuppressLint({"StringFormatInvalid", "LocalSuppress"}) String msg = getString(R.string.msg_token_fmt, token[0]);
-////                Log.e("testFirebase", msg);
-//                //Toast.makeText(Inscription_next.this, msg, Toast.LENGTH_SHORT).show();
-//
-//
-//            }
-//        });
-
-//        try {
-//            jsonObject = new JSONObject();
-//            String imgname = String.valueOf(Calendar.getInstance().getTimeInMillis());
-//            jsonObject.put("id_utilisateur", id_utilisateur);
-//            jsonObject.put("name1", imgname);
-//            jsonObject.put("name2", imgname);
-//            //  Log.e("Image name", etxtUpload.getText().toString().trim());
-//            jsonObject.put("image1", encodedImage);
-//            jsonObject.put("image2", encodedImage2);
-//
-//            //Envoie du tokn firebase au serveur
-//            jsonObject.put("firebase_token", token[0]);
-//            //Envoie du code marchand
-//            jsonObject.put("code_marchand", cmValue);
-//
-//            // jsonObject.put("aa", "aa");
-//        } catch (JSONException e) {
-//            //Log.e("JSONObject Here", e.toString());
-//        }
-//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, Constantes.URL_INSCRIPTION_NEXT + Prefs.getString(ID_UTILISATEUR_KEY, ""), jsonObject,
-//                new Response.Listener<JSONObject>() {
-//                    @SuppressLint("ResourceAsColor")
-//                    @Override
-//                    public void onResponse(JSONObject result) {
-//                        progressDialog.dismiss();
-//                        Log.e("Response", result.toString());
-//                        try {
-//                            //JSONObject result = new JSONObject(response);
-//                            Log.e("My App", result.toString());
-//                            if (result.getBoolean("success")){
-//                                JSONObject user = result.getJSONObject("data");
-//                                // enregistrer la photo en local
-//                                //List<Utilisateur> utilisateur = Utilisateur.find(Utilisateur.class, "id = ?", "25");
-//                                Log.e("My App2", Prefs.getString(ID_UTILISATEUR_KEY,"null"));
-//                                final Utilisateur utilisateur = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY,null)).get(0);
-////                                        Utilisateur.findById(Utilisateur.class, Long.valueOf(Prefs.getString(ID_UTILISATEUR_KEY,null)));
-//                                Log.e("My App4", user.toString());
-//                                utilisateur.setPhoto_identite(user.getString("photo_identite"));
-//                                //ajout
-//                                utilisateur.setcni_photo(user.getString("photo_cni"));
-//                                //Log.d("utilisateur_id","utilisateur:"+utilisateur.getId());
-//                                Log.e("My App2", user.getString("photo_identite"));
-//                                @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//
-//                                Date maj = (Date)formatter.parse(user.getString("maj"));
-//                                long output_maj=maj.getTime()/1000L;
-//                                String str_maj=Long.toString(output_maj);
-//                                long timestamp_maj = Long.parseLong(str_maj) * 1000;
-//                                utilisateur.setMaj(timestamp_maj);
-//
-//                                utilisateur.setFirebaseToken(token[0]);
-//
-//                                utilisateur.save();
-//                                // enregistrer la photo en local
-//                                utilitaire.saveToInternalStorage(bitmap,user.getString("photo_identite"));
-//                                //ajout
-//                                utilitaire.saveToInternalStorage(bitmap2,user.getString("photo_cni"));
-//                                //URL url = new URL(user.getString("photo_url"));
-//                                //utilitaire.saveImageUrl(url,user.getString("photo_identite"));
-//                                //Log.d("utilisateur_id","utilisateur:"+user.getString("photo_url"));
-//                                Prefs.putString(PHOTO_KEY, user.getString("photo_identite"));
-//                                Prefs.putString(FIREBASE_TOKEN, token[0]);
-//                                Prefs.putString(PHOTO_CNI_KEY, user.getString("photo_cni"));
-//                                Log.e("My App2", user.getString("photo_cni"));
-//                                Prefs.putString(NUMERO_COMPTE_KEY, result.getString("numero_compte"));
-//                                Log.e("inscrire_next", "onResponse: "+user);
-//
-//                            Prefs.putString(CODE_MARCHAND_KEY, user.getString("referent"));
-//
-//                                Inscription_next.this.finish();
-//                                Intent i = new Intent(Inscription_next.this, Message_changer_pin.class);
-//                                i.putExtra("msg_desc","Votre inscription s'est bien déroulée!");
-//                                i.putExtra("class","com.sicmagroup.tondi.NouvelleTontine");
-//                                startActivity(i);
-//                                utilitaire.refreshDatabse();
-////                                Intent i = new Intent(Inscription_next.this, Inscription_next_2.class);
-////                                i.putExtra("id_utilisateur", String.valueOf(id_utilisateur));
-////                                startActivity(i);
-//                                // afficher dialogue ok, avec possibilite de changer le pin
-//                                /*Alerter.create(Inscription_next.this)
-//                                        .setTitle(result.getString("message"))
-//                                        .setIcon(R.drawable.ic_check)
-//                                        //.setTitleAppearance(R.style.TextAppearance_AppCompat_Large)
-//                                        //.setIconColorFilter(R.color.colorPrimaryDark)
-//                                        //.setText("Vous pouvez maintenant vous connecter.")
-//                                        .setBackgroundColorRes(R.color.colorPrimaryDark) // or setBackgroundColorInt(Color.CYAN)
-//                                        .setOnHideListener(new OnHideAlertListener() {
-//                                            @Override
-//                                            public void onHide() {
-//                                                Inscription_next.this.finish();
-//                                                startActivity(new Intent(Inscription_next.this,Dashboard.class));
-//                                            }
-//                                        })
-//                                        .show();*/
-//                            }else{
-//                                Alerter.create(Inscription_next.this)
-//                                        .setTitle(result.getString("message"))
-//                                        .setIcon(R.drawable.ic_warning)
-//                                        .setTitleAppearance(R.style.TextAppearance_AppCompat_Large)
-//                                        .setIconColorFilter(R.color.colorPrimaryDark)
-//                                        //.setText("Vous pouvez maintenant vous connecter.")
-//                                        .setBackgroundColorRes(R.color.colorWhite) // or setBackgroundColorInt(Color.CYAN)
-//                                        .show();
-//                            }
-//
-//
-//                        } catch (Throwable t) {
-//                            Log.e("my App 5", t.getMessage());
-//                            //Log.d("Inscript_next", String.valueOf(t.getCause()));
-//                            Log.e("My App", "Could not parse malformed JSON: \"" + result.toString() + "\"");
-//                        }
-//                    }
-//                }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError volleyError) {
-//                progressDialog.dismiss();
-//                ConstraintLayout mainLayout =  findViewById(R.id.layout_inscription_next);
-//
-//                String message;
-//                if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
-//                    //Toast.makeText(Inscription_next.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-//                    message = "Aucune connexion Internet!";
-//                    Snackbar snackbar = Snackbar
-//                            .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-//                            .setAction("REESSAYER", new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View view) {
-//                                    uploadImage(bitmap,bitmap2,cmValue);
-//                                }
-//                            });
-//                    snackbar.getView().setBackgroundColor(ContextCompat.getColor(Inscription_next.this, R.color.colorGray));
-//                    // Changing message text color
-//                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-//                    // Changing action button text color
-//                    View sbView = snackbar.getView();
-//                    TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-//                    textView.setTextColor(Color.WHITE);
-//                    snackbar.show();
-//
-//                } else if (volleyError instanceof ServerError) {
-//                    message = "Impossible de contacter le serveur!";
-//                    Snackbar snackbar = Snackbar
-//                            .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-//                            .setAction("REESSAYER", new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View view) {
-//                                    uploadImage(bitmap,bitmap2,cmValue);
-//                                }
-//                            });
-//                    snackbar.getView().setBackgroundColor(ContextCompat.getColor(Inscription_next.this, R.color.colorGray));
-//                    // Changing message text color
-//                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-//                    // Changing action button text color
-//                    View sbView = snackbar.getView();
-//                    TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-//                    textView.setTextColor(Color.WHITE);
-//                    snackbar.show();
-//                }  else if (volleyError instanceof ParseError) {
-//                    //message = "Parsing error! Please try again later";
-//                    Log.e("inscr_nex", volleyError.getMessage());
-//                    Log.e("inscr_nex2", volleyError.getMessage());
-//                    message = "Une erreur est survenue!";
-//                    Snackbar snackbar = Snackbar
-//                            .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-//                            .setAction("REESSAYER", new View.OnClickListener() {
-//                                @Override
-//                                public void onClick(View view) {
-//                                    uploadImage(bitmap,bitmap2,cmValue);
-//                                }
-//                            });
-//                    snackbar.getView().setBackgroundColor(ContextCompat.getColor(Inscription_next.this, R.color.colorGray));
-//                    // Changing message text color
-//                    snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-//                    // Changing action button text color
-//                    View sbView = snackbar.getView();
-//                    TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-//                    textView.setTextColor(Color.WHITE);
-//                    snackbar.show();
-//                }
-//
-//            }
-//        });
-//
-//        rQueue = Volley.newRequestQueue(Inscription_next.this);
-//        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-//                15000,
-//                -1,
-//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//        rQueue.add(jsonObjectRequest);
-//        progressDialog = new ProgressDialog(Inscription_next.this);
-//        progressDialog.setCancelable(false);
-//        progressDialog.setMessage("Veuillez patienter SVP! Sauvegarde des photos en cours...");
-//        progressDialog.show();
-
-
-
     private void showError(String message) {
         Alerter.create(Inscription_next.this)
                 .setTitle(message)
@@ -720,20 +502,12 @@ public class Inscription_next extends AppCompatActivity {
         dialog.setTitle( title )
                 .setIcon(R.drawable.ic_warning)
                 .setMessage(message)
-//     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//      public void onClick(DialogInterface dialoginterface, int i) {
-//          dialoginterface.cancel();
-//          }})
+
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialoginterface, int i) {
                     }
                 }).show();
     }
-
-
-
-
-
 
     /**
      * On load image button click, start pick  image chooser activity.
@@ -830,14 +604,6 @@ public class Inscription_next extends AppCompatActivity {
         //}
     }
 
-    /*@Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        if (mCropImageUri != null && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            mCropImageView.setImageUriAsync(mCropImageUri);
-        } else {
-            Toast.makeText(this, "Required permissions are not granted", Toast.LENGTH_LONG).show();
-        }
-    }*/
 
     /**
      * Create a chooser intent to select the  source to get image from.<br/>

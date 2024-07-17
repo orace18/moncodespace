@@ -488,7 +488,7 @@ public class AutoVersement extends IntentService {
                                             .addAction(android.R.drawable.ic_menu_compass, "Voir la Carte", pendingIntent)
                                             .addAction(android.R.drawable.ic_menu_directions, "Confirmer la cotisation", pendingIntent2)
                                             .setAutoCancel(true); // clear notification after click
-                                    @SuppressLint("WrongConstant") PendingIntent pi = PendingIntent.getActivity(this,0,intent_1, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_IMMUTABLE);
+                                    @SuppressLint("WrongConstant") PendingIntent pi = PendingIntent.getActivity(this,0,intent_1, Intent.FLAG_ACTIVITY_NEW_TASK | PendingIntent.FLAG_MUTABLE);
                                     mBuilder.setContentIntent(pi);
                                     NotificationManager mNotificationManager =
                                             (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);

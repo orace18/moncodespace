@@ -70,6 +70,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -105,6 +107,7 @@ import static com.sicmagroup.tondi.Connexion.PIN_KEY;
 import static com.sicmagroup.tondi.Connexion.PRENOMS_KEY;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
 import static com.sicmagroup.tondi.Connexion.url_generate_otp_insc;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.USER_CF_MDP_EXTRAT_KEY;
@@ -413,8 +416,10 @@ public class Inscription extends AppCompatActivity {
 
                         if (!tel_value.isEmpty() && tel_value != null && !mdp_value.isEmpty() && mdp_value != null) {
                             obtenirNomPrenomsEtVerifier(tel_value, mdp_value, sexe_value);
+                            //inscrire();
                         } else {
                            //
+
                         }
                     }
                 }
@@ -474,7 +479,7 @@ public class Inscription extends AppCompatActivity {
                 });
 
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                25000,
+                250000,
                 -1,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(postRequest);
@@ -525,7 +530,7 @@ public class Inscription extends AppCompatActivity {
         };
 
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                25000,
+                250000,
                 -1,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(postRequest);
@@ -881,6 +886,8 @@ public class Inscription extends AppCompatActivity {
     }
 
 
+
+    @SuppressLint("LongLogTag")
     private void inscrire() {
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -890,8 +897,24 @@ public class Inscription extends AppCompatActivity {
 
         JSONObject postData = new JSONObject();
         try {
-            postData.put("numero", tel.getValue());
-            postData.put("password", mdp.getValue());
+            String telValue = tel.getValue().trim();
+            String mdpValue = mdp.getValue().trim();
+
+            Log.e("Numéro de téléphone", "Numéro: '" + telValue + "', Longueur: " + telValue.length());
+
+            if (telValue.isEmpty() || mdpValue.isEmpty()) {
+                Log.e("Erreur", "Le numéro de téléphone ou le mot de passe est vide après nettoyage.");
+                return;
+            }
+
+            if (telValue.length() != 8) {
+                Log.e("Erreur", "Le numéro de téléphone doit avoir exactement 8 chiffres.");
+                return;
+            }
+
+            postData.put("numero", telValue);
+            postData.put("password", mdpValue);
+            Log.e("Le body de l'inscription", postData.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -906,8 +929,6 @@ public class Inscription extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("Response pour tester", response.toString());
-
-
                         handleInscriptionResponse(response);
                     }
                 },
@@ -915,13 +936,25 @@ public class Inscription extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         progressDialog.dismiss();
+                        Log.e("VolleyError", "Error: " + error.toString());
+                        if (error.networkResponse != null) {
+                            String errorMsg = new String(error.networkResponse.data);
+                            Log.e("VolleyError", "Response data: " + errorMsg);
+                        }
                         handleVolleyError(error);
                     }
                 }
-        );
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json; charset=UTF-8");
+                return headers;
+            }
+        };
 
         jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
+                50000,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
         ));
@@ -939,6 +972,7 @@ public class Inscription extends AppCompatActivity {
     String customNumber = "";
 
     private void handleInscriptionResponse(JSONObject response) {
+        Connexion.AeSimpleSHA1 AeSimpleSHA1 = new Connexion.AeSimpleSHA1();
         try {
             if (response.getInt("responseCode") == 0) {
                 JSONObject body = response.getJSONObject("body");
@@ -947,6 +981,7 @@ public class Inscription extends AppCompatActivity {
                 customNumber = body.getString("username");
                 String user_uuid = user.getString("uuid");
                 String token = body.getString("accessToken");
+                String refreshToken = body.getString("refreshToken");
                 SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
                 String nom = sharedPreferences.getString("nom", "");
                 String prenoms = sharedPreferences.getString("prenoms", "");
@@ -954,14 +989,19 @@ public class Inscription extends AppCompatActivity {
                 Log.e("Le customNum: ", customNumber);
                 Log.e("L'id est : ", String.valueOf(id));
                 Log.e("Le token est:", token);
+                BaseFormElement mdp = mFormBuilder.getFormElement(TAG_PASS);
+                String mot_de_passe = mdp.getValue();
+                mot_de_passe = AeSimpleSHA1.md5(mot_de_passe);
+                mot_de_passe = AeSimpleSHA1.SHA1(mot_de_passe);
+                Log.e("Le mot de passe hashé:", mot_de_passe);
 
                 Utilisateur nouvel_utilisateur = new Utilisateur();
                 nouvel_utilisateur.setId_utilisateur(String.valueOf(id));
                 nouvel_utilisateur.setNumero(customNumber);
                 nouvel_utilisateur.setNom(user.optString("firstName", prenoms));
                 nouvel_utilisateur.setPrenoms(user.optString("lastName", nom));
-//                nouvel_utilisateur.setPin_acces(user.getString("password"));
-//                nouvel_utilisateur.setMdp(user.getString("password"));
+                nouvel_utilisateur.setPin_acces(mot_de_passe);
+                nouvel_utilisateur.setMdp(mot_de_passe);
 
                 DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 long timestamp_creation = formatter.parse(user.getString("createdAt")).getTime();
@@ -981,11 +1021,12 @@ public class Inscription extends AppCompatActivity {
                 sim_par_defaut.save();
 
                 Prefs.putString(TOKEN, token);
+                Prefs.putString(REFRESH_TOKEN, refreshToken);
                 Prefs.putString(ID_UTILISATEUR_KEY, user.getString("id"));
                 Prefs.putString(NOM_KEY, user.optString("firstName", prenoms));
                 Prefs.putString(PRENOMS_KEY, user.optString("lastName", nom));
-                Prefs.putString(PIN_KEY, "");
-                Prefs.putString(PASS_KEY, ""); //cc69caef-172f-4f90-9e92-d54f761eef83
+                Prefs.putString(PIN_KEY, mot_de_passe);
+                Prefs.putString(PASS_KEY, mot_de_passe);
                 Prefs.putString(CONNECTER_KEY, String.valueOf(timestamp_creation));
                 Prefs.putString(TEL_KEY, customNumber);
 
@@ -1000,6 +1041,10 @@ public class Inscription extends AppCompatActivity {
         } catch (JSONException e) {
             Log.e("ParsingError", e.getMessage());
         } catch (ParseException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }

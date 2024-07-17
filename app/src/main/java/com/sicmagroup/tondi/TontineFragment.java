@@ -36,9 +36,8 @@ import static com.sicmagroup.tondi.Connexion.ID_UTILISATEUR_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 
 public class TontineFragment extends Fragment {
-    /*private static final int TAG_MODE = 11;
-    RecyclerView mRecyclerView;
-    FormBuilder frm_retrait = null;*/
+
+
     private RadioGroup radioGroup;
     private RadioButton radioButton;
     private  ImageView no_tontine;
@@ -75,11 +74,6 @@ public class TontineFragment extends Fragment {
             }
         }
 
-        //int pos = getIntent.getIntExtra("pos",0);
-
-
-        //TextView title = (TextView) view.findViewById(R.id.item_title);
-        //title.setText(String.valueOf(position));
         new Prefs.Builder()
                 .setContext(getActivity())
                 .setMode(ContextWrapper.MODE_PRIVATE)
@@ -100,20 +94,6 @@ public class TontineFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         no_tontine = (ImageView) view.findViewById(R.id.imageView_notontine);
 
-
-    /*Button btn_nouvelle_tontine =  view.findViewById(R.id.btn_nouvelle_tontine);
-    // si fragment en cours
-    if (position==0){
-        btn_nouvelle_tontine.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(TontineFragment.this.getActivity(),NouvelleTontine.class));
-            }
-        });
-
-    }else{
-        btn_nouvelle_tontine.setVisibility(View.INVISIBLE);
-    }*/
 
 
         Log.d("position", String.valueOf(position));
@@ -140,47 +120,6 @@ public class TontineFragment extends Fragment {
 
 
 
-   /* void setupFrmPin(Dialog d, Context c){
-        mRecyclerView =  d.findViewById(R.id.form_retrait);
-        frm_retrait = new FormBuilder(c, mRecyclerView);
-
-        FormElementTextNumber element6 = FormElementTextNumber.createInstance().setTag(TAG_MODE).setTitle("").setRequired(true);
-        List<BaseFormElement> formItems = new ArrayList<>();
-        formItems.add(element6);
-
-        frm_retrait.addFormElements(formItems);
-    }
-
-    public class ViewDialog {
-
-        void showDialog(Activity activity, final Intent intent){
-            final Dialog dialog = new Dialog(activity);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(true);
-            dialog.setContentView(R.layout.pin_access);
-            setupFrmPin(dialog,dialog.getContext());
-
-
-            Button dialogButton = (Button) dialog.findViewById(R.id.btn_continue);
-            dialogButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    BaseFormElement pin = frm_retrait.getFormElement(TAG_MODE);
-
-                    String pin_value = pin.getValue();
-                    if (pin_value.equals(Prefs.getString(PIN_KEY,""))){
-                        startActivity(intent);
-                    }
-                    dialog.dismiss();
-
-                }
-            });
-            //Toast.makeText(getApplicationContext(),"e",Toast.LENGTH_LONG).show();
-
-            dialog.show();
-
-        }
-    }*/
 
     /**
      * Adding few albums for testing

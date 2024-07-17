@@ -11,7 +11,7 @@ public class Constantes {
     public static final String STATUT_UTILISATEUR = "statut";
     public static final String CODE_MARCHAND_KEY = "code_marchand";
     public static String TOKEN = "token";
-
+    public static String REFRESH_TOKEN = "refresh_token";
 
     //bottom nav destination start
     public static final String BOTTOM_NAV_DESTINATION = "bottom_nav_destination";
@@ -57,6 +57,7 @@ public class Constantes {
     public static final String URL_COLLECTED_MOMO_TONTINE = SERVEUR + "/api/v1/tontine/withdrawal/momo";
     public static final String URL_INIT_WITHDRAW = SERVEUR + "/api/v1/withdraw/init";
     public static final String URL_PLAINTE_NEW = SERVEUR + "/api/v1/plainte/new";
+    public static final String url_refresh_token = SERVEUR + "/api/v1/utilisateurs/refresh-token";
     public static final String URL_ALL_DATA = SERVEUR + "/api/v1/utilisateurs/allData";
     public static final String URL_CHANGE_PWD = SERVEUR + "/api/v1/utilisateurs/change_password";
     public static final String URL_GET_MERCHANT_DETAILS = SERVEUR + "/api/v1/merchant/get_merchant_details";
@@ -66,5 +67,6 @@ public class Constantes {
     public static final String URL_RETRY_WITHDRAW = SERVEUR + "/api/v1/withdraw/init/retry";
 
     public static String accessToken = Prefs.getString(TOKEN,"");
+    public static String refreshToken = Prefs.getString(REFRESH_TOKEN,"");
 
 }

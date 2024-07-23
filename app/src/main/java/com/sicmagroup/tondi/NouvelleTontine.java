@@ -1887,19 +1887,30 @@ public class NouvelleTontine extends AppCompatActivity  {
         progressDialog.show();
     }
 
+    @SuppressLint("LongLogTag")
     private void refreshTokenAndRetry(final String numero, final String montant, final Dialog dialog, final long heure_transaction, final String periode, final int prelevement_auto, final String mise_val, final String denomination_value, final String dateDeblocageValue) {
         String refreshToken = Prefs.getString(REFRESH_TOKEN, "");
-        StringRequest refreshTokenRequest = new StringRequest(Request.Method.POST, Constantes.url_refresh_token,
-                new Response.Listener<String>() {
+        JSONObject params = new JSONObject();
+        try {
+            params.put("refreshToken", refreshToken);
+            Log.e("Le body du refresh Token", params.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest refreshTokenRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                Constantes.url_refresh_token,
+                params,
+                new Response.Listener<JSONObject>() {
                     @SuppressLint("LongLogTag")
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
                         try {
-                            JSONObject jsonResponse = new JSONObject(response);
-                            Log.e("LA réponse du refresh token", jsonResponse.toString());
+                            Log.e("LA réponse du refresh token", response.toString());
 
-                            String newAccessToken = jsonResponse.getString("token");
-                            String newRefreshToken = jsonResponse.getString("refreshToken");
+                            String newAccessToken = response.getString("token");
+                            String newRefreshToken = response.getString("refreshToken");
                             Prefs.putString(TOKEN, newAccessToken);
                             Prefs.putString(REFRESH_TOKEN, newRefreshToken);
                             accessToken = newAccessToken;
@@ -1917,16 +1928,9 @@ public class NouvelleTontine extends AppCompatActivity  {
                         Log.e("Error.RefreshToken", String.valueOf(volleyError.getMessage()));
                         // Show error message to the user
                     }
-                }) {
-            @SuppressLint("LongLogTag")
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("refreshToken", refreshToken);
-                Log.e("Le body du refresh Token", params.toString());
-                return params;
-            }
-        };
+                }
+        );
+
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(refreshTokenRequest);
     }

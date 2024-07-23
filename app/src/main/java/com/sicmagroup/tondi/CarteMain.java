@@ -3662,6 +3662,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
 
 
+     @SuppressLint("LongLogTag")
      private void terminer_tontine(final String id_tontine_server) {
          Log.e("C'est dans la fonction", "Oui pour tester");
          RequestQueue queue = Volley.newRequestQueue(CarteMain.this);
@@ -3831,6 +3832,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                          ConstraintLayout mainLayout = findViewById(R.id.layout_tontine);
                          String message;
                          if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+                             Log.e("Mon erreur", volleyError.getMessage());
                             refreshAccessToken( CarteMain.this, new TokenRefreshListener() {
                                 @Override
                                 public void onTokenRefreshed(boolean success) {
@@ -3886,32 +3888,47 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
              }
          };
 
+         postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                 250000,
+                 -1,
+                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
          queue.add(postRequest);
+         afficherProgressDialog("Arret de la tontine en cours ...");
      }
 
-     private void refreshAccessToken(Context context, CarteMain.TokenRefreshListener listener) {
+     private void afficherProgressDialog(String message) {
+         progressDialog = new ProgressDialog(CarteMain.this);
+         progressDialog.setCancelable(false);
+         progressDialog.setMessage(message);
+         progressDialog.show();
+     }
+
+
+     private void refreshAccessToken(Context context, TokenRefreshListener listener) {
          RequestQueue queue = Volley.newRequestQueue(context);
          JSONObject params = new JSONObject();
          try {
-             String refresh_token = Prefs.getString(REFRESH_TOKEN, "");
-             Log.e("Mon refresh token", refresh_token);
-             params.put("refreshToken", Prefs.getString(REFRESH_TOKEN, ""));
+             String refreshToken = Prefs.getString(REFRESH_TOKEN, "");
+             Log.e("Mon refresh token", refreshToken);
+             params.put("refreshToken", refreshToken);
          } catch (JSONException e) {
              e.printStackTrace();
          }
 
-         JsonObjectRequest refreshRequest = new JsonObjectRequest(Request.Method.POST, url_refresh_token, params,
+         JsonObjectRequest refreshRequest = new JsonObjectRequest(
+                 Request.Method.POST,
+                 url_refresh_token,
+                 params,
                  new Response.Listener<JSONObject>() {
+                     @SuppressLint("LongLogTag")
                      @Override
                      public void onResponse(JSONObject response) {
                          try {
-                             Log.e("La réponse du refresh token",response.toString());
+                             Log.e("La réponse du refresh token", response.toString());
                              String newAccessToken = response.getString("token");
                              String newRefreshToken = response.getString("refreshToken");
                              Prefs.putString(TOKEN, newAccessToken);
                              Prefs.putString(REFRESH_TOKEN, newRefreshToken);
-//                             String newAccessToken = response.getString("accessToken");
-//                             Prefs.putString(TOKEN, newAccessToken);
                              listener.onTokenRefreshed(true);
                          } catch (JSONException e) {
                              e.printStackTrace();
@@ -3925,7 +3942,8 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                          Log.e("RefreshToken", "Error: " + volleyError.getMessage());
                          listener.onTokenRefreshed(false);
                      }
-                 });
+                 }
+         );
 
          queue.add(refreshRequest);
      }
@@ -3934,7 +3952,8 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
          void onTokenRefreshed(boolean success);
      }
 
-    private void terminer(final int id_tontine) {
+
+     private void terminer(final int id_tontine) {
         Tontine tontine = SugarRecord.findById(Tontine.class, (long) id_tontine);
         tontine.terminer(CarteMain.this);
         String msg = "";

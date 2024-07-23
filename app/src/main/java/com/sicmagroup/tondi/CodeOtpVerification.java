@@ -744,8 +744,7 @@ public class CodeOtpVerification extends AppCompatActivity {
                                 });
                         snackbar.show();
                     }
-                    else
-                    {
+                    else {
                         if(caller_activity.equals(callable_activity_carte)) {
                             RequestQueue queue = Volley.newRequestQueue(CodeOtpVerification.this);
                             StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_VERIFY_OTP,
@@ -1370,6 +1369,7 @@ public class CodeOtpVerification extends AppCompatActivity {
 
         JsonObjectRequest refreshRequest = new JsonObjectRequest(Request.Method.POST, Constantes.url_refresh_token, params,
                 new Response.Listener<JSONObject>() {
+                    @SuppressLint("LongLogTag")
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.e("C'est dans le refresh token", "Oui");
@@ -1735,8 +1735,6 @@ public class CodeOtpVerification extends AppCompatActivity {
                         if (String.valueOf(volleyError.getMessage()).equals("null"))
                         {
                             try {
-
-
                                 progressDialog.dismiss();
                                 Tontine tontine = SugarRecord.findById(Tontine.class, (long) id_tontine);
                                 Log.d("tontinegetPeriode", tontine.getPeriode());

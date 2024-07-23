@@ -76,9 +76,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -600,7 +603,7 @@ public class Connexion extends AppCompatActivity {
 
         JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_LOGIN, jsonBody,
                 new Response.Listener<JSONObject>() {
-                    @SuppressLint({"ResourceAsColor", "LongLogTag"})
+                    @SuppressLint({"ResourceAsColor", "LongLogTag", "SuspiciousIndentation"})
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("Response", response.toString());
@@ -631,31 +634,31 @@ public class Connexion extends AppCompatActivity {
                                     nouvel_utilisateur = new Utilisateur();
                                     nouvel_utilisateur.setId_utilisateur(user.getString("id"));
                                     nouvel_utilisateur.setNumero(tel_value);
-                                    if (user.getString("firstName").isEmpty() || user.has("firstName")) {
-                                        nouvel_utilisateur.setNom(user.getString("firstName"));
-                                    }else{
-                                        nouvel_utilisateur.setNom("");
-                                    }
-                                    if (user.getString("lastName").isEmpty() || user.has("lastName")) {
-                                        nouvel_utilisateur.setPrenoms(user.getString("lastName"));
-                                    }else{
-                                        nouvel_utilisateur.setPrenoms("");
-                                    }
-                                    if (user.getString("profilePicture").isEmpty() || user.has("profilePicture")) {
-                                        nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
-                                    }else{
-                                        nouvel_utilisateur.setPhoto_identite("");
-                                    }
-                                    if (user.getString("cniPicture").isEmpty() || user.has("cniPicture")) {
-                                        nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
-                                    }else{
-                                        nouvel_utilisateur.setcni_photo("");
-                                    }
+//                                    if (user.getString("firstName").isEmpty() || user.has("firstName")) {
+//                                        nouvel_utilisateur.setNom(user.getString("firstName"));
+//                                    }else{
+//                                        nouvel_utilisateur.setNom("");
+//                                    }
+//                                    if (user.getString("lastName").isEmpty() || user.has("lastName")) {
+//                                        nouvel_utilisateur.setPrenoms(user.getString("lastName"));
+//                                    }else{
+//                                        nouvel_utilisateur.setPrenoms("");
+//                                    }
+//                                    if (user.getString("profilePicture").isEmpty() || user.has("profilePicture")) {
+//                                        nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+//                                    }else{
+//                                        nouvel_utilisateur.setPhoto_identite("");
+//                                    }
+//                                    if (user.getString("cniPicture").isEmpty() || user.has("cniPicture")) {
+//                                        nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+//                                    }else{
+//                                        nouvel_utilisateur.setcni_photo("");
+//                                    }
 
 //                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
 //                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
                                     nouvel_utilisateur.setMdp(mot_de_passe);
-                                    nouvel_utilisateur.setStatut(user.getString("statut"));
+                                    nouvel_utilisateur.setStatut("true");
                                     nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
                                     if (user.isNull("referent"))
                                         nouvel_utilisateur.setCodeMarchand("");
@@ -717,9 +720,9 @@ public class Connexion extends AppCompatActivity {
                                     Prefs.putString(PRENOMS_KEY, "");
                                     Prefs.putString(PASS_KEY, mot_de_passe);
                                     Prefs.putBoolean(MOOV_DATA_SHARING, true);
-                                    Prefs.putString(STATUT_UTILISATEUR, user.getString("state"));
-                                    Prefs.putString(PHOTO_CNI_KEY, "");
-                                    Prefs.putString(SEXE_KEY, user.getString("sexe"));
+                                    Prefs.putString(STATUT_UTILISATEUR, "true");
+                                    Prefs.putString(PHOTO_CNI_KEY, user.getString("cniPicture"));
+                                    Prefs.putString(SEXE_KEY, "");
                                     Prefs.putString(NUMERO_COMPTE_KEY, user.getString("accountNumber"));
                                     Prefs.putString(TOKEN, result.getString("accessToken"));
                                     Prefs.putString(REFRESH_TOKEN, result.getString("refreshToken"));
@@ -735,9 +738,9 @@ public class Connexion extends AppCompatActivity {
                                     Prefs.putString(CONNECTER_KEY, String.valueOf(timestamp_current));
                                     Prefs.putString(PHOTO_KEY, user.getString("profilePicture"));
 
-                                    URL url_photo = new URL(Constantes.URL_MEDIA_PP + Prefs.getString(PHOTO_KEY, null) + ".png");
-                                    URL url_photo_cni = new URL(Constantes.URL_MEDIA_CNI + Prefs.getString(PHOTO_CNI_KEY, null) + ".png");
-                                    Prefs.putString(TEL_KEY, String.valueOf(user.getString("numero")));
+                                    URL url_photo = new URL(Constantes.URL_MEDIA_PP + user.getString("profilePicture"));
+                                    URL url_photo_cni = new URL(Constantes.URL_MEDIA_CNI + Prefs.getString(PHOTO_CNI_KEY, null));
+                                    Prefs.putString(TEL_KEY, String.valueOf(tel_value));
 
                                     // Traiter les tontines et historiques
                                     // ...
@@ -944,7 +947,6 @@ public class Connexion extends AppCompatActivity {
 
                                     new DownloadTask().execute(url_photo);
                                     new DownloadTaskCNI().execute(url_photo_cni);
-
                                     progressDialog.dismiss();
 
                                     if (isFromCarteTontine) {
@@ -955,19 +957,19 @@ public class Connexion extends AppCompatActivity {
                                         startActivity(carteMainIntent);
                                     } else {
                                         isFromCarteTontine = false;
-                                        if (user.getString("firstConnexion").equals("0") && user.getBoolean("addByMerchant")) {
-                                            Log.e("test1", "1success");
-                                            BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
-                                            String tel_value = tel.getValue();
-                                            askCodeOtpVerif(tel.getValue());
-                                        } else {
-                                            Log.e("firstConnexion", user.getString("firstConnexion"));
-                                            Log.e("addByMerchant", user.getString("addByMerchant"));
+//                                        if (user.getString("firstConnexion").equals("0") && user.getBoolean("addByMerchant")) {
+//                                            Log.e("test1", "1success");
+//                                            BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+//                                            String tel_value = tel.getValue();
+//                                            askCodeOtpVerif(tel.getValue());
+//                                        } else {
+                                            //Log.e("firstConnexion", user.getString("firstConnexion"));
+                                            //Log.e("addByMerchant", user.getString("addByMerchant"));
                                             Log.e("test1", "2echec");
                                             Log.e("Redirection", "Vers Home");
                                             startActivity(new Intent(Connexion.this, Home.class));
                                             Connexion.this.finish();
-                                        }
+                                       // }
                                     }
                                     startActivity(new Intent(Connexion.this, Home.class));
                                     Connexion.this.finish();
@@ -1407,6 +1409,7 @@ public class Connexion extends AppCompatActivity {
         os.close();
     }
 
+/*
     private class DownloadTask extends AsyncTask<URL,Void,Bitmap> {
         // Before the tasks execution
         protected void onPreExecute(){
@@ -1455,8 +1458,125 @@ public class Connexion extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(),"Erreur, photo de profile introuvable",Toast.LENGTH_LONG).show();
             }
         }
+    }*/
+
+
+    private class DownloadTask extends AsyncTask<URL, Void, Bitmap> {
+        private URL url;
+
+        // Before the tasks execution
+        protected void onPreExecute() {
+            // Display the progress dialog on async task start
+        }
+
+        // Do the task in background/non UI thread
+        protected Bitmap doInBackground(URL... urls) {
+            url = urls[0];
+            return downloadImage(url);
+        }
+
+        // Download the image from the given URL
+        private Bitmap downloadImage(URL url) {
+            HttpURLConnection connection = null;
+
+            try {
+                // Initialize a new http url connection
+                connection = (HttpURLConnection) url.openConnection();
+
+                // Connect the http url connection
+                connection.connect();
+
+                // Check if the response code is 401
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                    // Refresh the token and retry the download
+                    if (refreshToken()) {
+                        return downloadImage(url); // Retry the download after refreshing the token
+                    } else {
+                        return null; // If token refresh fails, return null
+                    }
+                }
+
+                // Get the input stream from http url connection
+                InputStream inputStream = connection.getInputStream();
+
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
+
+                // Return the downloaded bitmap
+                return bmp;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    // Disconnect the http url connection
+                    connection.disconnect();
+                }
+            }
+            return null;
+        }
+
+        // Refresh the token
+        private boolean refreshToken() {
+            // Implement your token refresh logic here
+            // Return true if token refresh is successful, false otherwise
+            // You might use a synchronous HTTP request here for simplicity
+            // For example, using HttpURLConnection or OkHttpClient to refresh the token
+            // Here is a simple example (you need to adapt it to your logic):
+            try {
+                URL url = new URL(Constantes.url_refresh_token);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+
+                JSONObject params = new JSONObject();
+                params.put("refreshToken", Prefs.getString(REFRESH_TOKEN, ""));
+
+                OutputStream os = connection.getOutputStream();
+                os.write(params.toString().getBytes("UTF-8"));
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    InputStream inputStream = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    reader.close();
+
+                    JSONObject jsonResponse = new JSONObject(result.toString());
+                    String newAccessToken = jsonResponse.getString("token");
+                    String newRefreshToken = jsonResponse.getString("refreshToken");
+
+                    Prefs.putString(TOKEN, newAccessToken);
+                    Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        // When all async task done
+        protected void onPostExecute(Bitmap result) {
+            // Hide the progress dialog
+            if (result != null) {
+                // Save bitmap to internal storage
+                utilitaire.saveToInternalStorage(result, Prefs.getString(PHOTO_KEY, null));
+            } else {
+                // Notify user that an error occurred while downloading image
+                Toast.makeText(getApplicationContext(), "Erreur, photo de profil introuvable", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
+/*
     private class DownloadTaskCNI extends AsyncTask<URL,Void,Bitmap> {
         // Before the tasks execution
         protected void onPreExecute(){
@@ -1506,6 +1626,122 @@ public class Connexion extends AppCompatActivity {
             }else {
                 // Notify user that an error occurred while downloading image
                 Toast.makeText(getApplicationContext(),"Une erreur est survenue",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+*/
+
+    private class DownloadTaskCNI extends AsyncTask<URL, Void, Bitmap> {
+        private URL url;
+
+        // Before the tasks execution
+        protected void onPreExecute() {
+            // Display the progress dialog on async task start
+        }
+
+        // Do the task in background/non UI thread
+        protected Bitmap doInBackground(URL... urls) {
+            url = urls[0];
+            return downloadImage(url);
+        }
+
+        // Download the image from the given URL
+        private Bitmap downloadImage(URL url) {
+            HttpURLConnection connection = null;
+
+            try {
+                // Initialize a new http url connection
+                connection = (HttpURLConnection) url.openConnection();
+
+                // Connect the http url connection
+                connection.connect();
+
+                // Check if the response code is 401
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                    // Refresh the token and retry the download
+                    if (refreshToken()) {
+                        return downloadImage(url); // Retry the download after refreshing the token
+                    } else {
+                        return null; // If token refresh fails, return null
+                    }
+                }
+
+                // Get the input stream from http url connection
+                InputStream inputStream = connection.getInputStream();
+
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
+
+                // Return the downloaded bitmap
+                return bmp;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    // Disconnect the http url connection
+                    connection.disconnect();
+                }
+            }
+            return null;
+        }
+
+        // Refresh the token
+        private boolean refreshToken() {
+            // Implement your token refresh logic here
+            // Return true if token refresh is successful, false otherwise
+            // You might use a synchronous HTTP request here for simplicity
+            // For example, using HttpURLConnection or OkHttpClient to refresh the token
+            // Here is a simple example (you need to adapt it to your logic):
+            try {
+                URL url = new URL(Constantes.url_refresh_token);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+
+                JSONObject params = new JSONObject();
+                params.put("refreshToken", Prefs.getString(REFRESH_TOKEN, ""));
+
+                OutputStream os = connection.getOutputStream();
+                os.write(params.toString().getBytes("UTF-8"));
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    InputStream inputStream = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    reader.close();
+
+                    JSONObject jsonResponse = new JSONObject(result.toString());
+                    String newAccessToken = jsonResponse.getString("token");
+                    String newRefreshToken = jsonResponse.getString("refreshToken");
+
+                    Prefs.putString(TOKEN, newAccessToken);
+                    Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        // When all async task done
+        protected void onPostExecute(Bitmap result) {
+            // Hide the progress dialog
+            if (result != null) {
+                // Save bitmap to internal storage
+                utilitaire.saveToInternalStorage(result, Prefs.getString(PHOTO_CNI_KEY, null));
+            } else {
+                // Notify user that an error occurred while downloading image
+                Toast.makeText(getApplicationContext(), "Une erreur est survenue", Toast.LENGTH_LONG).show();
             }
         }
     }

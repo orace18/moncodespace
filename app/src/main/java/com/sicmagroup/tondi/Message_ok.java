@@ -1,5 +1,6 @@
 package com.sicmagroup.tondi;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import com.sicmagroup.tondi.utils.Constantes;
 
 public class Message_ok extends AppCompatActivity {
     Button btn_fermer_cgu;
+    @SuppressLint("LongLogTag")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

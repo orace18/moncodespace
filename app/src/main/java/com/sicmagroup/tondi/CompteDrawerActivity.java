@@ -68,6 +68,7 @@ public class CompteDrawerActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         //Mon compte
         mon_compte = (ConstraintLayout) findViewById(R.id.mon_compte);
 

@@ -919,14 +919,17 @@ public class NouvelleTontine extends AppCompatActivity  {
 
         StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_NEW_TONTINE,
                 new Response.Listener<String>(){
-                    @SuppressLint("ResourceAsColor")
+                    @SuppressLint({"ResourceAsColor", "LongLogTag"})
                     @Override
                     public void onResponse(String response) {
                         Log.e("ResponseTagP", response);
                         if (response == null) {
+                            Log.e("Le cas où la reponse est null:", response.toString());
                             handleServerError();
                         } else {
                             //handleResponse(response);
+  //                          Log.e("Le cas où la reponse n'est pas null:", response.toString());
+
                             Log.e("La reponse:", resultat[0]);
 
                             resultat[0] = response;
@@ -1031,6 +1034,7 @@ public class NouvelleTontine extends AppCompatActivity  {
 
                                     }
                                     if (id_tontine != 0) {
+
                                         Log.i("id_tontine", String.valueOf(id_tontine));
                                         //alertView("souscription ok","ok");
                                         NouvelleTontine.ViewOk alert = new NouvelleTontine.ViewOk();
@@ -1081,9 +1085,9 @@ public class NouvelleTontine extends AppCompatActivity  {
                                         isNewTontine = true;
                                         //ajout fin
 
-                                        String msg = "Votre tontiner a été correctement enregistrée. Vous avez maintenant au total " + to_tontine_user
+                                        String msg = "Votre tontine a été correctement enregistrée. Vous avez maintenant au total " + to_tontine_user
                                                 + " dont :\n\n • " + to_tontine_encours + " en cours; \n • " + to_tontine_terminees + " terminé(e)s et \n • " + to_tontine_encaissees + " encaissé(e)s";
-                                        Intent i = new Intent(NouvelleTontine.this, Connexion.class);
+                                        Intent i = new Intent(NouvelleTontine.this, Message_ok.class);
                                         i.putExtra("msg_desc", msg);
                                         //i.putExtra("id_tontine",Integer.parseInt(String.valueOf(id)));
                                         i.putExtra("id_tontine", id_tontine);
@@ -1805,7 +1809,7 @@ public class NouvelleTontine extends AppCompatActivity  {
                                     isNewTontine = true;
                                     //ajout fin
 
-                                    String msg="Votre tontiner a été correctement enregistrée. Vous avez maintenant au total "+to_tontine_user
+                                    String msg="Votre tontine a été correctement enregistrée. Vous avez maintenant au total "+to_tontine_user
                                             +" dont :\n\n • "+to_tontine_encours+" en cours; \n • "+to_tontine_terminees+" terminé(e)s; \n • "+to_tontine_encaissees+" encaissé(e)s \n";
                                     Intent i = new Intent(NouvelleTontine.this, Message_ok.class);
                                     i.putExtra("msg_desc",msg);

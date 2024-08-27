@@ -65,6 +65,7 @@ public class Constantes {
     public static final String URL_FREQ_UPDATE_DB = SERVEUR + "/api/v1/utilisateurs/updateDatabase";
     public static final String URL_VALIDATE_FREQ_UPDATE_DB = SERVEUR +"/api/v1/utilisateurs/validateUpdate";
     public static final String URL_RETRY_WITHDRAW = SERVEUR + "/api/v1/withdraw/init/retry";
+    public static final String UPDATE_PROFIL_IMAGE = SERVEUR + "/api/v1/utilisateurs/change-pp";
 
     public static String accessToken = Prefs.getString(TOKEN,"");
     public static String refreshToken = Prefs.getString(REFRESH_TOKEN,"");

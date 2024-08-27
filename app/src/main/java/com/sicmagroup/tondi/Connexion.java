@@ -145,7 +145,7 @@ public class Connexion extends AppCompatActivity {
     static String url_verify_code_otp_insc = SERVEUR + "/api/v1/codesotp/verifier_codeotp_insc";
 
 //    static String url_get_nom_prenom_from_qos = SERVEUR + "/api/v1/user/get_customer_from_qos";
-    public static String url_save_plainte = SERVEUR + "/api/v1/plaintes/save_plainte";
+    public static String url_save_plainte = SERVEUR + "/api/v1/plaintes/new";
     static String url_desactiver_account = SERVEUR + "/api/v1/utilisateurs/desactivate_customer";
     static String url_get_code_otp_verif = SERVEUR + "/api/v1/codesotp/generer_codeotp_access";
 
@@ -161,6 +161,7 @@ public class Connexion extends AppCompatActivity {
     public static String NUMERO_COMPTE_KEY = "numero_compte";
     static String CONNECTER_KEY = "connecter_le";
     public static String TEL_KEY = "telephone";
+    public static String UUID_KEY = "uuid";
     static String SEXE_KEY = "sexe";
     static String ACCESS_RETURNf_KEY = "accessibity_return";
     static String ACCESS_BOOL = "accessibity_bool";
@@ -634,29 +635,11 @@ public class Connexion extends AppCompatActivity {
                                     nouvel_utilisateur = new Utilisateur();
                                     nouvel_utilisateur.setId_utilisateur(user.getString("id"));
                                     nouvel_utilisateur.setNumero(tel_value);
-//                                    if (user.getString("firstName").isEmpty() || user.has("firstName")) {
-//                                        nouvel_utilisateur.setNom(user.getString("firstName"));
-//                                    }else{
-//                                        nouvel_utilisateur.setNom("");
-//                                    }
-//                                    if (user.getString("lastName").isEmpty() || user.has("lastName")) {
-//                                        nouvel_utilisateur.setPrenoms(user.getString("lastName"));
-//                                    }else{
-//                                        nouvel_utilisateur.setPrenoms("");
-//                                    }
-//                                    if (user.getString("profilePicture").isEmpty() || user.has("profilePicture")) {
-//                                        nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
-//                                    }else{
-//                                        nouvel_utilisateur.setPhoto_identite("");
-//                                    }
-//                                    if (user.getString("cniPicture").isEmpty() || user.has("cniPicture")) {
-//                                        nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
-//                                    }else{
-//                                        nouvel_utilisateur.setcni_photo("");
-//                                    }
+                                    nouvel_utilisateur.setNom(user.getString("firstName"));
+                                    nouvel_utilisateur.setPrenoms(user.getString("lastName"));
 
-//                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
-//                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
                                     nouvel_utilisateur.setMdp(mot_de_passe);
                                     nouvel_utilisateur.setStatut("true");
                                     nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
@@ -675,36 +658,14 @@ public class Connexion extends AppCompatActivity {
                                     Log.e("C'est dans le else","Size == 0 là");
                                     nouvel_utilisateur = userH.get(0);
                                     nouvel_utilisateur.setId_utilisateur(user.getString("id"));
-//                                    nouvel_utilisateur.setNumero(tel_value);
-//                                    nouvel_utilisateur.setNom(user.getString("firstName"));
-//                                    nouvel_utilisateur.setPrenoms(user.getString("lastName"));
-//                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
-//                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
-//                                    nouvel_utilisateur.setMdp(mot_de_passe);
                                     nouvel_utilisateur.setNumero(tel_value);
-//                                    if (user.getString("firstName").isEmpty() || user.has("firstName")) {
-//                                        nouvel_utilisateur.setNom(user.getString("firstName"));
-//                                    }else{
-//                                        nouvel_utilisateur.setNom("");
-//                                    }
-//                                    if (user.getString("lastName").isEmpty() || user.has("lastName")) {
-//                                        nouvel_utilisateur.setPrenoms(user.getString("lastName"));
-//                                    }else{
-//                                        nouvel_utilisateur.setPrenoms("");
-//                                    }
-//                                    if (user.getString("profilePicture").isEmpty() || user.has("profilePicture")) {
-//                                        nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
-//                                    }else{
-//                                        nouvel_utilisateur.setPhoto_identite("");
-//                                    }
-//                                    if (user.getString("cniPicture").isEmpty() || user.has("cniPicture")) {
-//                                        nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
-//                                    }else{
-//                                        nouvel_utilisateur.setcni_photo("");
-//                                    }
-//
-//                                    nouvel_utilisateur.setStatut(user.getString("statut"));
-//                                    nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
+                                    nouvel_utilisateur.setNom(user.getString("firstName"));
+                                    nouvel_utilisateur.setPrenoms(user.getString("lastName"));
+                                    nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
+                                    nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
+                                    nouvel_utilisateur.setMdp(mot_de_passe);
+                                    nouvel_utilisateur.setStatut("true");
+                                    nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
                                     if (result.isNull("referent"))
                                         nouvel_utilisateur.setCodeMarchand("");
                                     else

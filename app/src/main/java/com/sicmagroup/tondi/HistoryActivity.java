@@ -2,11 +2,15 @@ package com.sicmagroup.tondi;
 
 import static com.sicmagroup.tondi.Connexion.ID_UTILISATEUR_KEY;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
+import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.accessToken;
+import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -14,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Color;
@@ -34,6 +39,7 @@ import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.Snackbar;
@@ -45,6 +51,7 @@ import com.sicmagroup.formmaster.model.BaseFormElement;
 import com.sicmagroup.tondi.utils.Constantes;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
@@ -140,85 +147,92 @@ public class HistoryActivity extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(this);
 
-        StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_HISTORIES,
-                new Response.Listener<String>() {
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("customerNumber", Prefs.getString(TEL_KEY, ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_HISTORIES, jsonBody,
+                new Response.Listener<JSONObject>() {
                     @SuppressLint("ResourceAsColor")
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
                         Log.d("medias_url_cy", "11111");
-                        Log.e("Response", response);
+                        Log.e("Response", response.toString());
 
                         try {
-                            JSONObject result = new JSONObject(response);
+                            if (response.getInt("responseCode") == 0) {
+                                final JSONArray activity = response.getJSONArray("body");
 
-                            if (result.getInt("responseCode") == 0) {
-                                final JSONArray activity = result.getJSONArray("body");
+                                List<History> liste_activity = new ArrayList<>();
 
-                                List<History> liste_activity= new ArrayList<>();
+                                for (int i = 0; i < activity.length(); i++) {
+                                    History row = new History();
 
+                                    @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                    Date creation = (Date)formatter.parse(activity.getJSONObject(i).getString("createdAt"));
+                                    long output_creation = creation.getTime() / 1000L;
+                                    String str_creation = Long.toString(output_creation);
+                                    long timestamp_creation = Long.parseLong(str_creation) * 1000;
+                                    byte[] titleByte = activity.getJSONObject(i).getString("title").getBytes(StandardCharsets.UTF_8);
+                                    byte[] contentByte = activity.getJSONObject(i).getString("content").getBytes(StandardCharsets.UTF_8);
+                                    row.setTitre(new String(titleByte, StandardCharsets.UTF_8));
+                                    row.setContenu(new String(contentByte, StandardCharsets.UTF_8));
+                                    row.setCreation(timestamp_creation);
+                                    row.setEtat(activity.getJSONObject(i).getBoolean("state") ? 1 : 0);
 
-                                    for (int i = 0; i < activity.length(); i++) {
-                                        History row = new History();
-
-                                        @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                        Date creation = (Date)formatter.parse(activity.getJSONObject(i).getString("createdAt"));
-                                        long output_creation=creation.getTime()/1000L;
-                                        String str_creation=Long.toString(output_creation);
-                                        long timestamp_creation = Long.parseLong(str_creation) * 1000;
-                                        byte[] titleByte = activity.getJSONObject(i).getString("title").getBytes(StandardCharsets.UTF_8);
-                                        byte[] contentByte = activity.getJSONObject(i).getString("content").getBytes(StandardCharsets.UTF_8);
-                                        row.setTitre(new String(titleByte, StandardCharsets.UTF_8));
-                                        row.setContenu(new String(contentByte, StandardCharsets.UTF_8));
-                                        row.setCreation(timestamp_creation);
-                                        row.setEtat(activity.getJSONObject(i).getBoolean("state") ? 1 : 0);
-
-                                        historyList.add(row);
-                                    }
-                                    if (historyList.isEmpty()){
-                                        adapter.notifyDataSetChanged();
-                                        ifNoHistory.setVisibility(View.VISIBLE);
-                                        recyclerView.setVisibility(View.INVISIBLE);
-                                    }else {
-                                        adapter.notifyDataSetChanged();
-                                        ifNoHistory.setVisibility(View.INVISIBLE);
-                                        recyclerView.setVisibility(View.VISIBLE);
-                                    }
-
+                                    historyList.add(row);
+                                }
+                                if (historyList.isEmpty()) {
+                                    adapter.notifyDataSetChanged();
+                                    ifNoHistory.setVisibility(View.VISIBLE);
+                                    recyclerView.setVisibility(View.INVISIBLE);
+                                } else {
+                                    adapter.notifyDataSetChanged();
+                                    ifNoHistory.setVisibility(View.INVISIBLE);
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                }
 
                                 progressDialog.dismiss();
                             }
-                        }catch(Throwable t){
+                        } catch (Throwable t) {
                             Log.d("errornscription", String.valueOf(t.getCause()));
-                            Log.e("My_App", response);
+                            Log.e("My_App", response.toString());
                             Log.e("Connexion", t.getMessage());
                         }
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
                         // error
                         Log.d("Error.Inscription", String.valueOf(volleyError.getMessage()));
-                        ConstraintLayout mainLayout =  findViewById(R.id.layout_history);
+                        CoordinatorLayout mainLayout = findViewById(R.id.layout_history);
 
                         String message;
                         if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
-                            //Toast.makeText(Connexion.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
                             message = "Aucune connexion Internet!";
                             Snackbar snackbar = Snackbar
                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
                                     .setAction("REESSAYER", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                           afficherActivity();
+                                            refreshAccessToken( HistoryActivity.this, new HistoryActivity.TokenRefreshListener() {
+                                                @Override
+                                                public void onTokenRefreshed(boolean success) {
+                                                    if (success) {
+                                                        afficherActivity();
+                                                    }
+                                                }
+                                            });
+
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(HistoryActivity.this, R.color.colorGray));
-                            // Changing message text color
                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
                             View sbView = snackbar.getView();
                             TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                             textView.setTextColor(Color.WHITE);
@@ -235,15 +249,12 @@ public class HistoryActivity extends AppCompatActivity {
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(HistoryActivity.this, R.color.colorGray));
-                            // Changing message text color
                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
                             View sbView = snackbar.getView();
                             TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                             textView.setTextColor(Color.WHITE);
                             snackbar.show();
-                        }  else if (volleyError instanceof ParseError) {
-                            //message = "Parsing error! Please try again later";
+                        } else if (volleyError instanceof ParseError) {
                             message = "Une erreur est survenue!";
                             Snackbar snackbar = Snackbar
                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
@@ -254,9 +265,7 @@ public class HistoryActivity extends AppCompatActivity {
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(HistoryActivity.this, R.color.colorGray));
-                            // Changing message text color
                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
                             View sbView = snackbar.getView();
                             TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                             textView.setTextColor(Color.WHITE);
@@ -266,35 +275,76 @@ public class HistoryActivity extends AppCompatActivity {
                 }
         ) {
             @Override
-            protected Map<String, String> getParams()
-            {
-                Map<String, String>  params = new HashMap<String, String>();
-
-                params.put("numero", Prefs.getString(TEL_KEY,""));
-
-                return params;
-            }
-            @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
+                accessToken = Prefs.getString(TOKEN,"");
                 headers.put("Content-Type", "application/json");
                 headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
                 return headers;
             }
         };
 
-        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(
                 50000,
                 -1,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        queue.add(postRequest);
+        queue.add(jsonRequest);
 
         //initialize the progress dialog and show it
         progressDialog = new ProgressDialog(HistoryActivity.this);
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Veuillez patienter SVP! Récupération de vos activités ...");
         progressDialog.show();
-
-
     }
+
+    private void refreshAccessToken(Context context, HistoryActivity.TokenRefreshListener listener) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JSONObject params = new JSONObject();
+        try {
+            String refreshToken = Prefs.getString(REFRESH_TOKEN, "");
+            Log.e("Mon refresh token", refreshToken);
+            params.put("refreshToken", refreshToken);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest refreshRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url_refresh_token,
+                params,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("LongLogTag")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.e("La réponse du refresh token", response.toString());
+                            String newAccessToken = response.getString("token");
+                            String newRefreshToken = response.getString("refreshToken");
+                            accessToken = newAccessToken;
+                            Prefs.putString(TOKEN, newAccessToken);
+                            Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                            listener.onTokenRefreshed(true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onTokenRefreshed(false);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.e("RefreshToken", "Error: " + volleyError.getMessage());
+                        listener.onTokenRefreshed(false);
+                    }
+                }
+        );
+
+        queue.add(refreshRequest);
+    }
+
+    private interface TokenRefreshListener {
+        void onTokenRefreshed(boolean success);
+    }
+
+
 }

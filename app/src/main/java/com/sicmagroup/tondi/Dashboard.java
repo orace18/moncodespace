@@ -13,6 +13,7 @@ import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -21,6 +22,9 @@ import android.os.Bundle;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.format.DateFormat;
@@ -38,6 +42,7 @@ import android.widget.Toast;
 
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
@@ -46,9 +51,11 @@ import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -59,6 +66,7 @@ import com.orm.query.Condition;
 import com.orm.query.Select;
 import com.romellfudi.permission.PermissionService;
 import com.sicmagroup.formmaster.model.FormElementTextPassword;
+import com.sicmagroup.tondi.utils.Constantes;
 import com.sicmagroup.ussdlibra.USSDController;
 import com.squareup.picasso.Transformation;
 
@@ -67,11 +75,14 @@ import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,9 +96,11 @@ import java.util.regex.Pattern;
 import com.sicmagroup.formmaster.FormBuilder;
 import com.sicmagroup.formmaster.model.BaseFormElement;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static com.sicmagroup.tondi.CodeOtpVerification.progressDialog;
 import static com.sicmagroup.tondi.Connexion.ACCESS_BOOL;
 import static com.sicmagroup.tondi.Connexion.ACCESS_RETURNf_KEY;
 import static com.sicmagroup.tondi.Connexion.CONNECTER_KEY;
@@ -99,11 +112,14 @@ import static com.sicmagroup.tondi.Connexion.PASS_KEY;
 import static com.sicmagroup.tondi.Connexion.PHOTO_KEY;
 import static com.sicmagroup.tondi.Connexion.PRENOMS_KEY;
 import static com.sicmagroup.tondi.Connexion.SPLASH_LOADING;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 import static com.sicmagroup.tondi.utils.Constantes.STATUT_UTILISATEUR;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
 import static com.sicmagroup.tondi.Connexion.url_desactiver_account;
+import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.accessToken;
+import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
 
 public class Dashboard extends AppCompatActivity  {
@@ -145,6 +161,10 @@ public class Dashboard extends AppCompatActivity  {
     FloatingActionButton fab3;
     Boolean isFABOpen = false;
     ImageButton solde_btn;
+    private RecyclerView recyclerViewHistory;
+    private HistoryAdapter historyAdapter;
+    private TextView ifNoHistory;
+    private List<History> historyList;
 
     private AppUpdateManager appUpdateManager;
     private static final int RC_APP_UPDATE = 100;
@@ -240,7 +260,7 @@ public class Dashboard extends AppCompatActivity  {
     }
 
     private NetworkChangeReceiver receiver;
-    @SuppressLint("ResourceAsColor")
+    @SuppressLint({"ResourceAsColor", "MissingInflatedId"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -263,6 +283,24 @@ public class Dashboard extends AppCompatActivity  {
         /**
          * Upodate automaticaly and IMMEDIAT
          */
+
+        recyclerViewHistory = findViewById(R.id.recycler_view_history);
+        ifNoHistory = (TextView) findViewById(R.id.ifNoActivityMsg);
+
+        if (recyclerViewHistory != null) {
+            recyclerViewHistory.setLayoutManager(new LinearLayoutManager(this));
+            // Set your adapter here as well
+        } else {
+            Log.e("HomeActivity", "RecyclerView is null. Please check the layout ID.");
+        }
+
+
+        // recyclerViewHistory.setLayoutManager(new LinearLayoutManager(this));
+
+        historyList = new ArrayList<>();
+        historyAdapter = new HistoryAdapter(this, historyList);
+        recyclerViewHistory.setAdapter(historyAdapter);
+        afficherDixHistorique();
 
         appUpdateManager = AppUpdateManagerFactory.create(this);
         appUpdateManager.getAppUpdateInfo().addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
@@ -450,11 +488,10 @@ public class Dashboard extends AppCompatActivity  {
         String photo_identite = Prefs.getString(PHOTO_KEY, "");
         // Create imageDir
         File mypath = new File(directory, photo_identite + ".JPG");
-        Picasso.get().load(mypath).transform(new CircleTransform()).into(user_avatar);
+       // Picasso.get().load(mypath).transform(new CircleTransform()).into(user_avatar);
 
 
 
-//        Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new CircleTransform()).into(user_avatar);
 //        utilitaire.loadImageFromStorage(photo_identite,getWindow().getDecorView());
 //        Log.d("isFilePresent","isFilePresent:"+isFilePresent());
 //        Toast.makeText(getApplicationContext(),"photo_identite:"+isFilePresent(),Toast.LENGTH_LONG).show();
@@ -468,6 +505,8 @@ public class Dashboard extends AppCompatActivity  {
 
             }
         });
+
+
 //
 //        Button btn_accueil = findViewById(R.id.btn_accueil);
 //        btn_accueil.setOnClickListener(new View.OnClickListener() {
@@ -805,7 +844,7 @@ public class Dashboard extends AppCompatActivity  {
                 }
                 else
                 {
-                    int tentative_restant =  3 - Prefs.getInt(NMBR_PWD_TENTATIVE_FAILED, 0);
+                    int tentative_restant =  5 - Prefs.getInt(NMBR_PWD_TENTATIVE_FAILED, 0);
                     msg_try_mdp.setVisibility(View.VISIBLE);
                     msg_try_mdp.setText("Il vous reste "+String.valueOf(tentative_restant)+" tentative(s)");
                 }
@@ -1275,4 +1314,199 @@ public class Dashboard extends AppCompatActivity  {
             Toast.makeText(this, "Annuler", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private void afficherDixHistorique(){
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("customerNumber", Prefs.getString(TEL_KEY, ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_HISTORIES, jsonBody,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("medias", "10001");
+                        Log.e("Response", response.toString());
+
+                        try {
+                            // Vérifier si la réponse est valide
+                            if (response.getInt("responseCode") == 0) {
+                                final JSONArray activity = response.getJSONArray("body");
+
+                                // Liste temporaire pour stocker les activités
+                                List<History> liste_activity = new ArrayList<>();
+
+                                // Limiter à 10 éléments maximum
+                                int maxItems = 10;
+                                for (int i = 0; i < activity.length() && i < maxItems; i++) {
+                                    History row = new History();
+
+                                    @SuppressLint("SimpleDateFormat") java.text.DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                    Date creation = (Date)formatter.parse(activity.getJSONObject(i).getString("createdAt"));
+                                    long output_creation = creation.getTime() / 1000L;
+                                    String str_creation = Long.toString(output_creation);
+                                    long timestamp_creation = Long.parseLong(str_creation) * 1000;
+                                    byte[] titleByte = activity.getJSONObject(i).getString("title").getBytes(StandardCharsets.UTF_8);
+                                    byte[] contentByte = activity.getJSONObject(i).getString("content").getBytes(StandardCharsets.UTF_8);
+                                    row.setTitre(new String(titleByte, StandardCharsets.UTF_8));
+                                    row.setContenu(new String(contentByte, StandardCharsets.UTF_8));
+                                    row.setCreation(timestamp_creation);
+                                    row.setEtat(activity.getJSONObject(i).getBoolean("state") ? 1 : 0);
+
+                                    liste_activity.add(row);
+                                }
+
+                                // Mettre à jour la liste d'activités dans le RecyclerView
+                                if (liste_activity.isEmpty()) {
+                                    historyAdapter.notifyDataSetChanged();
+                                    ifNoHistory.setVisibility(View.VISIBLE);
+                                    recyclerViewHistory.setVisibility(View.INVISIBLE);
+                                } else {
+                                    historyList.clear(); // Efface l'ancienne liste d'historiques
+                                    historyList.addAll(liste_activity); // Ajout des 10 dernières activités
+                                    historyAdapter.notifyDataSetChanged(); // Notifie l'adaptateur des changements
+                                    ifNoHistory.setVisibility(View.INVISIBLE);
+                                    recyclerViewHistory.setVisibility(View.VISIBLE);
+                                }
+
+                                // Masque la boîte de dialogue de progression
+                                progressDialog.dismiss();
+                            }
+                        } catch (Throwable t) {
+                            Log.d("errornscription", String.valueOf(t.getCause()));
+                            Log.e("My_App", response.toString());
+                            Log.e("Connexion", t.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+//                        progressDialog.dismiss();
+                        // Gérer les erreurs de la requête
+                        Log.d("Error.Inscription", String.valueOf(volleyError.getMessage()));
+                        CoordinatorLayout mainLayout = findViewById(R.id.layout_history);
+
+                        String message;
+                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+                            message = "Aucune connexion Internet!";
+                            //showSnackbar(mainLayout, message);
+                        } else if (volleyError instanceof ServerError) {
+                            message = "Impossible de contacter le serveur!";
+                            showSnackbar(mainLayout, message);
+                        } else if (volleyError instanceof ParseError) {
+                            message = "Une erreur est survenue!";
+                            showSnackbar(mainLayout, message);
+                        }
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + accessToken); // Ajouter le token ici
+                return headers;
+            }
+        };
+
+        // Configurer la politique de nouvelle tentative de la requête
+        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        // Ajouter la requête à la file de requêtes
+        queue.add(jsonRequest);
+//
+//        // Initialiser la boîte de dialogue de progression et l'afficher
+//        progressDialog = new ProgressDialog(Home.this);
+//        progressDialog.setCancelable(false);
+//        progressDialog.setMessage("Veuillez patienter SVP! Récupération de vos activités ...");
+//        progressDialog.show();
+    }
+
+    // Fonction utilitaire pour afficher un Snackbar
+    private void showSnackbar(CoordinatorLayout mainLayout, String message) {
+        Snackbar snackbar = Snackbar
+                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                .setAction("REESSAYER", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        refreshAccessToken( Dashboard.this, new Dashboard.TokenRefreshListener() {
+                            @Override
+                            public void onTokenRefreshed(boolean success) {
+                                if (success) {
+                                    afficherDixHistorique();
+
+                                }
+                            }
+                        });
+                    }
+                });
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(Dashboard.this, R.color.colorGray));
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+        View sbView = snackbar.getView();
+        TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
+
+
+    }
+
+
+    private void refreshAccessToken(Context context, Dashboard.TokenRefreshListener listener) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JSONObject params = new JSONObject();
+        try {
+            String refreshToken = Prefs.getString(REFRESH_TOKEN, "");
+            Log.e("Mon refresh token", refreshToken);
+            params.put("refreshToken", refreshToken);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest refreshRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url_refresh_token,
+                params,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("LongLogTag")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.e("La réponse du refresh token", response.toString());
+                            String newAccessToken = response.getString("token");
+                            String newRefreshToken = response.getString("refreshToken");
+                            accessToken = newAccessToken;
+                            Prefs.putString(TOKEN, newAccessToken);
+                            Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                            listener.onTokenRefreshed(true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onTokenRefreshed(false);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.e("RefreshToken", "Error: " + volleyError.getMessage());
+                        listener.onTokenRefreshed(false);
+                    }
+                }
+        );
+
+        queue.add(refreshRequest);
+    }
+
+    private interface TokenRefreshListener {
+        void onTokenRefreshed(boolean success);
+    }
+
 }

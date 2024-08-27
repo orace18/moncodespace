@@ -11,7 +11,8 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
-        import androidx.recyclerview.widget.RecyclerView;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -131,6 +132,7 @@ public class TontineAdapter extends RecyclerView.Adapter<TontineAdapter.MyViewHo
             holder.versements.setText("Carte N°"+tontine.getPositionCarteNew(tontine.getId())+ " avec " +versements+" / 31 versements");
             holder.titre.setText("CARNET N° "+tontine.getCarnet()+" - Tontine "+tontine.getPeriode()+" de "+tontine.getMise()+" F");
 //            holder.relativeLayoutCard.setBackgroundResource(R.drawable.tontine_bg);
+            holder.relativeLayoutCard.setBackgroundColor(ContextCompat.getColor(mContext, R.color.card_jour));
         }else{
             holder.titre.setText("CARNET N° "+tontine.getCarnet()+" - Tontine "+tontine.getPeriode()+" de "+tontine.getMise()+" F");
 
@@ -139,10 +141,14 @@ public class TontineAdapter extends RecyclerView.Adapter<TontineAdapter.MyViewHo
         if (tontine.getPeriode().equals(PeriodiciteEnum.HEBDOMADAIRE.toString())){
             holder.versements.setText("Carte N°"+tontine.getPositionCarteNew(tontine.getId())+ " avec " +versements+" / 52 versements");
 //            holder.relativeLayoutCard.setBackgroundResource(R.drawable.tontine_bg);
+            holder.relativeLayoutCard.setBackgroundColor(ContextCompat.getColor(mContext, R.color.card_hebdo));
+
         }
         if (tontine.getPeriode().equals(PeriodiciteEnum.MENSUELLE.toString())){
 //            holder.relativeLayoutCard.setBackgroundResource(R.drawable.tontine_bg);
             holder.versements.setText("Carte N°"+tontine.getPositionCarteNew(tontine.getId())+ " avec " +versements+"/ 12 versements ");
+            holder.relativeLayoutCard.setBackgroundColor(ContextCompat.getColor(mContext, R.color.card_mensuel));
+
         }
 
         if (tontine.getDateDeblocage() != null )

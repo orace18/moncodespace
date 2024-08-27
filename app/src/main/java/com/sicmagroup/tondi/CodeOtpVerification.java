@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.orm.SugarRecord;
 import com.pixplicity.easyprefs.library.Prefs;
+import com.sicmagroup.formmaster.model.BaseFormElement;
 import com.sicmagroup.tondi.utils.Constantes;
 import com.sicmagroup.tondi.Enum.OperationTypeEnum;
 import com.sicmagroup.tondi.Enum.SexeEnum;
@@ -66,12 +68,15 @@ import java.util.Map;
 
 
 import static com.sicmagroup.tondi.Connexion.CODE_OTP_RECU;
+import static com.sicmagroup.tondi.Connexion.CONNECTER_KEY;
 import static com.sicmagroup.tondi.Connexion.ID_UTILISATEUR_KEY;
 import static com.sicmagroup.tondi.Connexion.NOM_KEY;
 import static com.sicmagroup.tondi.Connexion.PASS_KEY;
+import static com.sicmagroup.tondi.Connexion.PIN_KEY;
 import static com.sicmagroup.tondi.Connexion.PRENOMS_KEY;
 import static com.sicmagroup.tondi.Connexion.SEXE_KEY;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
+import static com.sicmagroup.tondi.Connexion.UUID_KEY;
 import static com.sicmagroup.tondi.Connexion.url_disable_code_otp;
 import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
@@ -745,36 +750,40 @@ public class CodeOtpVerification extends AppCompatActivity {
                         snackbar.show();
                     }
                     else {
-                        if(caller_activity.equals(callable_activity_carte)) {
-                            RequestQueue queue = Volley.newRequestQueue(CodeOtpVerification.this);
-                            StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_VERIFY_OTP,
-                                    new Response.Listener<String>() {
-                                        @SuppressLint("ResourceAsColor")
+                        if(caller_activity.equals(callable_activity_carte)) {RequestQueue queue = Volley.newRequestQueue(CodeOtpVerification.this);
+
+                            JSONObject jsonBody = new JSONObject();
+                            try {
+                                jsonBody.put("code", codeSaisit);
+                                jsonBody.put("type_operation", OperationTypeEnum.WITHDRAW_FROM_CUSTOMER.toString());
+                                jsonBody.put("numberClient", Prefs.getString(TEL_KEY, ""));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            JsonObjectRequest jsonRequest = new JsonObjectRequest(
+                                    Request.Method.POST,
+                                    Constantes.URL_VERIFY_OTP,
+                                    jsonBody,
+                                    new Response.Listener<JSONObject>() {
                                         @Override
-                                        public void onResponse(String response) {
-                                            Log.e("ResVerifCodCar", response);
-
-                                            // if (!response.equals("Erreur")) {
+                                        public void onResponse(JSONObject response) {
+                                            Log.e("ResVerifCodCar", response.toString());
                                             try {
-
-                                                JSONObject result = new JSONObject(response);
-                                                int responseCode = result.getInt("responseCode");
-                                                String bodyString = result.getString("body");
-                                                Log.e("jsonObjt", result.toString());
+                                                int responseCode = response.getInt("responseCode");
+                                                String bodyString = response.getString("body");
+                                                Log.e("jsonObjt", response.toString());
                                                 if (responseCode == 0) {
                                                     progressDialog.dismiss();
                                                     retrait_mmo(numero, montant);
-
                                                 } else {
                                                     progressDialog.dismiss();
                                                     CodeOtpVerification.this.finish();
                                                     Intent intent = new Intent(CodeOtpVerification.this, Message_non.class);
-                                                    intent.putExtra("msg_desc", result.getString("body"));
+                                                    intent.putExtra("msg_desc", bodyString);
                                                     intent.putExtra("id_tontine", id_tontine);
                                                     startActivity(intent);
                                                 }
-
-
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                                 Log.e("erreurCodOtp", e.getMessage());
@@ -785,46 +794,30 @@ public class CodeOtpVerification extends AppCompatActivity {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
                                             progressDialog.dismiss();
-                                            // error
-                                            //Log.e("Error.receive.smsrappel", String.valueOf(error.getMessage()));
                                             String message = "Une erreur est survenue! Veuillez réessayer svp.";
                                             Snackbar snackbar = Snackbar
                                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
                                                     .setAction("OK", new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
-                                                            refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                            refreshAccessToken(CodeOtpVerification.this, new TokenRefreshListener() {
                                                                 @Override
                                                                 public void onTokenRefreshed(boolean success) {
                                                                     if (success) {
-
+                                                                       // queue.add(jsonRequest);
                                                                     }
                                                                 }
                                                             });
                                                         }
                                                     });
                                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
-                                            // Changing message text color
                                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                                            // Changing action button text color
                                             View sbView = snackbar.getView();
-                                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                                            TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                                             textView.setTextColor(Color.WHITE);
                                             snackbar.show();
                                         }
-                                    }
-                            ) {
-                                @Override
-                                protected Map<String, String> getParams() {
-                                    //Date currentDate = new Date();
-                                    Map<String, String> params = new HashMap<String, String>();
-                                    params.put("code", codeSaisit);
-                                    params.put("type_operation", OperationTypeEnum.WITHDRAW_FROM_CUSTOMER.toString());
-
-                                    params.put("numberClient", Prefs.getString(TEL_KEY, ""));
-                                    // params.put("verification_date", android.text.format.DateFormat.format("yyyy-MM-dd H:i:m", currentDate.getTime()).toString());
-                                    return params;
-                                }
+                                    }) {
                                 @Override
                                 public Map<String, String> getHeaders() throws AuthFailureError {
                                     Map<String, String> headers = new HashMap<>();
@@ -834,11 +827,17 @@ public class CodeOtpVerification extends AppCompatActivity {
                                 }
                             };
 
-                            queue.add(postRequest);
+                            jsonRequest.setRetryPolicy(new DefaultRetryPolicy(
+                                    50000,
+                                    -1,
+                                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+                            queue.add(jsonRequest);
 
                             progressDialog = new ProgressDialog(CodeOtpVerification.this);
                             progressDialog.setCancelable(false);
                             progressDialog.setMessage("Veuillez patienter SVP! \n Vérification du code.");
+                            progressDialog.show();
+
 //                            progressDialog.show();
                         }
                         else if(caller_activity.equals(callable_activity_smsReceiver))
@@ -936,33 +935,41 @@ public class CodeOtpVerification extends AppCompatActivity {
                             progressDialog.setMessage("Veuillez patienter SVP! \n Vérification du code.");
                             progressDialog.show();
                         }
-                        else if(caller_activity.equals(callable_activity_inscription))
-                        {
+                        else if(caller_activity.equals(callable_activity_inscription)) {
                             RequestQueue queue = Volley.newRequestQueue(CodeOtpVerification.this);
-                            StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_VERIFY_OTP,
-                                    new Response.Listener<String>() {
+
+                            JSONObject jsonBody = new JSONObject();
+                            try {
+                                jsonBody.put("code", codeSaisit);
+                                jsonBody.put("numberClient", numero);
+                                jsonBody.put(Constantes.TYPE_OP_KEY, OperationTypeEnum.INSCRIPTION.toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                                    Request.Method.POST,
+                                    Constantes.URL_VERIFY_OTP,
+                                    jsonBody,
+                                    new Response.Listener<JSONObject>() {
                                         @SuppressLint("ResourceAsColor")
                                         @Override
-                                        public void onResponse(String response) {
-                                            Log.e("ResInscr", response);
-                                            // if (!response.equals("Erreur")) {
+                                        public void onResponse(JSONObject response) {
+                                            Log.e("ResInscr", response.toString());
                                             try {
-
-                                                JSONObject result = new JSONObject(response);
-                                                int responseCode = result.getInt("responseCode");
-                                                String bodyString = result.getString("body");
-                                                Log.e("jsonObjt", result.toString());
+                                                int responseCode = response.getInt("responseCode");
+                                                String bodyString = response.getString("body");
+                                                Log.e("jsonObjt", response.toString());
                                                 if (responseCode == 0) {
                                                     progressDialog.dismiss();
                                                     Log.d("inscription", "validation du code otp pour poursuivre insc");
                                                     inscrire();
                                                 } else {
                                                     progressDialog.dismiss();
-                                                    //CodeOtpVerification.this.finish();
                                                     Intent i = new Intent(CodeOtpVerification.this, Message_non.class);
-                                                    i.putExtra("msg_desc", bodyString.toString());
+                                                    i.putExtra("msg_desc", bodyString);
                                                     i.putExtra("class", "com.sicmagroup.tondi.Inscription");
-                                                    i.putExtra("mmi","1");
+                                                    i.putExtra("mmi", "1");
                                                     startActivity(i);
                                                 }
                                             } catch (JSONException e) {
@@ -975,37 +982,22 @@ public class CodeOtpVerification extends AppCompatActivity {
                                         @Override
                                         public void onErrorResponse(VolleyError error) {
                                             progressDialog.dismiss();
-                                            // error
                                             String message = "Une erreur est survenue! Veuillez réessayer svp.";
                                             Snackbar snackbar = Snackbar
                                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
                                                     .setAction("OK", new View.OnClickListener() {
                                                         @Override
                                                         public void onClick(View view) {
-
                                                         }
                                                     });
                                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
-                                            // Changing message text color
                                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                                            // Changing action button text color
                                             View sbView = snackbar.getView();
-                                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                                            TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                                             textView.setTextColor(Color.WHITE);
                                             snackbar.show();
                                         }
-                                    }
-                            ) {
-                                @Override
-                                protected Map<String, String> getParams() {
-                                    //Date currentDate = new Date();
-                                    Map<String, String> params = new HashMap<String, String>();
-                                    params.put("code", codeSaisit);
-                                    params.put("numberClient", numero);
-                                    params.put(Constantes.TYPE_OP_KEY, OperationTypeEnum.INSCRIPTION.toString());
-
-                                    return params;
-                                }
+                                    }) {
                                 @Override
                                 public Map<String, String> getHeaders() throws AuthFailureError {
                                     Map<String, String> headers = new HashMap<>();
@@ -1015,18 +1007,18 @@ public class CodeOtpVerification extends AppCompatActivity {
                                 }
                             };
 
-                            postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                                     25000,
                                     -1,
                                     DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                            queue.add(postRequest);
+                            queue.add(jsonObjectRequest);
 
                             progressDialog = new ProgressDialog(CodeOtpVerification.this);
                             progressDialog.setCancelable(false);
                             progressDialog.setMessage("Veuillez patienter SVP! \n Vérification du code.");
                             progressDialog.show();
-                        }
-                        else if(caller_activity.equals(callable_activity_connexion)){
+
+                        }else if(caller_activity.equals(callable_activity_connexion)){
                             RequestQueue queue = Volley.newRequestQueue(CodeOtpVerification.this);
                             StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_VERIFY_OTP,
                                     new Response.Listener<String>() {
@@ -1377,6 +1369,7 @@ public class CodeOtpVerification extends AppCompatActivity {
                             Log.e("La réponse du refresh token est:", response.toString());
                             String newAccessToken = response.getString("token");
                             String newRefreshToken = response.getString("refreshToken");
+                            accessToken = newAccessToken;
                             Prefs.putString(TOKEN, newAccessToken);
                             Prefs.putString(REFRESH_TOKEN, newRefreshToken);
                             Log.d("RefreshToken", "New Token: " + newAccessToken);
@@ -1436,6 +1429,10 @@ public class CodeOtpVerification extends AppCompatActivity {
                         Log.e("Response", response.toString());
 
                         try {
+                            int id = 0;
+                            String customNumber = "";
+                            Connexion.AeSimpleSHA1 AeSimpleSHA1 = new Connexion.AeSimpleSHA1();
+
 
                             JSONObject result = response;
                             int responseCode = result.getInt("responseCode");
@@ -1443,63 +1440,116 @@ public class CodeOtpVerification extends AppCompatActivity {
                             //final JSONArray array = result.getJSONArray("data");
                             //Log.d("My App", obj.toString());
                             if (responseCode == 0){
-                                JSONObject body = new JSONObject(bodyString);
+                               // JSONObject body = new JSONObject(bodyString);
                                 // enregistrer en local
+                               // Utilisateur nouvel_utilisateur = new Utilisateur();
+
+                                JSONObject body = response.getJSONObject("body");
+                                JSONObject user = body.getJSONObject("userDTO");
+                                id = Integer.parseInt(user.getString("id"));
+                                customNumber = body.getString("username");
+                                String user_uuid = user.getString("uuid");
+                                String token = body.getString("accessToken");
+                                String refreshToken = body.getString("refreshToken");
+                                SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+                                //String nom = sharedPreferences.getString("nom", "");
+                                //String prenoms = sharedPreferences.getString("prenoms", "");
+
+                                Log.e("Le customNum: ", customNumber);
+                                Log.e("L'id est : ", String.valueOf(id));
+                                Log.e("Le token est:", token);
+                                //BaseFormElement mdp = mFormBuilder.getFormElement(TAG_PASS);
+                                String mot_de_passe = mdp;
+                                mot_de_passe = AeSimpleSHA1.md5(mot_de_passe);
+                                mot_de_passe = AeSimpleSHA1.SHA1(mot_de_passe);
+                                Log.e("Le mot de passe hashé:", mot_de_passe);
+
                                 Utilisateur nouvel_utilisateur = new Utilisateur();
-                                nouvel_utilisateur.setId_utilisateur(body.getString("id"));
-                                nouvel_utilisateur.setNumero(body.getString("numero"));
-                                nouvel_utilisateur.setNom(body.getString("firstName"));
-                                nouvel_utilisateur.setPrenoms(body.getString("lastName"));
-//                                nouvel_utilisateur.setPin_acces(user.getString("pin_acces"));
-                                nouvel_utilisateur.setMdp(body.getString("password"));
-                                // maj des dates
-                                @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                                Date creation = (Date)formatter.parse(body.getString("createdAt"));
-                                long output_creation=creation.getTime()/1000L;
-                                String str_creation=Long.toString(output_creation);
-                                long timestamp_creation = Long.parseLong(str_creation) * 1000;
-                                Date maj = (Date)formatter.parse(body.getString("updatedAt"));
-                                long output_maj=maj.getTime()/1000L;
-                                String str_maj=Long.toString(output_maj);
-                                long timestamp_maj = Long.parseLong(str_maj) * 1000;
+                                nouvel_utilisateur.setId_utilisateur(String.valueOf(id));
+                                nouvel_utilisateur.setNumero(customNumber);
+                                nouvel_utilisateur.setNom(Prefs.getString(NOM_KEY,""));
+                                nouvel_utilisateur.setPrenoms(Prefs.getString(PRENOMS_KEY,""));
+                                nouvel_utilisateur.setPin_acces(mot_de_passe);
+                                nouvel_utilisateur.setMdp(mot_de_passe);
+
+                                DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                long timestamp_creation = formatter.parse(user.getString("createdAt")).getTime();
+                                long timestamp_maj = formatter.parse(user.getString("updatedAt")).getTime();
+
                                 nouvel_utilisateur.setCreation(timestamp_creation);
-                                nouvel_utilisateur.setId_utilisateur(body.getString("id"));
                                 nouvel_utilisateur.setMaj(timestamp_maj);
                                 nouvel_utilisateur.setConnecter_le(timestamp_maj);
-
                                 nouvel_utilisateur.save();
 
-                                Long id= Long.parseLong(nouvel_utilisateur.getId_utilisateur());
+//                                nouvel_utilisateur.setId_utilisateur(body.getString("id"));
+//                                nouvel_utilisateur.setNumero(body.getString("numero"));
+//                                nouvel_utilisateur.setNom(body.getString("firstName"));
+//                                nouvel_utilisateur.setPrenoms(body.getString("lastName"));
+////                                nouvel_utilisateur.setPin_acces(user.getString("pin_acces"));
+//                                nouvel_utilisateur.setMdp(body.getString("password"));
+//                                // maj des dates
+//                                @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+//                                Date creation = (Date)formatter.parse(body.getString("createdAt"));
+//                                long output_creation=creation.getTime()/1000L;
+//                                String str_creation=Long.toString(output_creation);
+//                                long timestamp_creation = Long.parseLong(str_creation) * 1000;
+//                                Date maj = (Date)formatter.parse(body.getString("updatedAt"));
+//                                long output_maj=maj.getTime()/1000L;
+//                                String str_maj=Long.toString(output_maj);
+//                                long timestamp_maj = Long.parseLong(str_maj) * 1000;
+//                                nouvel_utilisateur.setCreation(timestamp_creation);
+//                                nouvel_utilisateur.setId_utilisateur(body.getString("id"));
+//                                nouvel_utilisateur.setMaj(timestamp_maj);
+//                                nouvel_utilisateur.setConnecter_le(timestamp_maj);
+//
+//                                nouvel_utilisateur.save();
+
+                                Long iD = Long.parseLong(nouvel_utilisateur.getId_utilisateur());
                                 //Log.d("nouvel_utilisateur_id", "id:"+String.valueOf(id));
-                                if (id!=null){
+                                if (iD!=null){
 
-                                    // Mettre à jour la préférence id utilisateur
-                                    Prefs.putString(ID_UTILISATEUR_KEY, String.valueOf(id));
-                                    // Mettre à jour la préférence nom
-                                    Prefs.putString(NOM_KEY, body.getString("firstName"));
-                                    // Mettre à jour la préférence prenoms
-                                    Prefs.putString(PRENOMS_KEY, body.getString("lastName"));
-                                    // Mettre à jour la préférence pin d'accès
-//                                    Prefs.putString(PIN_KEY, user.getString("pin_acces"));
-                                    // Mettre à jour la préférence pin d'accès
-                                    Prefs.putString(PASS_KEY, body.getString("password"));
-                                    // Mettre à jour la préférence pin d'accès
-//                                    Prefs.putString(CONNECTER_KEY, String.valueOf(timestamp_creation));
-                                    Prefs.putString(TEL_KEY, String.valueOf(body.getString("numero")));
-                                    //Mettre la valeur du sexe
-                                    Prefs.putString(SEXE_KEY, body.getString("sexe"));
-//                                    final JSONObject array = result.getJSONObject("data");
-                                    //Inscription.this.finish();
+//                                    // Mettre à jour la préférence id utilisateur
+//                                    Prefs.putString(ID_UTILISATEUR_KEY, String.valueOf(id));
+//                                    // Mettre à jour la préférence nom
+//                                    Prefs.putString(NOM_KEY, body.getString("firstName"));
+//                                    // Mettre à jour la préférence prenoms
+//                                    Prefs.putString(PRENOMS_KEY, body.getString("lastName"));
+//                                    // Mettre à jour la préférence pin d'accès
+////                                    Prefs.putString(PIN_KEY, user.getString("pin_acces"));
+//                                    // Mettre à jour la préférence pin d'accès
+//                                    Prefs.putString(PASS_KEY, body.getString("password"));
+//                                    // Mettre à jour la préférence pin d'accès
+////                                    Prefs.putString(CONNECTER_KEY, String.valueOf(timestamp_creation));
+//                                    Prefs.putString(TEL_KEY, String.valueOf(body.getString("numero")));
+//                                    //Mettre la valeur du sexe
+//                                    Prefs.putString(SEXE_KEY, body.getString("sexe"));
+////                                    final JSONObject array = result.getJSONObject("data");
+//                                    //Inscription.this.finish();
+
+                                    Prefs.putString(TOKEN, token);
+                                    Prefs.putString(REFRESH_TOKEN, refreshToken);
+                                    Prefs.putString(ID_UTILISATEUR_KEY, user.getString("id"));
+                                   // Prefs.putString(NOM_KEY, user.optString("firstName", prenoms));
+                                   // Prefs.putString(PRENOMS_KEY, user.optString("lastName", nom));
+                                    Prefs.putString(PIN_KEY, mot_de_passe);
+                                    Prefs.putString(PASS_KEY, mot_de_passe);
+                                    Prefs.putString(CONNECTER_KEY, String.valueOf(timestamp_creation));
+                                    Prefs.putString(TEL_KEY, customNumber);
+                                    Prefs.putString(UUID_KEY, user_uuid);
+
+
                                     Intent inscription_next_intent = new Intent(CodeOtpVerification.this,Inscription_next.class);
+                                    inscription_next_intent.putExtra("id_utilisateur", id);
+                                    inscription_next_intent.putExtra("user_uuid", user_uuid);
+                                    inscription_next_intent.putExtra("accessToken", token);
+//                                    try {
+//                                        //inscription_next_intent.putExtra("id_utilisateur", body.getString("id"));
+//                                        inscription_next_intent.putExtra("id_utilisateur", id);
+//                                    } catch (JSONException e) {
+//                                        e.printStackTrace();
+//                                    }
 
-                                    try {
-                                        inscription_next_intent.putExtra("id_utilisateur", body.getString("id"));
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
                                     startActivity(inscription_next_intent);
-
-
 
                                 }
 
@@ -1621,7 +1671,7 @@ public class CodeOtpVerification extends AppCompatActivity {
         progressDialog.show();
     }
 
-    private void retrait_mmo(final String numero, final String montant) {
+    /*private void retrait_mmo(final String numero, final String montant) {
         final Tontine t = SugarRecord.findById(Tontine.class, (long) id_tontine);
         RequestQueue queue = Volley.newRequestQueue(this);
 
@@ -1718,9 +1768,9 @@ public class CodeOtpVerification extends AppCompatActivity {
                             Log.d("errornscription", t.getMessage());
                             //Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
                         }
-                       /* }
+                        }
                         else
-                            Toast.makeText(CarteMain.this, "Erreur lors du versement", Toast.LENGTH_LONG).show();*/
+                            Toast.makeText(CarteMain.this, "Erreur lors du versement", Toast.LENGTH_LONG).show();
 
                     }
                 },
@@ -1901,7 +1951,277 @@ public class CodeOtpVerification extends AppCompatActivity {
         progressDialog.setCancelable(false);
         progressDialog.setMessage("Veuillez patienter SVP! \n Le virement sur votre compte mobile money est en cours...");
         progressDialog.show();
+    }*/
+
+    private void retrait_mmo(final String numero, final String montant) {
+        final Tontine t = SugarRecord.findById(Tontine.class, (long) id_tontine);
+        RequestQueue queue = Volley.newRequestQueue(this);
+
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("customerNumber", numero);
+            jsonBody.put("idTontine", String.valueOf(id_tontine));
+            // Ajoutez d'autres paramètres si nécessaire
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                Constantes.URL_COLLECTED_MOMO_TONTINE,
+                jsonBody,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.e("ResponseRetraitMomo", response.toString());
+                        try {
+                            if (response.getInt("responseCode") == 0) {
+                                progressDialog.dismiss();
+                                JSONObject result = response;
+
+                                    // maj des dates
+                                    Long id_tont = Long.valueOf(0);
+                                    Date currentTime = Calendar.getInstance().getTime();
+                                    long output_creation=currentTime.getTime()/1000L;
+                                    String str_creation=Long.toString(output_creation);
+                                    long timestamp_creation = Long.parseLong(str_creation) * 1000;
+                                    long output_maj=currentTime.getTime()/1000L;
+                                    String str_maj=Long.toString(output_maj);
+                                    long timestamp_maj = Long.parseLong(str_maj) * 1000;
+
+                                    JSONArray resultat = result.getJSONArray("body");
+                                    String[] actionGroup = {};
+                                    String action = "";
+                                    String object = "";
+                                    for (int i = 0; i < resultat.length(); i++)
+                                    {
+                                        JSONObject content = new JSONObject(resultat.get(i).toString());
+                                        actionGroup =  content.getString("action").split("#");
+                                        action = actionGroup[0];
+                                        object = actionGroup[1];
+                                        JSONObject data = new JSONObject(content.getJSONObject("data").toString());
+                                        Utilisateur u = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY,null)).get(0);
+                                        if ("update".equals(action)) {
+                                            if (object.equals("tontines")) {
+                                                List<Tontine> old = Tontine.find(Tontine.class, "id_server = ?", data.getLong("id")+"");
+                                                if (old.size() > 0) {
+                                                    if(data.has("state")) {
+                                                        old.get(0).setStatut(data.getString("state"));
+                                                    }
+                                                    if(data.has("carnet")) {
+                                                        old.get(0).setCarnet(data.getString("carnet"));
+                                                    }
+                                                    old.get(0).setMaj(timestamp_maj);
+                                                    old.get(0).save();
+                                                    id_tont = old.get(0).getId();
+                                                }
+
+                                            }
+                                        }
+                                    }
+                                    if(id_tont != 0)
+                                    {
+                                        CodeOtpVerification.this.finish();
+                                        String msg = "Votre tontine a correctement été transféré sur votre compte Moov Money";
+//                                    String msg = result.getString("message");
+                                        Intent j = new Intent(CodeOtpVerification.this, Message_ok.class);
+                                        j.putExtra("class", "com.sicmagroup.tondi.MesTontines");
+                                        //j.putExtra("id_tontine",Integer.parseInt(String.valueOf(id_tontine)));
+                                        j.putExtra("msg_desc", msg);
+                                        startActivity(j);
+                                    }
+                                    else
+                                    {
+                                        CodeOtpVerification.this.finish();
+                                        String msg = "Désolé, une erreur est survenue. Contactez le service client.";
+                                        Intent i = new Intent(CodeOtpVerification.this, Message_non.class);
+                                        i.putExtra("msg_desc", msg);
+                                        i.putExtra("class", "com.sicmagroup.tondi.MesTontines");
+                                        startActivity(i);
+                                    }
+
+
+                            } else {
+                                progressDialog.dismiss();
+                                String msg = response.getString("body");
+                                Intent i = new Intent(CodeOtpVerification.this, Message_non.class);
+                                i.putExtra("msg_desc", msg);
+                                i.putExtra("class", "com.sicmagroup.tondi.NouvelleTontine");
+                                startActivity(i);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        progressDialog.dismiss();
+                        Log.e("ErrRetraitMomo", String.valueOf(volleyError.getMessage()));
+                        Log.e("Stack", "Error StackTrace: \t" + volleyError.getStackTrace());
+
+                        if (String.valueOf(volleyError.getMessage()).equals("null"))
+                        {
+                            try {
+                                progressDialog.dismiss();
+                                Tontine tontine = SugarRecord.findById(Tontine.class, (long) id_tontine);
+                                Log.d("tontinegetPeriode", tontine.getPeriode());
+                                String msg = "Le montant de " + tontine.getMontEncaisse() + " a été correctement transféré sur votre compte mobile money";
+
+                                Log.e("testTontine", tontine_main.getStatut());
+                                //passage a l'etat encaissee des tonines precedentes en cas de retraits cumule de cartes
+                                List<Tontine> tontines = tontine.getIdForMontCumuleNow(id_tontine, tontine_main.getStatut());
+                                // maj des dates
+                                Date currentTime = Calendar.getInstance().getTime();
+                                long output_maj = currentTime.getTime() / 1000L;
+                                String str_maj = Long.toString(output_maj);
+                                long timestamp_maj = Long.parseLong(str_maj) * 1000;
+                                Gson gson = new Gson();
+                                Utilisateur u = SugarRecord.find(Utilisateur.class, "id_utilisateur = ? ", Prefs.getString(ID_UTILISATEUR_KEY, "")).get(0);
+
+                                for (Tontine to:tontines)
+                                {
+                                    to.setStatut("encaissee");
+                                    to.save();
+                                    try {
+
+                                        //
+                                        Synchronisation new_sync2 = new Synchronisation();
+                                        JSONObject jsonObject2 = new JSONObject();
+                                        jsonObject2.put("a","update#tontines");
+                                        jsonObject2.put("n",u.getNumero());
+                                        Log.e("soldevv", String.valueOf(u.getSolde()));
+                                        jsonObject2.put("s", u.getSolde());
+                                        String t_json = gson.toJson(to);
+                                        jsonObject2.put("d",t_json);
+                                        new_sync2.setMaj(timestamp_maj);
+                                        new_sync2.setStatut(0);
+                                        new_sync2.setDonnees(jsonObject2.toString());
+                                        new_sync2.save();
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                Utilitaire utilitaire = new Utilitaire(CodeOtpVerification.this);
+                                // si internet, appeler synchroniser_en_ligne
+                                if (utilitaire.isConnected()) {
+                                    utilitaire.synchroniser_en_ligne();
+                                }
+
+                                Intent j = new Intent(CodeOtpVerification.this, Message_ok.class);
+                                j.putExtra("class", "com.sicmagroup.tondi.MesTontines");
+                                //j.putExtra("id_tontine",Integer.parseInt(String.valueOf(id_tontine)));
+                                j.putExtra("msg_desc", msg);
+
+                                startActivity(j);
+
+                            } catch (Throwable t) {
+                                Log.e("errornscription", t.getMessage());
+                                //Log.e("My App", "Could not parse malformed JSON: \"" + response + "\"");
+                            }
+
+                        }
+                        String message;
+                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                            //Log.d("VolleyError_Test",volleyError.getMessage());
+                            progressDialog.dismiss();
+                            message = "Aucune connexion Internet!";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+
+                                            refreshAccessToken(CodeOtpVerification.this, new CodeOtpVerification.TokenRefreshListener() {
+                                                @Override
+                                                public void onTokenRefreshed(boolean success) {
+                                                    if (success) {
+                                                        retrait_mmo(numero,montant);
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+
+                        } else if (volleyError instanceof ServerError) {
+                            message = "Impossible de contacter le serveur!";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            retrait_mmo(numero,montant);
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+                        }  else if (volleyError instanceof ParseError) {
+                            //message = "Parsing error! Please try again later";
+                            message = "Une erreur est survenue!";
+                            Snackbar snackbar = Snackbar
+                                    .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction("REESSAYER", new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            retrait_mmo(numero,montant);
+                                        }
+                                    });
+                            snackbar.getView().setBackgroundColor(ContextCompat.getColor(CodeOtpVerification.this, R.color.colorGray));
+                            // Changing message text color
+                            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                            // Changing action button text color
+                            View sbView = snackbar.getView();
+                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            textView.setTextColor(Color.WHITE);
+                            snackbar.show();
+                        }
+                    }
+
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
+                return headers;
+            }
+        };
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        queue.add(jsonObjectRequest);
+
+        // Initialiser et afficher le ProgressDialog
+        progressDialog = new ProgressDialog(CodeOtpVerification.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Veuillez patienter SVP! \n Le virement sur votre compte mobile money est en cours...");
+        progressDialog.show();
     }
+
 
 
     public static class OtpReceiver extends BroadcastReceiver{

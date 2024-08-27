@@ -14,7 +14,16 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
@@ -32,6 +41,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -52,6 +62,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
@@ -75,13 +86,16 @@ import com.sicmagroup.formmaster.model.FormElementTextSingleLine;
 import com.sicmagroup.tondi.Enum.TontineEnum;
 import com.sicmagroup.tondi.utils.Constantes;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 import com.tapadoo.alerter.Alerter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -93,6 +107,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.sicmagroup.formmaster.FormBuilder;
 import com.sicmagroup.formmaster.model.BaseFormElement;
@@ -104,13 +119,25 @@ import static com.sicmagroup.tondi.Connexion.PHOTO_CNI_KEY;
 import static com.sicmagroup.tondi.Connexion.PHOTO_KEY;
 import static com.sicmagroup.tondi.Connexion.PRENOMS_KEY;
 import static com.sicmagroup.formmaster.model.BaseFormElement.TYPE_EDITTEXT_PASSWORD;
+import static com.sicmagroup.tondi.Connexion.UUID_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.CODE_MARCHAND_KEY;
+import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 import static com.sicmagroup.tondi.utils.Constantes.STATUT_UTILISATEUR;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
+import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.accessToken;
+import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+
 
 public class MonCompte extends AppCompatActivity {
 
@@ -120,6 +147,8 @@ public class MonCompte extends AppCompatActivity {
     private static final int TAG_PIN = 44;
     private static final int TAG_TEL = 45;
     private static final int TAG_CODE_MERCHANT = 46;
+    private static final int GALLERY_REQUEST_CODE = 200;
+    private static final int CAMERA_REQUEST_CODE = 200;
     private RecyclerView form_pass;
     private RecyclerView form_sim;
     private FormBuilder frm_pass_builder;
@@ -127,6 +156,7 @@ public class MonCompte extends AppCompatActivity {
     private FormBuilder frm_sim_builder;
     private FormBuilder frm_merchant_builder;
     ProgressDialog progressDialog;
+    Utilitaire utilitaire1;
 
 
 
@@ -170,6 +200,7 @@ public class MonCompte extends AppCompatActivity {
     private RecyclerView merchandForm;
     private TextView cardMerchantTitle;
     private Button btn_pmerchant;
+    private ImageView user_avatar;
     private ProgressBar progressBar;
     private LinearLayout linearLayoutDetails;
     private static AsyncHttpClient client = new AsyncHttpClient();
@@ -178,6 +209,7 @@ public class MonCompte extends AppCompatActivity {
     private TextView code_merchant;
 
     TextView cni_details;
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -207,8 +239,8 @@ public class MonCompte extends AppCompatActivity {
         String firstname = sharedPreferences.getString("prenoms", "");
 
 
-        String nom = Prefs.getString(NOM_KEY, lastname);
-        String prenoms = Prefs.getString(PRENOMS_KEY, firstname);
+        String nom = Prefs.getString(NOM_KEY, "");
+        String prenoms = Prefs.getString(PRENOMS_KEY, "");
         TextView user_name = (TextView) findViewById(R.id.username);
         user_name.setText(nom + " " + prenoms);
         user_name.setSelected(true);
@@ -227,6 +259,8 @@ public class MonCompte extends AppCompatActivity {
         expandedMerchantBtn = (ImageButton) findViewById(R.id.expanded_merchant_btn);
         expandeMerchantBox = (ConstraintLayout) findViewById(R.id.expand_merchant);
         merchandForm = (RecyclerView) findViewById(R.id.form_merchant);
+        user_avatar = findViewById(R.id.avatar);
+
 
         double solde = 0.00;
         // liste tontines encours et terminees
@@ -244,22 +278,38 @@ public class MonCompte extends AppCompatActivity {
         Utilisateur u = new Utilisateur().getUser(Prefs.getString(TEL_KEY, null));
         solde_compte.setText("Votre solde est : "+new DecimalFormat("##.##").format(u.getSolde())+" F CFA");
 
-        ImageView user_avatar = findViewById(R.id.avatar);
+
+        /*ContextWrapper cw = new ContextWrapper(this);
+        File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
+        String photo_identite = Prefs.getString(PHOTO_KEY, "");
+        // Create imageDir
+        File mypath = new File(directory, photo_identite);
+        Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
+*/
+        Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
 
         ContextWrapper cw = new ContextWrapper(this);
         File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
         String photo_identite = Prefs.getString(PHOTO_KEY, "");
         // Create imageDir
-        File mypath = new File(directory, photo_identite + ".png");
-        Picasso.get().load(mypath).transform(new Dashboard.CircleTransform()).into(user_avatar);
-
+        File mypath = new File(directory, photo_identite);
+        //Picasso.get().load(mypath).transform(new Dashboard.CircleTransform()).into(user_avatar);
+        //Log.e("photo identite", photo_identite);
 
         ImageView photo_cni_view = findViewById(R.id.photo_cni_cmpte);
-
         String photo_cni = Prefs.getString(PHOTO_CNI_KEY, "");
         File mypath_cni = new File(directory, photo_cni + ".png");
         Picasso.get().load(mypath_cni).into(photo_cni_view);
-        Log.e("photo", photo_cni);
+        Log.e("photo cni", photo_cni);
+
+            user_avatar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showPictureDialog();
+                }
+            });
+
+
         if(!isSecuriteExpanded){
             expandedSecuriteBtn.setRotationX(0.0F);
         } else {
@@ -365,7 +415,7 @@ public class MonCompte extends AppCompatActivity {
             }
         });
 
-        if(Prefs.getString(CODE_MARCHAND_KEY, "").equals("")){
+        if(Prefs.getString(CODE_MARCHAND_KEY, "").equals("null")){
             cardMerchantTitle.setText("Lier un marchand");
             //afficher le formulaire
             setupFormMerchand();
@@ -382,10 +432,10 @@ public class MonCompte extends AppCompatActivity {
 
         }
 
-//        if(utilitaire.isConnected())
-//        {
-//            Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
-//        }
+        if(utilitaire.isConnected())
+        {
+            Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
+        }
 
         //Picasso.get().load(medias_url + Prefs.getString(PHOTO_KEY, null) + ".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
 
@@ -527,24 +577,526 @@ public class MonCompte extends AppCompatActivity {
 //        {
 //            e.printStackTrace();
 //        }
+
     }
 
+    public static class CircleTransform implements Transformation {
+        @Override
+        public Bitmap transform(Bitmap source) {
+            int size = Math.min(source.getWidth(), source.getHeight());
+
+            int x = (source.getWidth() - size) / 2;
+            int y = (source.getHeight() - size) / 2;
+
+            Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
+            if (squaredBitmap != source) {
+                source.recycle();
+            }
+
+            Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
+
+            Canvas canvas = new Canvas(bitmap);
+            Paint paint = new Paint();
+            BitmapShader shader = new BitmapShader(squaredBitmap,
+                    BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
+            paint.setShader(shader);
+            paint.setAntiAlias(true);
+
+            float r = size / 2f;
+            canvas.drawCircle(r, r, r, paint);
+
+            squaredBitmap.recycle();
+            return bitmap;
+        }
+
+        @Override
+        public String key() {
+            return "circle";
+        }
+    }
+
+
+    private void showPictureDialog() {
+        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
+        pictureDialog.setTitle("Choisissez une action");
+        String[] pictureDialogItems = {
+                "Sélectionner depuis la galerie",
+                "Prendre une photo"};
+        pictureDialog.setItems(pictureDialogItems,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                choosePhotoFromGallery();
+                                break;
+                            case 1:
+                                takePhotoFromCamera();
+                                break;
+                        }
+                    }
+                });
+        pictureDialog.show();
+    }
+
+    
+
+    public void choosePhotoFromGallery() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+
+    }
+
+    private void takePhotoFromCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, CAMERA_REQUEST_CODE);
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == GALLERY_REQUEST_CODE) {
+                if (data != null && data.getData() != null) {
+                    Uri contentURI = data.getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                        String path = saveImage(bitmap);
+                        Log.e("Image", bitmap.toString());
+
+                        Bitmap circularBitmap = getCircularBitmap(bitmap);
+                        user_avatar.setImageBitmap(circularBitmap);
+                        Log.e("Photo profil uploaded",bitmap.toString());                        Toast.makeText(MonCompte.this, "Image Saved!", Toast.LENGTH_SHORT).show();
+                        uploadImageToServer(path);
+                        String imageString = encodeToBase64(bitmap);
+                        String imgname = String.valueOf(Calendar.getInstance().getTimeInMillis());
+
+
+                        utilitaire.saveToInternalStorage(bitmap, imgname);
+                        //Prefs.putString(PHOTO_KEY, imageString);
+                       // Log.e("image :", imageString);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(MonCompte.this, "Failed to load image!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MonCompte.this, "Failed to get image from gallery!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            if (requestCode == CAMERA_REQUEST_CODE) {
+                if (data != null && data.getExtras() != null) {
+                    Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+                    if (thumbnail != null) {
+                        Log.d("Photo prise", thumbnail.toString());
+                        Bitmap circularBitmap = getCircularBitmap(thumbnail);
+                        user_avatar.setImageBitmap(circularBitmap);
+                        Log.e("Photo profil uploaded",thumbnail.toString());
+                        String path = saveImage(thumbnail);
+                        Log.e("Photo profil uploaded",path);
+                        String imgname = String.valueOf(Calendar.getInstance().getTimeInMillis());
+
+
+                        utilitaire.saveToInternalStorage(thumbnail, imgname);
+
+                        Toast.makeText(MonCompte.this, "Image Saved!", Toast.LENGTH_SHORT).show();
+                        uploadImageToServer(path);
+                        String imageString = encodeToBase64(thumbnail);
+                        //Prefs.putString(PHOTO_KEY, imageString);
+                       // Log.e("image :", imageString);
+                    } else {
+                        Toast.makeText(MonCompte.this, "Failed to capture image!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MonCompte.this, "Failed to capture image!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            Toast.makeText(MonCompte.this, "Action canceled or failed!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public String encodeToBase64(Bitmap image) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+
+    public String saveImage(Bitmap myBitmap) {
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
+        File mypath = new File(directory, "user_avatar.png");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            myBitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return mypath.getAbsolutePath();
+    }
+
+
+    private Bitmap getCircularBitmap(Bitmap bitmap) {
+        int width = Math.min(bitmap.getWidth(), bitmap.getHeight());
+
+        Bitmap outputBitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(outputBitmap);
+
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, width, width);
+        final RectF rectF = new RectF(rect);
+
+        float radius = width / 2.0f;
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(Color.BLACK);
+        canvas.drawCircle(radius, radius, radius, paint);
+
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return outputBitmap;
+    }
+
+
+
+    private Bitmap resizeImage(Bitmap originalImage, int width, int height) {
+        return Bitmap.createScaledBitmap(originalImage, width, height, false);
+    }
+
+    private String convertImageToBase64(String imagePath) {
+        Bitmap bitmap = BitmapFactory.decodeFile(imagePath);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        byte[] byteArray = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(byteArray, Base64.DEFAULT);
+    }
+
+   /* private void uploadImageToServer(String imagePath) {
+        // Convertir l'image en base64
+        String base64Image = convertImageToBase64(imagePath);
+
+        // Créer le JSON pour le corps de la requête
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("pp_file", base64Image);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(MonCompte.this, "Failed to create JSON body", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Créer un client OkHttp
+        OkHttpClient client = new OkHttpClient();
+
+        // Créer le corps de la requête
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonObject.toString());
+
+        // Remplacer cette variable par le token d'autorisation réel
+        String authToken = accessToken;
+
+        // Construire la requête POST avec le header d'autorisation
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(Constantes.UPDATE_PROFIL_IMAGE +"/"+ Prefs.getString(UUID_KEY, ""))
+                .addHeader("Authorization", "Bearer " + authToken)
+                .post(body)
+                .build();
+
+        // Envoyer la requête de manière asynchrone
+        client.newCall(request).enqueue(new Callback() {
+            @SuppressLint("LongLogTag")
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("Erreur lors de l'envoie de l'image", e.getMessage());
+                // Gérer les erreurs
+                runOnUiThread(() -> Toast.makeText(MonCompte.this, "Failed to upload image", Toast.LENGTH_SHORT).show());
+            }
+
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                Log.e("La reponse du seveur", response.toString());
+                // Gérer la réponse du serveur
+                if (response.isSuccessful()) {
+                    runOnUiThread(() -> Toast.makeText(MonCompte.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show());
+                    Log.e("image path", imagePath);
+                    Prefs.putString(PHOTO_KEY, imagePath);
+                } else {
+                    runOnUiThread(() -> Toast.makeText(MonCompte.this, "Failed to upload image, server error", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
+    }*/
+
+
+//    private void uploadImageToServer(String imagePath) {
+//        File file = new File(imagePath);
+//
+//        // Créer le RequestBody pour le fichier image
+//        RequestBody fileBody = RequestBody.create(MediaType.parse("image/jpeg"), file);
+//
+//        // Créer le MultipartBody pour la requête
+//        MultipartBody requestBody = new MultipartBody.Builder()
+//                .setType(MultipartBody.FORM)
+//                .addFormDataPart("pp_file", file.getName(), fileBody)
+//                .build();
+//
+//        // Remplacer cette variable par le token d'autorisation réel
+//        String authToken = accessToken;
+//
+//        // Construire la requête POST avec le header d'autorisation
+//        okhttp3.Request request = new okhttp3.Request.Builder()
+//                .url(Constantes.UPDATE_PROFIL_IMAGE + "/" + Prefs.getString(UUID_KEY, ""))
+//                .addHeader("Authorization", "Bearer " + authToken)
+//                .post(requestBody)
+//                .build();
+//
+//        // Configurer le client OkHttp avec des timeouts et la reconnexion automatique
+//        OkHttpClient client = new OkHttpClient.Builder()
+//                .connectTimeout(30, TimeUnit.SECONDS)
+//                .writeTimeout(30, TimeUnit.SECONDS)
+//                .readTimeout(30, TimeUnit.SECONDS)
+//                .retryOnConnectionFailure(true)
+//                .build();
+//
+//        // Envoyer la requête de manière asynchrone
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                Log.e("Erreur lors de l'envoie de l'image", "Message: " + e.getMessage(), e);
+//                runOnUiThread(() -> Toast.makeText(MonCompte.this, "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+//                Log.e("La réponse du serveur", response.toString());
+//                if (response.isSuccessful()) {
+//                    runOnUiThread(() -> Toast.makeText(MonCompte.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show());
+//                    Log.e("image path", imagePath);
+//                    Prefs.putString(PHOTO_KEY, imagePath);
+//                } else {
+//                    runOnUiThread(() -> Toast.makeText(MonCompte.this, "Failed to upload image, server error", Toast.LENGTH_SHORT).show());
+//                }
+//            }
+//        });
+//    }
+
+
+
+    private void uploadImageToServer(String imagePath) {
+        File file = new File(imagePath);
+
+        // Créer le RequestBody pour le fichier image
+        RequestBody fileBody = RequestBody.create(MediaType.parse("image/jpeg"), file);
+
+        // Créer le MultipartBody pour la requête
+        MultipartBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("pp_file", file.getName(), fileBody)
+                .build();
+
+        // Remplacer cette variable par le token d'autorisation réel
+        String authToken = accessToken;
+
+        // Construire la requête POST avec le header d'autorisation
+        okhttp3.Request request = new okhttp3.Request.Builder()
+                .url(Constantes.UPDATE_PROFIL_IMAGE + "/" + Prefs.getString(UUID_KEY, ""))
+                .addHeader("Authorization", "Bearer " + authToken)
+                .post(requestBody)
+                .build();
+
+        // Configurer le client OkHttp avec des timeouts et la reconnexion automatique
+        OkHttpClient client = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .retryOnConnectionFailure(true)
+                .build();
+
+        // Envoyer la requête de manière asynchrone
+        client.newCall(request).enqueue(new Callback() {
+            @SuppressLint("LongLogTag")
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e("Erreur lors de l'envoie de l'image", "Message: " + e.getMessage(), e);
+                runOnUiThread(() -> Toast.makeText(MonCompte.this, "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(Call call, okhttp3.Response response) throws IOException {
+                Log.e("La réponse du serveur", response.toString());
+                if (response.isSuccessful()) {
+                    // Récupérer le corps de la réponse sous forme de chaîne
+                    String responseString = response.body().string();
+                    Log.e("Analyse de l'image", responseString);
+
+                    try {
+                        // Créer un JSONObject à partir du corps de la réponse
+                        JSONObject resp = new JSONObject(responseString);
+                        if (resp.has("responseCode")) {
+                            int responseCode = resp.getInt("responseCode");
+                            Log.e("La réponse ", resp.toString());
+                            if (responseCode == 0) {
+                                String img = resp.getString("body");
+                                final Utilisateur utilisateur = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY, null)).get(0);
+                                utilisateur.setPhoto_identite(img);
+                                utilisateur.save();
+                                Log.e("La valeur du body", img);
+                                Prefs.putString(PHOTO_KEY, img);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                    String msg = "Votre photo a été correctement modifiée";
+                    Intent i = new Intent(MonCompte.this, Message_ok.class);
+                    i.putExtra("msg_desc", msg);
+                    i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
+                    startActivity(i);
+                } else if (response.code() == 401) {
+                    refreshAccessToken(MonCompte.this, success -> {
+                        if (success) {
+                            uploadImageToServer(imagePath);
+                        } else {
+                            runOnUiThread(() -> Toast.makeText(MonCompte.this, "Failed to refresh token, please log in again.", Toast.LENGTH_SHORT).show());
+                        }
+                    });
+                } else {
+                    String msg = "Echec lors de la mise à jour de la photo";
+                    Intent i = new Intent(MonCompte.this, Message_non.class);
+                    i.putExtra("msg_desc", msg);
+                    i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
+                    startActivity(i);
+                }
+            }
+
+        });
+    }
+
+
+
+
+
+
+
+
+
+
     //show merchant_details
+//    public void showMerchantDetails() {
+//        RequestParams params = new RequestParams();
+//        params.put("codeReferent", Prefs.getString(CODE_MARCHAND_KEY, ""));
+//
+//        AsyncHttpClient client = new AsyncHttpClient();
+//        // String authorizationToken = Prefs.getString(AUTHORIZATION_KEY, "");
+//
+//        // Ajouter l'autorisation dans le header
+//        client.addHeader("Authorization", "Bearer " + accessToken);
+//
+//        client.post(Constantes.URL_GET_MERCHANT_DETAILS, params, new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                super.onSuccess(statusCode, headers, response);
+//                try {
+//                    if (response.getInt("responseCode") == 0) {
+//                        JSONObject body = response.getJSONObject("body");
+//                        name_merchant.setText(body.getString("nom") + " " + body.getString("prenoms"));
+//                        code_merchant.setText(body.getString("code_marchand"));
+//                        tel_merchant.setText(body.getString("numero"));
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//                Log.i("ErreurAsync", "We got a jsonObject");
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, String responseString) {
+//                super.onSuccess(statusCode, headers, responseString);
+//                Log.i("ErreurAsync", "We got a responseString");
+//            }
+//
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+//                super.onSuccess(statusCode, headers, response);
+//                Log.i("ErreurAsync", "We got an array");
+//            }
+//
+//            @Override
+//            public void onStart() {
+//                super.onStart();
+//                progressBar.setVisibility(View.VISIBLE);
+//                linearLayoutDetails.setVisibility(View.GONE);
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                super.onFinish();
+//                progressBar.setVisibility(View.GONE);
+//                linearLayoutDetails.setVisibility(View.VISIBLE);
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+//                Log.e("ErreurAsync", errorResponse != null ? errorResponse.toString() : "Error response is null");
+//            }
+//
+////            @Override
+////            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String errorResponse) {
+////                super.onFailure(statusCode, headers, errorResponse, throwable);
+////                Log.e("ErreurAsync", errorResponse != null ? errorResponse : "Error response is null");
+////            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+//                Log.e("ErreurAsync", errorResponse != null ? errorResponse.toString() : "Error response is null");
+//            }
+//        });
+//    }
+
     public void showMerchantDetails() {
-        RequestParams params = new RequestParams();
-        params.put("codeReferent", Prefs.getString(CODE_MARCHAND_KEY, ""));
+        JSONObject jsonParams = new JSONObject();
+        try {
+            // Ajouter les paramètres dans l'objet JSON
+            jsonParams.put("codeReferent", Prefs.getString(CODE_MARCHAND_KEY, ""));
+            Log.e("Le code Référant:", Prefs.getString(CODE_MARCHAND_KEY,"").toString());
+            Log.e("Le body marchand:", jsonParams.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Convertir JSONObject en StringEntity
+        StringEntity entity = new StringEntity(jsonParams.toString(), "UTF-8");
 
         AsyncHttpClient client = new AsyncHttpClient();
-        // String authorizationToken = Prefs.getString(AUTHORIZATION_KEY, "");
 
         // Ajouter l'autorisation dans le header
         client.addHeader("Authorization", "Bearer " + accessToken);
 
-        client.post(Constantes.URL_GET_MERCHANT_DETAILS, params, new JsonHttpResponseHandler() {
+        // Ajouter le Content-Type pour JSON
+        client.addHeader("Content-Type", "application/json");
+
+        client.post(null, Constantes.URL_GET_MERCHANT_DETAILS, entity, "application/json", new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 super.onSuccess(statusCode, headers, response);
                 try {
+                    Log.e("La reponse marchande:",response.toString());
                     if (response.getInt("responseCode") == 0) {
                         JSONObject body = response.getJSONObject("body");
                         name_merchant.setText(body.getString("nom") + " " + body.getString("prenoms"));
@@ -590,18 +1142,13 @@ public class MonCompte extends AppCompatActivity {
             }
 
 //            @Override
-//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, String errorResponse) {
-//                super.onFailure(statusCode, headers, errorResponse, throwable);
-//                Log.e("ErreurAsync", errorResponse != null ? errorResponse : "Error response is null");
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+//                Log.e("ErreurAsync", errorResponse != null ? errorResponse.toString() : "Error response is null");
 //            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
-                Log.e("ErreurAsync", errorResponse != null ? errorResponse.toString() : "Error response is null");
-            }
         });
     }
+
     // slide the view from below itself to the current position
     public void slideUp(View view){
         view.setVisibility(View.VISIBLE);
@@ -674,6 +1221,7 @@ public class MonCompte extends AppCompatActivity {
         // clique sur enregistrer mon mot de passe
         Button btn_pass = findViewById(R.id.btn_change_pass);
         btn_pass.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("LongLogTag")
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
@@ -684,12 +1232,15 @@ public class MonCompte extends AppCompatActivity {
                     boolean flag = false;
                     String msg = "";
                     String old_pass = Prefs.getString(PASS_KEY, null);
+                    Log.e("L'ancien mot de passe est:",old_pass);
                     Connexion.AeSimpleSHA1 AeSimpleSHA1 = new Connexion.AeSimpleSHA1();
                     String ins_old_pass = element1.getValue();
+
                     try {
+                        Log.e("L'Ancien pass avant chifrement:", ins_old_pass);
                         ins_old_pass = AeSimpleSHA1.md5(ins_old_pass);
                         ins_old_pass = AeSimpleSHA1.SHA1(ins_old_pass);
-                        //Log.d("ins_old_pass",ins_old_pass);
+                        Log.d("ins_old_pass",ins_old_pass);
                     } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
                     } catch (UnsupportedEncodingException e) {
@@ -796,46 +1347,49 @@ public class MonCompte extends AppCompatActivity {
 
     }
 
-    private void linkMerchant(String codeMarchand){
+    private void linkMerchant(String codeMarchand) {
         RequestQueue queue = Volley.newRequestQueue(MonCompte.this);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_LINK_MERCHANT_TO_USER, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("onResponse: ", response);
-                try {
-                    JSONObject result = new JSONObject(response);
-                        if (result.getInt("responseCode") == 0) {
-                            Prefs.putString(CODE_MARCHAND_KEY, codeMarchand);
-                            Intent i = new Intent(MonCompte.this, Message_ok.class);
-                            i.putExtra("class", "com.sicmagroup.tondi.Home");
-                            i.putExtra("msg_desc", "Affectation du marchand à votre compte réussie");
-                            startActivity(i);
-                        } else {
-                            CoordinatorLayout mainLayout = (CoordinatorLayout) findViewById(R.id.mon_compte_layout);
-                            Snackbar.make(mainLayout, "Code de marchand invalide!", Snackbar.LENGTH_SHORT);
-                        }
-                } catch (Throwable t) {
-                    Log.d("link_merchand", String.valueOf(t.getCause()));
-                    CoordinatorLayout mainLayout = (CoordinatorLayout) findViewById(R.id.mon_compte_layout);
-                    Snackbar.make(mainLayout, "Une erreur est survenue. Réessayer plus tard, merci.", Snackbar.LENGTH_SHORT);
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                CoordinatorLayout mainLayout = (CoordinatorLayout) findViewById(R.id.mon_compte_layout);
-                Snackbar.make(mainLayout, "Une erreur est survenue. Réessayez svp!", Snackbar.LENGTH_SHORT);
-            }
-        }){
-            @Nullable
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("code_referent", codeMarchand);
-                params.put("customer_number", Prefs.getString(TEL_KEY, ""));
-                return params;
 
-            }
+        // Créez un objet JSON pour les paramètres
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("codeReferent", codeMarchand);
+            jsonParams.put("customerNumber", Prefs.getString(TEL_KEY, ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_LINK_MERCHANT_TO_USER, jsonParams,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("onResponse: ", response.toString());
+                        try {
+                            if (response.getInt("responseCode") == 0) {
+                                Prefs.putString(CODE_MARCHAND_KEY, codeMarchand);
+                                Intent i = new Intent(MonCompte.this, Message_ok.class);
+                                i.putExtra("class", "com.sicmagroup.tondi.Home");
+                                i.putExtra("msg_desc", "Affectation du marchand à votre compte réussie");
+                                startActivity(i);
+                            } else {
+                                CoordinatorLayout mainLayout = findViewById(R.id.mon_compte_layout);
+                                Snackbar.make(mainLayout, "Code de marchand invalide!", Snackbar.LENGTH_SHORT).show();
+                            }
+                        } catch (Throwable t) {
+                            Log.d("link_merchand", String.valueOf(t.getCause()));
+                            CoordinatorLayout mainLayout = findViewById(R.id.mon_compte_layout);
+                            Snackbar.make(mainLayout, "Une erreur est survenue. Réessayer plus tard, merci.", Snackbar.LENGTH_SHORT).show();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        CoordinatorLayout mainLayout = findViewById(R.id.mon_compte_layout);
+                        Snackbar.make(mainLayout, "Une erreur est survenue. Réessayez svp!", Snackbar.LENGTH_SHORT).show();
+                    }
+                }
+        ) {
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -1024,7 +1578,7 @@ public class MonCompte extends AppCompatActivity {
         queue.add(postRequest);
     }*/
 
-    @SuppressLint("ResourceAsColor")
+    /*@SuppressLint("ResourceAsColor")
     private void savePass() {
         BaseFormElement pass = frm_pass_builder.getFormElement(TAG_PASS);
         String pass_value = pass.getValue();
@@ -1033,73 +1587,70 @@ public class MonCompte extends AppCompatActivity {
         try {
             pass_value =  AeSimpleSHA1.md5(pass_value);
             pass_value = AeSimpleSHA1.SHA1(pass_value);
-            //Log.d("ins_old_pass",ins_old_pass);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        Utilisateur utilisateur_modifie = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY,null)).get(0); //Utilisateur.findById(Utilisateur.class, Long.valueOf(Prefs.getString(ID_UTILISATEUR_KEY,null)));
+
+        Utilisateur utilisateur_modifie = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY, null)).get(0);
         utilisateur_modifie.setMdp(pass_value);
         utilisateur_modifie.save();
+
         Long id_user = utilisateur_modifie.getId();
-        if (id_user!=null){
+        if (id_user != null) {
             Prefs.putString(PASS_KEY, pass_value);
             RequestQueue queue = Volley.newRequestQueue(this);
-            Log.e("updateDatabse", "swip to reffesh is working");
-            StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_CHANGE_PWD,
-                    new Response.Listener<String>()
-                    {
+
+            // Créer le corps JSON de la requête
+            JSONObject jsonBody = new JSONObject();
+            try {
+                BaseFormElement oldpass = frm_pass_builder.getFormElement(TAG_OLD_PASS);
+                jsonBody.put("numero", Prefs.getString(TEL_KEY, null));
+                jsonBody.put("holdPassword", oldpass.getValue());
+                jsonBody.put("newPassword", pass.getValue());
+                Log.e("Le changement de password", jsonBody.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // Utiliser JsonObjectRequest pour envoyer les données JSON
+            JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_CHANGE_PWD, jsonBody,
+                    new Response.Listener<JSONObject>() {
                         @SuppressLint("ResourceAsColor")
                         @Override
-                        public void onResponse(String response) {
-                            Log.e("onResponse: ", response);
+                        public void onResponse(JSONObject response) {
+                            Log.e("onResponse: ", response.toString());
                             try {
-                                JSONObject result = new JSONObject(response);
-                                if (result.getInt("responseCode") == 0) {
-                                    String msg="Votre Mot de passe a été correctement modifié ";
+                                if (response.getInt("responseCode") == 0) {
+                                    String msg = "Votre Mot de passe a été correctement modifié";
                                     Intent i = new Intent(MonCompte.this, Message_ok.class);
-                                    i.putExtra("msg_desc",msg);
-                                    i.putExtra("class","com.sicmagroup.tondi.MonCompte");
+                                    i.putExtra("msg_desc", msg);
+                                    i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
                                     progressDialog.dismiss();
                                     startActivity(i);
                                 } else {
-                                    String msg=result.getString("body");
+                                    String msg = response.getString("body");
                                     Intent i = new Intent(MonCompte.this, Message_non.class);
-                                    i.putExtra("msg_desc",msg);
-                                    i.putExtra("class","com.sicmagroup.tondi.MonCompte");
+                                    i.putExtra("msg_desc", msg);
+                                    i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
                                     progressDialog.dismiss();
                                     startActivity(i);
                                 }
-                        } catch(Throwable t) {
-                            Toast.makeText(MonCompte.this, "Une erreur est survenue", Toast.LENGTH_SHORT).show();
-                            progressDialog.dismiss();
-                            Log.d("errornscription", String.valueOf(t.getCause()));
-                            Log.e("Update Data", t.getMessage());
+                            } catch (JSONException t) {
+                                Toast.makeText(MonCompte.this, "Une erreur est survenue", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                                Log.d("errornscription", t.getMessage());
+                                Log.e("Update Data", t.getMessage());
+                            }
                         }
-                    }
-        },
-        new Response.ErrorListener()
-        {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressDialog.dismiss();
-                Toast.makeText(MonCompte.this, "Une erreur est survenue", Toast.LENGTH_SHORT).show();
-                Log.e("Error.Synchronisation", String.valueOf(error.getMessage()));
-            }
-        }
-        ) {
-            @Override
-            protected Map<String, String> getParams()
-            {
-                BaseFormElement oldpass = frm_pass_builder.getFormElement(TAG_OLD_PASS);
-                BaseFormElement pass = frm_pass_builder.getFormElement(TAG_PASS);
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("numero",Prefs.getString(TEL_KEY,null));
-                params.put("hold_password", oldpass.getValue());
-                params.put("new_password", pass.getValue());
-                return params;
-            }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            progressDialog.dismiss();
+                            Toast.makeText(MonCompte.this, "Une erreur est survenue", Toast.LENGTH_SHORT).show();
+                            Log.e("Error.Synchronisation", String.valueOf(error.getMessage()));
+                        }
+                    }) {
                 @Override
                 public Map<String, String> getHeaders() throws AuthFailureError {
                     Map<String, String> headers = new HashMap<>();
@@ -1107,30 +1658,192 @@ public class MonCompte extends AppCompatActivity {
                     headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
                     return headers;
                 }
-        };
-        postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                35000,
-                -1,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        queue.add(postRequest);
+            };
+
+            jsonRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    35000,
+                    -1,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            queue.add(jsonRequest);
 
             progressDialog = new ProgressDialog(this);
             progressDialog.setCancelable(false);
             progressDialog.setMessage("Mise à jour de votre mot de passe");
             progressDialog.show();
 
-
-        }else{
-
-            String msg="Une erreur est survenue.";
+        } else {
+            String msg = "Une erreur est survenue.";
             Intent i = new Intent(MonCompte.this, Message_non.class);
-            i.putExtra("msg_desc",msg);
-            i.putExtra("class","com.sicmagroup.tondi.MonCompte");
+            i.putExtra("msg_desc", msg);
+            i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
             startActivity(i);
         }
+    }*/
 
+    @SuppressLint("LongLogTag")
+    private void savePass() {
+        BaseFormElement pass = frm_pass_builder.getFormElement(TAG_PASS);
+        String pass_value = pass.getValue();
+        Connexion.AeSimpleSHA1 AeSimpleSHA1 = new Connexion.AeSimpleSHA1();
 
+        try {
+            pass_value =  AeSimpleSHA1.md5(pass_value);
+            pass_value = AeSimpleSHA1.SHA1(pass_value);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        Utilisateur utilisateur_modifie = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY, null)).get(0);
+        utilisateur_modifie.setMdp(pass_value);
+        utilisateur_modifie.save();
+
+        Long id_user = utilisateur_modifie.getId();
+        if (id_user != null) {
+            Prefs.putString(PASS_KEY, pass_value);
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            JSONObject jsonBody = new JSONObject();
+            try {
+                BaseFormElement oldpass = frm_pass_builder.getFormElement(TAG_OLD_PASS);
+                jsonBody.put("numero", Prefs.getString(TEL_KEY, null));
+                jsonBody.put("holdPassword", oldpass.getValue());
+                jsonBody.put("newPassword", pass.getValue());
+                Log.e("Le changement de password", jsonBody.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_CHANGE_PWD, jsonBody,
+                    new Response.Listener<JSONObject>() {
+                        @SuppressLint("ResourceAsColor")
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            Log.e("onResponse: ", response.toString());
+                            try {
+                                if (response.getInt("responseCode") == 0) {
+                                    String msg = "Votre Mot de passe a été correctement modifié";
+                                    Intent i = new Intent(MonCompte.this, Message_ok.class);
+                                    i.putExtra("msg_desc", msg);
+                                    i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
+                                    progressDialog.dismiss();
+                                    startActivity(i);
+                                } else {
+                                    String msg = response.getString("body");
+                                    Intent i = new Intent(MonCompte.this, Message_non.class);
+                                    i.putExtra("msg_desc", msg);
+                                    i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
+                                    progressDialog.dismiss();
+                                    startActivity(i);
+                                }
+                            } catch (JSONException t) {
+                                Toast.makeText(MonCompte.this, "Une erreur est survenue", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                                Log.d("errornscription", t.getMessage());
+                                Log.e("Update Data", t.getMessage());
+                            }
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            progressDialog.dismiss();
+                            if (error.networkResponse != null && error.networkResponse.statusCode == 401) {
+                                // Le token a expiré, donc on le rafraîchit et on réessaie la requête
+                                refreshAccessToken(MonCompte.this, new TokenRefreshListener() {
+                                    @Override
+                                    public void onTokenRefreshed(boolean success) {
+                                        if (success) {
+                                            // Réessayer la requête avec le nouveau token
+                                            savePass();
+                                        } else {
+                                            Toast.makeText(MonCompte.this, "Impossible de rafraîchir le token", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(MonCompte.this, "Une erreur est survenue", Toast.LENGTH_SHORT).show();
+                                Log.e("Error.Synchronisation", String.valueOf(error.getMessage()));
+                            }
+                        }
+                    }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Content-Type", "application/json");
+                    headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
+                    return headers;
+                }
+            };
+
+            jsonRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    35000,
+                    -1,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            queue.add(jsonRequest);
+
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Mise à jour de votre mot de passe");
+            progressDialog.show();
+
+        } else {
+            String msg = "Une erreur est survenue.";
+            Intent i = new Intent(MonCompte.this, Message_non.class);
+            i.putExtra("msg_desc", msg);
+            i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
+            startActivity(i);
+        }
     }
+
+
+    private void refreshAccessToken(Context context, MonCompte.TokenRefreshListener listener) {
+        RequestQueue queue = Volley.newRequestQueue(context);
+        JSONObject params = new JSONObject();
+        try {
+            String refreshToken = Prefs.getString(REFRESH_TOKEN, "");
+            Log.e("Mon refresh token", refreshToken);
+            params.put("refreshToken", refreshToken);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest refreshRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                url_refresh_token,
+                params,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("LongLogTag")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Log.e("La réponse du refresh token", response.toString());
+                            String newAccessToken = response.getString("token");
+                            String newRefreshToken = response.getString("refreshToken");
+                            Prefs.putString(TOKEN, newAccessToken);
+                            Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                            listener.onTokenRefreshed(true);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onTokenRefreshed(false);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Log.e("RefreshToken", "Error: " + volleyError.getMessage());
+                        listener.onTokenRefreshed(false);
+                    }
+                }
+        );
+
+        queue.add(refreshRequest);
+    }
+
+    private interface TokenRefreshListener {
+        void onTokenRefreshed(boolean success);
+    }
+
 
     @SuppressLint("ResourceAsColor")
     private void saveSim() {
@@ -1341,50 +2054,50 @@ public class MonCompte extends AppCompatActivity {
         return outputFileUri;
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-        Bitmap bitmap;
-        if (resultCode == Activity.RESULT_OK) {
-
-            ImageView imageView = (ImageView) findViewById(R.id.avatar);
-
-            if (getPickImageResultUri(data) != null) {
-                picUri = getPickImageResultUri(data);
-
-                try {
-                    myBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
-                    myBitmap = rotateImageIfRequired(myBitmap, picUri);
-                    myBitmap = getResizedBitmap(myBitmap, 500);
-
-                    /*CircleImageView croppedImageView = (CircleImageView) findViewById(R.id.img_profile);
-                    croppedImageView.setImageBitmap(myBitmap);*/
-                    imageView.setImageBitmap(myBitmap);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-            } else {
-
-
-                bitmap = (Bitmap) data.getExtras().get("data");
-
-                myBitmap = bitmap;
-                /*CircleImageView croppedImageView = (CircleImageView) findViewById(R.id.img_profile);
-                if (croppedImageView != null) {
-                    croppedImageView.setImageBitmap(myBitmap);
-                }*/
-
-                imageView.setImageBitmap(myBitmap);
-
-            }
-
-        }
-
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//
+//        super.onActivityResult(requestCode, resultCode, data);
+//        Bitmap bitmap;
+//        if (resultCode == Activity.RESULT_OK) {
+//
+//            ImageView imageView = (ImageView) findViewById(R.id.avatar);
+//
+//            if (getPickImageResultUri(data) != null) {
+//                picUri = getPickImageResultUri(data);
+//
+//                try {
+//                    myBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
+//                    myBitmap = rotateImageIfRequired(myBitmap, picUri);
+//                    myBitmap = getResizedBitmap(myBitmap, 500);
+//
+//                    /*CircleImageView croppedImageView = (CircleImageView) findViewById(R.id.img_profile);
+//                    croppedImageView.setImageBitmap(myBitmap);*/
+//                    imageView.setImageBitmap(myBitmap);
+//
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//
+//            } else {
+//
+//
+//                bitmap = (Bitmap) data.getExtras().get("data");
+//
+//                myBitmap = bitmap;
+//                /*CircleImageView croppedImageView = (CircleImageView) findViewById(R.id.img_profile);
+//                if (croppedImageView != null) {
+//                    croppedImageView.setImageBitmap(myBitmap);
+//                }*/
+//
+//                imageView.setImageBitmap(myBitmap);
+//
+//            }
+//
+//        }
+//
+//    }
 
     private static Bitmap rotateImageIfRequired(Bitmap img, Uri selectedImage) throws IOException {
 

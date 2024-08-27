@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.text.InputFilter;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
@@ -38,6 +39,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -274,6 +276,8 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
         Prefs.putBoolean(ACCESS_BOOL, true);
         //RelativeLayout nav = findViewById(R.id.btn_navs);
         //nav.setVisibility(View.GONE);
+
+
         map = new HashMap<>();
         map.put("KEY_LOGIN", new HashSet<>(Arrays.asList("waiting", "loading")));
         map.put("KEY_ERROR", new HashSet<>(Arrays.asList("problem", "error")));
@@ -488,6 +492,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                 suiv_tontine(id_tontine);
             }
 
+            @SuppressLint("ClickableViewAccessibility")
             @Override
             public void onSwipeRight() {
                 super.onSwipeRight();
@@ -553,7 +558,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
         if (Prefs.contains(NMBR_PWD_TENTATIVE_FAILED)) {
             int tentative = Prefs.getInt(NMBR_PWD_TENTATIVE_FAILED, 0);
-            if (tentative >= 3) {
+            if (tentative >= 5) {
                 btn_terminer.setEnabled(false);
                 btn_code_retrait.setEnabled(false);
                 btn_encaisser.setEnabled(false);
@@ -1123,14 +1128,19 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
             if (tontine.getPeriode().equals(PeriodiciteEnum.JOURNALIERE.toString())){
                 carte_versements.setText(versements+" sur 31");
                 nb_vers_defaut = 31;
+              //  versements_grid.setBackgroundColor(ContextCompat.getColor(this, R.color.card_jour));
             }
             if (tontine.getPeriode().equals(PeriodiciteEnum.HEBDOMADAIRE.toString())){
                 carte_versements.setText(versements+" sur 52");
                 nb_vers_defaut=52;
+               // versements_grid.setBackgroundColor(ContextCompat.getColor(this, R.color.card_hebdo));
+
             }
             if (tontine.getPeriode().equals(PeriodiciteEnum.MENSUELLE.toString())){
                 carte_versements.setText(versements+" sur 12");
                 nb_vers_defaut=12;
+             //   versements_grid.setBackgroundColor(ContextCompat.getColor(this, R.color.card_mensuel));
+
             }
 
             //Log.d("getMontCommisNow", String.valueOf(tontine.getMontCommisNow(id_tontine)));
@@ -2070,13 +2080,10 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
 
                         }
-
                     }
-
                 }
             });
             dialog.show();
-
         }
     }
 
@@ -2189,151 +2196,152 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                         }
                     });
 
-                    RequestQueue queue = Volley.newRequestQueue(CarteMain.this);
-                    StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_GENERATE_OTP,
-                            new Response.Listener<String>()
-                            {
-                                @SuppressLint("ResourceAsColor")
-                                @Override
-                                public void onResponse(String response) {
-                                    Log.d("ResponseTagMain", response);
-                                    // if (!response.equals("Erreur")) {
-                                    try {
+//                    RequestQueue queue = Volley.newRequestQueue(CarteMain.this);
+//                    StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_GENERATE_OTP,
+//                            new Response.Listener<String>()
+//                            {
+//                                @SuppressLint("ResourceAsColor")
+//                                @Override
+//                                public void onResponse(String response) {
+//                                    Log.d("ResponseTagMain", response);
+//                                    // if (!response.equals("Erreur")) {
+//                                    try {
+//
+//                                        JSONObject result = new JSONObject(response);
+//                                        if(result.getBoolean("success"))
+//                                        {
+//                                            progressDialog.dismiss();
+//
+//                                        }
+//                                        else
+//                                        {
+//                                            progressDialog.dismiss();
+//                                            Intent intent = new Intent(CarteMain.this, Message_non.class);
+//                                            intent.putExtra("msg_desc", result.getString("message"));
+//                                            intent.putExtra("id_tontine", id_tontine);
+//                                            startActivity(intent);
+//                                        }
+//
+//                                    } catch (JSONException e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                }
+//                            },
+//                            new Response.ErrorListener()
+//                            {
+//                                @Override
+//                                public void onErrorResponse(VolleyError volleyError) {
+//                                    progressDialog.dismiss();
+//                                    Log.e("ResponseTagMain", String.valueOf(volleyError.getMessage()));
+//                                    Log.e("Stack", "Error StackTrace: \t" + volleyError.getStackTrace());
+//                                    // error
+//                                    //Log.d("Error.Inscription", String.valueOf(error.getMessage()));
+//                                    ConstraintLayout mainLayout =  findViewById(R.id.layout_cartemain);
+//
+//                                    // volleyError.getMessage() == null
+//                                    String message;
+//                                    if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+//                                        //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+//                                        //Log.d("VolleyError_Test",volleyError.getMessage());
+//                                        message = "Aucune connexion Internet! Patientez et réessayez.";
+//                                        final Snackbar snackbar = Snackbar
+//                                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+//                                                .setAction("Ok", new View.OnClickListener() {
+//                                                    @Override
+//                                                    public void onClick(View view) {
+//                                                        refreshAccessToken( CarteMain.this, new TokenRefreshListener() {
+//                                                            @Override
+//                                                            public void onTokenRefreshed(boolean success) {
+//                                                                if (success) {
+//                                                                    confirmer_retrait("ATTENTION","Confirmez-vous le virement du montant à encaisser "+tontine_main.getMontEncaisse()
+//                                                                                    +" ?",1
+//                                                                            , numero, String.valueOf( tontine_main.getMontEncaisse()));
+//                                                                }
+//                                                            }
+//                                                        });
+//                                                        //retrait_mmo(numero,montant);
+//                                                    }
+//                                                });
+//                                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(CarteMain.this, R.color.colorGray));
+//                                        // Changing message text color
+//                                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+//                                        // Changing action button text color
+//                                        View sbView = snackbar.getView();
+//                                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+//                                        textView.setTextColor(Color.WHITE);
+//                                        snackbar.show();
+//
+//                                    } else if (volleyError instanceof ServerError) {
+//                                        message = "Impossible de contacter le serveur! Patientez et réessayez.";
+//                                        Snackbar snackbar = Snackbar
+//                                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+//                                                .setAction("REESSAYER", new View.OnClickListener() {
+//                                                    @Override
+//                                                    public void onClick(View view) {
+//                                                        //retrait_mmo(numero,montant);
+//                                                    }
+//                                                });
+//                                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(CarteMain.this, R.color.colorGray));
+//                                        // Changing message text color
+//                                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+//                                        // Changing action button text color
+//                                        View sbView = snackbar.getView();
+//                                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+//                                        textView.setTextColor(Color.WHITE);
+//                                        snackbar.show();
+//                                    }  else if (volleyError instanceof ParseError) {
+//                                        //message = "Parsing error! Please try again later";
+//                                        message = "Une erreur est survenue! Patientez et réessayez.";
+//                                        Snackbar snackbar = Snackbar
+//                                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+//                                                .setAction("REESSAYER", new View.OnClickListener() {
+//                                                    @Override
+//                                                    public void onClick(View view) {
+//                                                        //retrait_mmo(numero,montant);
+//                                                    }
+//                                                });
+//                                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(CarteMain.this, R.color.colorGray));
+//                                        // Changing message text color
+//                                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+//                                        // Changing action button text color
+//                                        View sbView = snackbar.getView();
+//                                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+//                                        textView.setTextColor(Color.WHITE);
+//                                        snackbar.show();
+//                                    }
+//                                }
+//                            }
+//                    ) {
+//                        @Override
+//                        protected Map<String, String> getParams() {
+//
+//                            Map<String, String> params = new HashMap<String, String>();
+//                            params.put("number", Prefs.getString(TEL_KEY, ""));
+//                            params.put("type_operation", OperationTypeEnum.WITHDRAW_FROM_CUSTOMER.toString());
+//                            Log.e("Le body pour OTP de la requete retrait mobile money:", params.toString());
+//                            return params;
+//                        }
+//                        @Override
+//                        public Map<String, String> getHeaders() throws AuthFailureError {
+//                            Map<String, String> headers = new HashMap<>();
+//                            headers.put("Content-Type", "application/json");
+//                            headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
+//                            return headers;
+//                        }
+//                    };
+//                    postRequest.setRetryPolicy(new DefaultRetryPolicy(
+//                            50000,
+//                            -1,
+//                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//                    queue.add(postRequest);
+//
+//
+//                    progressDialog = new ProgressDialog(CarteMain.this);
+//                    progressDialog.setCancelable(false);
+//                    progressDialog.setMessage("Veuillez patienter SVP! \nTraitement de la requête en cours.");
+//                    progressDialog.show();
 
-                                        JSONObject result = new JSONObject(response);
-                                        if(result.getBoolean("success"))
-                                        {
-                                            progressDialog.dismiss();
-
-                                        }
-                                        else
-                                        {
-                                            progressDialog.dismiss();
-                                            Intent intent = new Intent(CarteMain.this, Message_non.class);
-                                            intent.putExtra("msg_desc", result.getString("message"));
-                                            intent.putExtra("id_tontine", id_tontine);
-                                            startActivity(intent);
-                                        }
-
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            },
-                            new Response.ErrorListener()
-                            {
-                                @Override
-                                public void onErrorResponse(VolleyError volleyError) {
-                                    progressDialog.dismiss();
-                                    Log.e("ResponseTagMain", String.valueOf(volleyError.getMessage()));
-                                    Log.e("Stack", "Error StackTrace: \t" + volleyError.getStackTrace());
-                                    // error
-                                    //Log.d("Error.Inscription", String.valueOf(error.getMessage()));
-                                    ConstraintLayout mainLayout =  findViewById(R.id.layout_cartemain);
-
-                                    // volleyError.getMessage() == null
-                                    String message;
-                                    if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
-                                        //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                                        //Log.d("VolleyError_Test",volleyError.getMessage());
-                                        message = "Aucune connexion Internet! Patientez et réessayez.";
-                                        final Snackbar snackbar = Snackbar
-                                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                                .setAction("Ok", new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        refreshAccessToken( CarteMain.this, new TokenRefreshListener() {
-                                                            @Override
-                                                            public void onTokenRefreshed(boolean success) {
-                                                                if (success) {
-                                                                    confirmer_retrait("ATTENTION","Confirmez-vous le virement du montant à encaisser "+tontine_main.getMontEncaisse()
-                                                                                    +" ?",1
-                                                                            , numero, String.valueOf( tontine_main.getMontEncaisse()));
-                                                                }
-                                                            }
-                                                        });
-                                                        //retrait_mmo(numero,montant);
-                                                    }
-                                                });
-                                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(CarteMain.this, R.color.colorGray));
-                                        // Changing message text color
-                                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                                        // Changing action button text color
-                                        View sbView = snackbar.getView();
-                                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                                        textView.setTextColor(Color.WHITE);
-                                        snackbar.show();
-
-                                    } else if (volleyError instanceof ServerError) {
-                                        message = "Impossible de contacter le serveur! Patientez et réessayez.";
-                                        Snackbar snackbar = Snackbar
-                                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                                .setAction("REESSAYER", new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        //retrait_mmo(numero,montant);
-                                                    }
-                                                });
-                                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(CarteMain.this, R.color.colorGray));
-                                        // Changing message text color
-                                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                                        // Changing action button text color
-                                        View sbView = snackbar.getView();
-                                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                                        textView.setTextColor(Color.WHITE);
-                                        snackbar.show();
-                                    }  else if (volleyError instanceof ParseError) {
-                                        //message = "Parsing error! Please try again later";
-                                        message = "Une erreur est survenue! Patientez et réessayez.";
-                                        Snackbar snackbar = Snackbar
-                                                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
-                                                .setAction("REESSAYER", new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        //retrait_mmo(numero,montant);
-                                                    }
-                                                });
-                                        snackbar.getView().setBackgroundColor(ContextCompat.getColor(CarteMain.this, R.color.colorGray));
-                                        // Changing message text color
-                                        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-                                        // Changing action button text color
-                                        View sbView = snackbar.getView();
-                                        TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
-                                        textView.setTextColor(Color.WHITE);
-                                        snackbar.show();
-                                    }
-                                }
-                            }
-                    ) {
-                        @Override
-                        protected Map<String, String> getParams() {
-
-                            Map<String, String> params = new HashMap<String, String>();
-                            params.put("number", Prefs.getString(TEL_KEY, ""));
-                            params.put("type_operation", OperationTypeEnum.WITHDRAW_FROM_CUSTOMER.toString());
-                            return params;
-                        }
-                        @Override
-                        public Map<String, String> getHeaders() throws AuthFailureError {
-                            Map<String, String> headers = new HashMap<>();
-                            headers.put("Content-Type", "application/json");
-                            headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
-                            return headers;
-                        }
-                    };
-                    postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                            50000,
-                            -1,
-                            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-                    queue.add(postRequest);
-
-
-                    progressDialog = new ProgressDialog(CarteMain.this);
-                    progressDialog.setCancelable(false);
-                    progressDialog.setMessage("Veuillez patienter SVP! \nTraitement de la requête en cours.");
-                    progressDialog.show();
-
-
+                    sendOtpRequest();
                 }
 
                 if (mode==2){
@@ -2353,7 +2361,139 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
         dialog.show();
     }
-    private static final String ALLOWED_CHARACTERS ="0123456789";
+
+     private JsonObjectRequest jsonRequest;
+
+     public void sendOtpRequest() {
+         RequestQueue queue = Volley.newRequestQueue(CarteMain.this);
+
+         jsonRequest = new JsonObjectRequest(
+                 Request.Method.POST,
+                 Constantes.URL_GENERATE_OTP,
+                 null,
+                 new Response.Listener<JSONObject>() {
+                     @Override
+                     public void onResponse(JSONObject response) {
+                         try {
+                             Log.e("La reponse :", response.toString());
+                             if(response.getBoolean("success")) {
+                                 progressDialog.dismiss();
+                             } else {
+                                 progressDialog.dismiss();
+                                 Intent intent = new Intent(CarteMain.this, Message_non.class);
+                                 intent.putExtra("msg_desc", response.getString("message"));
+                                 intent.putExtra("id_tontine", id_tontine);
+                                 startActivity(intent);
+                             }
+                         } catch (JSONException e) {
+                             e.printStackTrace();
+                         }
+                     }
+                 },
+                 new Response.ErrorListener() {
+                     @Override
+                     public void onErrorResponse(VolleyError volleyError) {
+                         if (volleyError.networkResponse != null && volleyError.networkResponse.statusCode == 401) {
+                             refreshAccessToken(CarteMain.this, new TokenRefreshListener() {
+                                 @Override
+                                 public void onTokenRefreshed(boolean success) {
+                                     if (success) {
+                                         queue.add(jsonRequest);
+                                     } else {
+                                         progressDialog.dismiss();
+                                         Intent intent = new Intent(CarteMain.this, Message_non.class);
+                                         intent.putExtra("msg_desc", "Échec du rafraîchissement du token.");
+                                         startActivity(intent);
+                                     }
+                                 }
+                             });
+                         } else {
+                             handleNetworkError(volleyError);
+                         }
+                     }
+                 }) {
+             @Override
+             public byte[] getBody(){
+                 Map<String, String> params = new HashMap<>();
+                 params.put("number", Prefs.getString(TEL_KEY, ""));
+                 params.put("type_operation", OperationTypeEnum.WITHDRAW_FROM_CUSTOMER.toString());
+
+                 return new JSONObject(params).toString().getBytes();
+             }
+
+             @Override
+             public String getBodyContentType() {
+                 return "application/json; charset=utf-8";
+             }
+
+             @Override
+             public Map<String, String> getHeaders() throws AuthFailureError {
+                 Map<String, String> headers = new HashMap<>();
+                 headers.put("Content-Type", "application/json");
+                 headers.put("Authorization", "Bearer " + accessToken);
+                 return headers;
+             }
+         };
+
+         jsonRequest.setRetryPolicy(new DefaultRetryPolicy(
+                 50000,
+                 -1,
+                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+         queue.add(jsonRequest);
+
+         progressDialog = new ProgressDialog(CarteMain.this);
+         progressDialog.setCancelable(false);
+         progressDialog.setMessage("Veuillez patienter SVP! \nTraitement de la requête en cours.");
+         progressDialog.show();
+     }
+
+
+     private void handleNetworkError(VolleyError volleyError) {
+         progressDialog.dismiss(); // Ferme la boîte de dialogue de progression si elle est encore ouverte
+
+         ConstraintLayout mainLayout = findViewById(R.id.layout_cartemain);
+         String message;
+
+         if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+             message = "Aucune connexion Internet! Patientez et réessayez.";
+         } else if (volleyError instanceof ServerError) {
+             message = "Impossible de contacter le serveur! Patientez et réessayez.";
+         } else if (volleyError instanceof ParseError) {
+             message = "Une erreur est survenue lors de l'analyse des données! Patientez et réessayez.";
+         } else {
+             message = "Une erreur inattendue est survenue! Patientez et réessayez.";
+         }
+
+         final Snackbar snackbar = Snackbar
+                 .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                 .setAction("OK", new View.OnClickListener() {
+                     @Override
+                     public void onClick(View view) {
+                         // Action après que l'utilisateur a cliqué sur "OK"
+                         refreshAccessToken( CarteMain.this, new TokenRefreshListener() {
+                             @Override
+                             public void onTokenRefreshed(boolean success) {
+                                 if (success) {
+                                     //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                     requete_retrait_2(id_tontine);
+
+                                 }
+                             }
+                         });
+                     }
+                 });
+
+         snackbar.getView().setBackgroundColor(ContextCompat.getColor(CarteMain.this, R.color.colorGray));
+         snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+
+         View sbView = snackbar.getView();
+         TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+         textView.setTextColor(Color.WHITE);
+         snackbar.show();
+     }
+
+
+     private static final String ALLOWED_CHARACTERS ="0123456789";
     private static String getRandomString(final int sizeOfRandomString)
     {
         final Random random=new Random();
@@ -2477,7 +2617,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
                              Dialog dialog = new Dialog(CarteMain.this);
                              dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                             dialog.setCancelable(false);
+                             dialog.setCancelable(true);
                              dialog.setContentView(R.layout.dialog_attention);
 
                              TextView titre = dialog.findViewById(R.id.deco_title);
@@ -2491,19 +2631,52 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                              oui.setOnClickListener(new View.OnClickListener() {
                                  @Override
                                  public void onClick(View v) {
-                                     requete_retrait_2(id_tontine);
+                                     refreshAccessToken( CarteMain.this, new TokenRefreshListener() {
+                                         @Override
+                                         public void onTokenRefreshed(boolean success) {
+                                             if (success) {
+                                                 //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                                 requete_retrait_2(id_tontine);
+
+                                             }
+                                         }
+                                     });
                                  }
                              });
 
                              Button non = dialog.findViewById(R.id.btn_non);
                              non.setVisibility(View.GONE);
                              dialog.show();
+                            /* Snackbar snackbar = Snackbar
+                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                                     .setAction("REESSAYER", new View.OnClickListener() {
+                                         @Override
+                                         public void onClick(View view) {
+                                             refreshAccessToken( CarteMain.this, new TokenRefreshListener() {
+                                                 @Override
+                                                 public void onTokenRefreshed(boolean success) {
+                                                     if (success) {
+                                                         //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                                         requete_retrait_2(id_tontine);
 
+                                                     }
+                                                 }
+                                             });
+
+                                         }
+                                     });
+                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(CarteMain.this, R.color.colorGray));
+                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+                             View sbView = snackbar.getView();
+                             TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                             textView.setTextColor(Color.WHITE);
+                             snackbar.show();
+*/
                          } else if (volleyError instanceof ServerError) {
                              message = "Impossible de contacter le serveur! Patientez et réessayez.";
                              Dialog dialog = new Dialog(CarteMain.this);
                              dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                             dialog.setCancelable(false);
+                             dialog.setCancelable(true);
                              dialog.setContentView(R.layout.dialog_attention);
 
                              TextView titre = dialog.findViewById(R.id.deco_title);
@@ -2517,7 +2690,17 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                              oui.setOnClickListener(new View.OnClickListener() {
                                  @Override
                                  public void onClick(View v) {
-                                     requete_retrait_2(id_tontine);
+                                    // requete_retrait_2(id_tontine);
+                                     refreshAccessToken( CarteMain.this, new TokenRefreshListener() {
+                                         @Override
+                                         public void onTokenRefreshed(boolean success) {
+                                             if (success) {
+                                                 //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                                 requete_retrait_2(id_tontine);
+
+                                             }
+                                         }
+                                     });
                                  }
                              });
 
@@ -2530,7 +2713,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
                              Dialog dialog = new Dialog(CarteMain.this);
                              dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                             dialog.setCancelable(false);
+                             dialog.setCancelable(true);
                              dialog.setContentView(R.layout.dialog_attention);
 
                              TextView titre = dialog.findViewById(R.id.deco_title);
@@ -2717,7 +2900,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
                             Dialog dialog = new Dialog(CarteMain.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
+                            dialog.setCancelable(true);
                             dialog.setContentView(R.layout.dialog_attention);
 
                             TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -2752,7 +2935,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                             message = "Impossible de contacter le serveur! Patientez et réessayez.";
                             Dialog dialog = new Dialog(CarteMain.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
+                            dialog.setCancelable(true);
                             dialog.setContentView(R.layout.dialog_attention);
 
                             TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -2778,7 +2961,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
 
                             Dialog dialog = new Dialog(CarteMain.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
+                            dialog.setCancelable(true);
                             dialog.setContentView(R.layout.dialog_attention);
 
                             TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -2979,7 +3162,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                             message = "Aucune connexion Internet! Patientez et réessayez.";
                             Dialog dialog = new Dialog(CarteMain.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
+                            dialog.setCancelable(true);
                             dialog.setContentView(R.layout.dialog_attention);
 
                             TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -3013,7 +3196,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                                 message = "Impossible de contacter le serveur! Patientez et réessayez.";
                                 Dialog dialog = new Dialog(CarteMain.this);
                                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                dialog.setCancelable(false);
+                                dialog.setCancelable(true);
                                 dialog.setContentView(R.layout.dialog_attention);
 
                                 TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -3041,7 +3224,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                             message = "Une erreur est survenue! Patientez et réessayez.";
                             Dialog dialog = new Dialog(CarteMain.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
+                            dialog.setCancelable(true);
                             dialog.setContentView(R.layout.dialog_attention);
 
                             TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -3927,6 +4110,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                              Log.e("La réponse du refresh token", response.toString());
                              String newAccessToken = response.getString("token");
                              String newRefreshToken = response.getString("refreshToken");
+                             accessToken = newAccessToken;
                              Prefs.putString(TOKEN, newAccessToken);
                              Prefs.putString(REFRESH_TOKEN, newRefreshToken);
                              listener.onTokenRefreshed(true);

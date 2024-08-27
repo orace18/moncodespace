@@ -311,7 +311,7 @@ public class Carte extends AppCompatActivity {
         //btn_encaisser.setVisibility(View.INVISIBLE);
         //Button btn_terminer = findViewById(R.id.btn_terminer);
         if (tontine_main.getPeriode().equals(PeriodiciteEnum.JOURNALIERE.toString())){
-            btn_terminer.setText("Arrêter mois en cours");
+            btn_terminer.setText("Arrêter le mois en cours");
         }
         btn_terminer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -418,7 +418,7 @@ public class Carte extends AppCompatActivity {
                         if (id_tontines_concernes == null)
                             id_tontines_concernes = String.valueOf(tontine.getId());
                         else
-                            id_tontines_concernes =id_tontines_concernes + " , "+ String.valueOf(tontine.getId())  ;
+                            id_tontines_concernes = id_tontines_concernes + " , "+ String.valueOf(tontine.getId())  ;
                     }
                 }
                 List<Retrait> retraitList = SugarRecord.find(Retrait.class, "tontine IN ("+id_tontines_concernes+") AND statut = ?", new String[]{RetraitEnum.IN_PROGRESS.toString()}, null, "creation desc", null);
@@ -701,7 +701,7 @@ public class Carte extends AppCompatActivity {
         });
 
     }
-    private void requete_retrait_2(final int id_tontine)
+    /*private void requete_retrait_2(final int id_tontine)
     {
         final Tontine tontine = SugarRecord.findById(Tontine.class, (long)id_tontine);
         RequestQueue queue = Volley.newRequestQueue(Carte.this);
@@ -845,7 +845,16 @@ public class Carte extends AppCompatActivity {
                             oui.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    requete_retrait_2(id_tontine);
+                                    refreshAccessToken(  new Carte.TokenRefreshListener() {
+                                        @Override
+                                        public void onTokenRefreshed(boolean success) {
+                                            if (success) {
+                                                //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                                requete_retrait_2(id_tontine);
+
+                                            }
+                                        }
+                                    });
                                 }
                             });
 
@@ -945,7 +954,283 @@ public class Carte extends AppCompatActivity {
         progressDialog.show();
 
 
+    }*/
+
+    private void requete_retrait_2(final int id_tontine) {
+        final Tontine tontine = SugarRecord.findById(Tontine.class, (long)id_tontine);
+        RequestQueue queue = Volley.newRequestQueue(Carte.this);
+
+        // Créez l'objet JSON à envoyer au serveur
+        JSONObject jsonParams = new JSONObject();
+        try {
+            jsonParams.put("customerNumber", Prefs.getString(TEL_KEY, ""));
+            jsonParams.put("idTontine", String.valueOf(tontine.getId_server()));
+            jsonParams.put("montant", String.valueOf(tontine_main.getMontEncaisse()));
+            jsonParams.put("periode", String.valueOf(tontine.getPeriode()));
+            jsonParams.put("mise", String.valueOf(tontine_main.getMise()));
+            jsonParams.put("carnet", String.valueOf(tontine_main.getCarnet()));
+            Log.e("Retrait espece", jsonParams.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, url_init_retrait_espece, jsonParams,
+                new Response.Listener<JSONObject>() {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // Réponse reçue du serveur
+                        Log.e("ResponseTagP", response.toString());
+                        try {
+                            JSONObject result = new JSONObject(response.toString());
+                            // Gestion de la réponse
+                            Log.e("test", String.valueOf(result.getBoolean("success")));
+                            Long id_retrait = Long.valueOf(0);
+                            if (result.getBoolean("success") && result.has("resultat")) {
+
+                                    // maj des dates
+                                    Date currentTime = Calendar.getInstance().getTime();
+                                    long output_creation=currentTime.getTime()/1000L;
+                                    String str_creation=Long.toString(output_creation);
+                                    long timestamp_creation = Long.parseLong(str_creation) * 1000;
+                                    long output_maj=currentTime.getTime()/1000L;
+                                    String str_maj=Long.toString(output_maj);
+                                    long timestamp_maj = Long.parseLong(str_maj) * 1000;
+                                    progressDialog.dismiss();
+                                    JSONArray resultat = result.getJSONArray("resultat");
+                                    String[] actionGroup = {};
+                                    String action = "";
+                                    String object = "";
+                                    String token = "";
+                                    for (int i = 0; i < resultat.length(); i++) {
+
+                                        JSONObject content = new JSONObject(resultat.get(i).toString());
+                                        actionGroup = content.getString("action").split("#");
+                                        action = actionGroup[0];
+                                        object = actionGroup[1];
+                                        JSONObject data = new JSONObject(content.getJSONObject("data").toString());
+                                        Utilisateur u = SugarRecord.find(Utilisateur.class, "id_utilisateur = ? ", Prefs.getString(ID_UTILISATEUR_KEY, "")).get(0);
+
+                                        if ("add".equals(action)) {
+                                            if("retraits".equals(object))
+                                            {
+                                                Retrait retrait = new Retrait();
+                                                retrait.setToken(data.getString("token"));
+                                                retrait.setCreation(timestamp_creation);
+                                                retrait.setMaj(timestamp_maj);
+                                                retrait.setMontant(data.getString("montant"));
+                                                retrait.setStatut(data.getString("statut"));
+                                                List<Tontine> t = SugarRecord.find(Tontine.class, "id_server = ?", data.getString("id_tontine"));
+                                                if(t.size()>0)
+                                                    retrait.setTontine(t.get(0));
+                                                retrait.setUtilisateur(u);
+                                                retrait.save();
+                                                id_retrait = retrait.getId();
+                                                token = String.valueOf(data.getLong("token"));
+                                            }
+                                        }
+                                        else if("update".equals(action)){
+                                            if (object.equals("tontines")) {
+                                                List<Tontine> old = Tontine.find(Tontine.class, "id_server = ?", content.getString("id"));
+                                                Log.e("old_t_size", String.valueOf(old.size()));
+                                                if (old.size() > 0) {
+                                                    if(data.has("statut")) {
+                                                        old.get(0).setStatut(data.getString("statut"));
+                                                        Log.e("old_t_stat", data.getString("statut"));
+                                                    }
+                                                    old.get(0).setMaj(timestamp_maj);
+                                                    old.get(0).save();
+                                                }
+                                            }
+                                        }
+                                    }
+                                    if(id_retrait != null)
+                                    {
+                                        String msg="Le code de retrait portant le token "+ token +" est désormais actif pour 24H. Passé ce délai il sera inactif, vous pourrez toujours en généré autant de fois que vous voulez.";
+                                        Intent i = new Intent(Carte.this, Message_ok.class);
+                                        i.putExtra("msg_desc",msg);
+                                        i.putExtra("id_retrait",id_retrait);
+                                        startActivity(i);
+                                    }
+                                    else
+                                    {
+                                        String msg="Une erreur est survenue!";
+                                        Intent i = new Intent(Carte.this, Message_non.class);
+                                        i.putExtra("msg_desc",msg);
+                                        i.putExtra("id_tontine",id_tontine);
+                                        i.putExtra("class","com.sicmagroup.tondi.MesTontines");
+                                        startActivity(i);
+                                    }
+
+
+
+
+                            } else {
+                                progressDialog.dismiss();
+                                String msg = result.getString("body");
+                                Intent i = new Intent(Carte.this, Message_non.class);
+                                i.putExtra("msg_desc", msg);
+                                i.putExtra("id_tontine", id_tontine);
+                                i.putExtra("class", "com.sicmagroup.tondi.MesTontines");
+                                startActivity(i);
+                            }
+                        } catch (JSONException t) {
+                            Log.d("errornscription", t.getMessage());
+                            progressDialog.dismiss();
+                            String msg = "";
+                            try {
+                                msg = response.getString("body");
+                            } catch (JSONException e) {
+                                throw new RuntimeException(e);
+                            }
+                            Intent i = new Intent(Carte.this, Message_non.class);
+                            i.putExtra("msg_desc", msg);
+                            i.putExtra("id_tontine", id_tontine);
+                            i.putExtra("class", "com.sicmagroup.tondi.MesTontines");
+                            startActivity(i);
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        progressDialog.dismiss();
+                        // error
+                        //Log.d("Error.Inscription", String.valueOf(error.getMessage()));
+                        ConstraintLayout mainLayout =  findViewById(R.id.layout_cartemain);
+
+                        String message;
+                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+                            //Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                            //Log.d("VolleyError_Test",volleyError.getMessage());
+                            message = "Aucune connexion Internet! Patientez et réessayez.";
+
+                            Dialog dialog = new Dialog(Carte.this);
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setCancelable(true);
+                            dialog.setContentView(R.layout.dialog_attention);
+
+                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
+                            titre.setText("Attention");
+                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
+                            message_deco.setText(message);
+
+                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
+                            oui.setText("Réessayer");
+
+                            oui.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    refreshAccessToken(  new Carte.TokenRefreshListener() {
+                                        @Override
+                                        public void onTokenRefreshed(boolean success) {
+                                            if (success) {
+                                                //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                                requete_retrait_2(id_tontine);
+
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+
+                            Button non = (Button) dialog.findViewById(R.id.btn_non);
+                            non.setVisibility(View.GONE);
+                            dialog.show();
+
+
+                        } else if (volleyError instanceof ServerError) {
+                            message = "Impossible de contacter le serveur! Patientez et réessayez.";
+                            Dialog dialog = new Dialog(Carte.this);
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setCancelable(true); // Permettre à la boîte de dialogue d'être annulable
+                            dialog.setCanceledOnTouchOutside(true); // Fermer lorsqu'on touche à l'extérieur
+                            dialog.setContentView(R.layout.dialog_attention);
+
+                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
+                            titre.setText("Attention");
+
+                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
+                            message_deco.setText(message);
+
+                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
+                            oui.setText("Réessayer");
+
+                            oui.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    requete_retrait_2(id_tontine);
+                                    // Vous pourriez aussi vouloir fermer la boîte de dialogue après l'action de réessayer
+                                    dialog.dismiss();
+                                }
+                            });
+
+                            Button non = (Button) dialog.findViewById(R.id.btn_non);
+                            non.setText("Quitter");
+
+                            non.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    onVisibleBehindCanceled(); // Supposant que cela ferme la boîte de dialogue
+                                    dialog.dismiss(); // Assurez-vous que la boîte de dialogue est fermée
+                                }
+                            });
+
+                            dialog.show();
+
+                        }  else if (volleyError instanceof ParseError) {
+                            message = "Une erreur est survenue! Patientez et réessayez.";
+
+                            Dialog dialog = new Dialog(Carte.this);
+                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            dialog.setCancelable(true);
+                            dialog.setContentView(R.layout.dialog_attention);
+
+                            TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
+                            titre.setText("Attention");
+                            TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
+                            message_deco.setText(message);
+
+                            Button oui = (Button) dialog.findViewById(R.id.btn_oui);
+                            oui.setText("Réessayer");
+
+                            oui.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    requete_retrait_2(id_tontine);
+                                }
+                            });
+
+                            Button non = (Button) dialog.findViewById(R.id.btn_non);
+                            non.setVisibility(View.GONE);
+                            dialog.show();
+
+
+                        }
+                    }
+
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
+                return headers;
+            }
+        };
+
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                25000,
+                -1,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        queue.add(postRequest);
+
+        progressDialog = new ProgressDialog(Carte.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("Veuillez patienter SVP! \nInitialisation de la requête de retrait en espèce...");
+        progressDialog.show();
     }
+
 
     private void requete_retry_retrait_2(final int id_tontine)
     {
@@ -1077,7 +1362,7 @@ public class Carte extends AppCompatActivity {
 
                             Dialog dialog = new Dialog(Carte.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
+                            dialog.setCancelable(true);
                             dialog.setContentView(R.layout.dialog_attention);
 
                             TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -1091,7 +1376,16 @@ public class Carte extends AppCompatActivity {
                             oui.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    requete_retrait_2(id_tontine);
+                                    refreshAccessToken(  new Carte.TokenRefreshListener() {
+                                        @Override
+                                        public void onTokenRefreshed(boolean success) {
+                                            if (success) {
+                                                //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                                requete_retrait_2(id_tontine);
+
+                                            }
+                                        }
+                                    });
                                 }
                             });
 
@@ -1114,7 +1408,7 @@ public class Carte extends AppCompatActivity {
                             message = "Impossible de contacter le serveur! Patientez et réessayez.";
                             Dialog dialog = new Dialog(Carte.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
+                            dialog.setCancelable(true);
                             dialog.setContentView(R.layout.dialog_attention);
 
                             TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -1128,7 +1422,17 @@ public class Carte extends AppCompatActivity {
                             oui.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    requete_retrait_2(id_tontine);
+                                    refreshAccessToken(  new Carte.TokenRefreshListener() {
+                                        @Override
+                                        public void onTokenRefreshed(boolean success) {
+                                            if (success) {
+                                                //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                                requete_retrait_2(id_tontine);
+
+                                            }
+                                        }
+                                    });
+                                   // requete_retrait_2(id_tontine);
                                 }
                             });
 
@@ -1151,7 +1455,7 @@ public class Carte extends AppCompatActivity {
 
                             Dialog dialog = new Dialog(Carte.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            dialog.setCancelable(false);
+                            dialog.setCancelable(true);
                             dialog.setContentView(R.layout.dialog_attention);
 
                             TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
@@ -1416,7 +1720,7 @@ public class Carte extends AppCompatActivity {
         void showDialog(Activity activity){
             final Dialog dialog = new Dialog(activity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setCancelable(true);
+            dialog.setCancelable(false);
             dialog.setContentView(R.layout.pin_access_2);
             setupFrmPin(dialog,dialog.getContext());
             TextView msg_try_mdp = dialog.findViewById(R.id.msg_pin_trying);
@@ -1672,7 +1976,7 @@ public class Carte extends AppCompatActivity {
             final Dialog dialog = new Dialog(activity);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-            dialog.setCancelable(false);
+            dialog.setCancelable(true);
             dialog.setContentView(R.layout.sim1_info);
             CheckBox check_sims_i = dialog.findViewById(R.id.check_sims_i);
             check_sims_i.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -1715,6 +2019,7 @@ public class Carte extends AppCompatActivity {
             TextView carte_montant_a_encaisser = findViewById(R.id.montant_a_encaisser);
             TextView carte_versements = findViewById(R.id.versements);
             Calendar cal = Calendar.getInstance(Locale.FRENCH);
+            GridView carte = findViewById(R.id.carte_tontine);
             TextView carte_mise = findViewById(R.id.mise);
             cal.setTimeInMillis(tontine.getCreation());
             String creation = DateFormat.format("dd/MM/yyyy HH:mm:ss", cal).toString();
@@ -1749,6 +2054,7 @@ public class Carte extends AppCompatActivity {
             if (tontine_main.getPeriode().equals(PeriodiciteEnum.JOURNALIERE.toString())){
 //                carte_titre.setText("Carnet N°"+ tontine_main.getCarnet()+" de la tontine journaliere de mise "+tontine.getMise()+" F");
                 carte_titre.setText(tontine_main.getDenomination() +" Mise : "+tontine.getMise() +" F");
+              //  carte.setBackgroundColor(ContextCompat.getColor(this, R.color.card_jour));
 
                 num_carte.setText("Carte "+tontine_main.getPositionCarteNew(tontine_main.getId())+ " sur 12");
             }else{
@@ -1767,14 +2073,20 @@ public class Carte extends AppCompatActivity {
             if (tontine.getPeriode().equals(PeriodiciteEnum.JOURNALIERE.toString())){
                 carte_versements.setText(versements+" sur 31");
                 nb_vers_defaut = 31;
+                //carte.setBackgroundColor(ContextCompat.getColor(this, R.color.card_jour));
+
             }
             if (tontine.getPeriode().equals(PeriodiciteEnum.HEBDOMADAIRE.toString())){
                 carte_versements.setText(versements+" sur 52");
                 nb_vers_defaut=52;
+              //  carte.setBackgroundColor(ContextCompat.getColor(this, R.color.card_hebdo));
+
             }
             if (tontine.getPeriode().equals(PeriodiciteEnum.MENSUELLE.toString())){
                 carte_versements.setText(versements+" sur 12");
                 nb_vers_defaut=12;
+             //   carte.setBackgroundColor(ContextCompat.getColor(this, R.color.card_mensuel));
+
             }
             carte_montant_cumule.setText(tontine.getMontCumuleNow(id_tontine,tontine_main.getStatut())+" F");
             carte_commission.setText(new DecimalFormat("##.##").format(tontine.getMontCommisNow(id_tontine,tontine_main.getStatut()))+" F");
@@ -2787,7 +3099,7 @@ public class Carte extends AppCompatActivity {
                                     public void onResponse(JSONObject response) {
                                         Log.e("ResponseTagMain", response.toString());
                                         try {
-                                            if (response.getBoolean("success")) {
+                                            if (response.getInt("responseCode") == 0) {
                                                 progressDialog.dismiss();
                                             } else {
                                                 progressDialog.dismiss();
@@ -2877,6 +3189,7 @@ public class Carte extends AppCompatActivity {
                         try {
                             String newAccessToken = response.getString("token");
                             String newRefreshToken = response.getString("refreshToken");
+                            accessToken = newAccessToken;
                             Prefs.putString(TOKEN, newAccessToken);
                             Prefs.putString(REFRESH_TOKEN, newRefreshToken);
                             listener.onTokenRefreshed(true);
@@ -3147,7 +3460,14 @@ public class Carte extends AppCompatActivity {
                                     .setAction("REESSAYER", new View.OnClickListener() {
                                         @Override
                                         public void onClick(View view) {
-                                            retrait_mmo(numero,montant);
+                                            refreshAccessToken(  new Carte.TokenRefreshListener() {
+                                                @Override
+                                                public void onTokenRefreshed(boolean success) {
+                                                    if (success) {
+                                                        retrait_mmo(numero,montant);
+                                                    }
+                                                }
+                                            });
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(Carte.this, R.color.colorGray));
@@ -3568,7 +3888,7 @@ public class Carte extends AppCompatActivity {
 
         Dialog dialog = new Dialog(Carte.this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setCancelable(false);
+        dialog.setCancelable(true);
         dialog.setContentView(R.layout.dialog_attention);
 
         TextView titre = dialog.findViewById(R.id.deco_title);
@@ -3581,7 +3901,17 @@ public class Carte extends AppCompatActivity {
         oui.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                terminer_tontine(tontine_main.getId_server());
+                refreshAccessToken(  new Carte.TokenRefreshListener() {
+                    @Override
+                    public void onTokenRefreshed(boolean success) {
+                        if (success) {
+                            //payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                            terminer_tontine(tontine_main.getId_server());
+
+
+                        }
+                    }
+                });
             }
         });
 
@@ -3687,7 +4017,7 @@ public class Carte extends AppCompatActivity {
                     int nbre_versemnt_defaut = 31;
                     if(t.getPeriode().equals(PeriodiciteEnum.MENSUELLE))
                         nbre_versemnt_defaut = 12;
-                    else if(t.getPeriode().equals(PeriodiciteEnum.HEBDOMADAIRE))
+                    if(t.getPeriode().equals(PeriodiciteEnum.HEBDOMADAIRE))
                         nbre_versemnt_defaut = 52;
                     pay_via_internet(montant_value, t.getId_server(), nbre_versemnt_defaut, t.getMontant());
                 }
@@ -3799,7 +4129,16 @@ public class Carte extends AppCompatActivity {
                                 .setAction("REESSAYER", new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+                                        refreshAccessToken(  new Carte.TokenRefreshListener() {
+                                            @Override
+                                            public void onTokenRefreshed(boolean success) {
+                                                if (success) {
+                                                    payer(numero, montant, heure_transaction, id_server, nbre_versemnt_defaut, montCumule);
+
+
+                                                }
+                                            }
+                                        });
                                     }
                                 });
                         snackbar.getView().setBackgroundColor(ContextCompat.getColor(Carte.this, R.color.colorGray));

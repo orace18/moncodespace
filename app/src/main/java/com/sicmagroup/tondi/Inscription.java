@@ -9,6 +9,7 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -16,7 +17,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceActivity;
 import android.provider.Settings;
+
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -27,6 +30,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
@@ -116,6 +120,7 @@ import static com.sicmagroup.tondi.utils.Constantes.USER_NOM_EXTRAT_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.USER_PRENOMS_EXTRAT_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.USER_TEL_EXTRAT_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.accessToken;
+import static com.sicmagroup.ussdlibra.USSDController.isAccessibilitySettingsOn;
 
 
 public class Inscription extends AppCompatActivity {
@@ -193,6 +198,7 @@ public class Inscription extends AppCompatActivity {
         // Initialiser les préférences CGU
         Prefs.putInt(CGU_FON_KEY, 0);
         Prefs.putInt(CGU_FR_KEY, 0);
+        initMediaPlayer();
 
         // Récupérer les valeurs de l'intent
         element1.setValue(getIntent().getStringExtra("nom"));
@@ -206,25 +212,401 @@ public class Inscription extends AppCompatActivity {
         map.put("KEY_LOGIN", new HashSet<>(Arrays.asList("waiting", "loading")));
         map.put("KEY_ERROR", new HashSet<>(Arrays.asList("problem", "error")));
 
-        // Initialiser les composants UI
         setupForm();
         circularProgressBar = findViewById(R.id.circular_progress);
         circularProgressBar.setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark2));
+        //mp_cgu_fon = MediaPlayer.create(this, RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE));
+        mp_cgu_fon = new MediaPlayer();
+        mp_cgu_fon.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mp_cgu_fon.setDataSource(cgu_test_url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        // Initialiser les media players
-        initMediaPlayer();
-
-        // Récupérer les boutons
         final Button b = findViewById(R.id.cgu_fon);
         final Button b1 = findViewById(R.id.cgu_fr);
-        b.setVisibility(View.INVISIBLE);
-        b1.setVisibility(View.INVISIBLE);
 
-        // Préparer et gérer le media player pour mp_cgu_fon
-        prepareMediaPlayer(mp_cgu_fon, cgu_test_url, b, circularProgressBar, R.drawable.bg_ccm);
-        // Préparer et gérer le media player pour mp_cgu_fr
-        prepareMediaPlayer(mp_cgu_fr, cgu_fr_url, b1, circularProgressBar1, R.drawable.bg_ccm);
+        b.setVisibility(View.VISIBLE);
+        b1.setVisibility(View.VISIBLE);
+
+        //if (utilitaire.isConnected()){
+        final ProgressDialog fon_prepare = new ProgressDialog(Inscription.this);
+        //mp3 will be started after completion of preparing...
+        mp_cgu_fon.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(final MediaPlayer player) {
+                //Toast.makeText(getApplicationContext(),"prepare",Toast.LENGTH_LONG).show();
+                //fon_prepare.dismiss();
+                b.setVisibility(View.VISIBLE);
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int animationDuration = mp_cgu_fon.getDuration(); // 2500ms = 2,5s
+                        int actual_percent = (mp_cgu_fon.getCurrentPosition() * 100) / animationDuration;
+
+                        try {
+                            if (mp_cgu_fon.isPlaying()) {
+                                mp_cgu_fon.pause();
+                                //b.setCompoundDrawablePadding(R.drawable.ic_play_arrow);
+                                int imgResource = R.drawable.ic_play_arrow;
+                                b.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                                b.setCompoundDrawablePadding(8);     //for padding
+
+                                circularProgressBar.setBackground(null);
+                                // calculer le pourcentage actuel
+                                //Toast.makeText(getApplicationContext(),"s:"+mp_cgu_fon.getCurrentPosition()/1000,Toast.LENGTH_LONG).show();
+                                circularProgressBar.setProgressWithAnimation(actual_percent, mp_cgu_fon.getCurrentPosition()); // Default duration = 1500ms
+                            } else {
+                                // start playing
+                                Toast.makeText(getApplicationContext(), "La lecture des termes et conditions est en cours...", Toast.LENGTH_SHORT).show();
+                                player.start();
+                                circularProgressBar.setBackground(getResources().getDrawable(R.drawable.bg_ccm));
+
+                                if (mp_cgu_fr.isPlaying()) {
+                                    mp_cgu_fr.pause();
+                                    //b.setCompoundDrawablePadding(R.drawable.ic_play_arrow);
+                                    int imgResource = R.drawable.ic_play_arrow;
+                                    b1.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                                    b1.setCompoundDrawablePadding(8);     //for padding
+
+                                    // calculer le pourcentage actuel
+                                    //Toast.makeText(getApplicationContext(),"s:"+mp_cgu_fon.getCurrentPosition()/1000,Toast.LENGTH_LONG).show();
+                                    circularProgressBar1.setProgressWithAnimation(actual_percent, mp_cgu_fr.getCurrentPosition()); // Default duration = 1500ms
+                                }
+                                int imgResource = R.drawable.ic_pause;
+                                b.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                                b.setCompoundDrawablePadding(8);     //for padding
+                                //circularProgressBar.setProgressWithAnimation(actual_percent);
+                                circularProgressBar.setBackgroundColor(ContextCompat.getColor(Inscription.this, R.color.colorGrey));
+                                circularProgressBar.setProgressBarWidth(getResources().getDimension(R.dimen.progressBarWidth));
+                                circularProgressBar.setBackgroundProgressBarWidth(getResources().getDimension(R.dimen.backgroundProgressBarWidth));
+                                //circularProgressBar.
+                                circularProgressBar.setProgressWithAnimation(100, (animationDuration - mp_cgu_fon.getCurrentPosition())); // Default duration = 1500ms
+
+                                mp_cgu_fon.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        // TODO Auto-generated method stub
+                                        // mettre à jour la preference
+                                        //Toast.makeText(getApplicationContext(),"dza: "+mp.getDuration(),Toast.LENGTH_LONG).show();
+                                        //if (mp.getDuration() != 0) {
+                                        Toast.makeText(getApplicationContext(), "La lecture des termes et conditions est terminée", Toast.LENGTH_LONG).show();
+                                        //}
+
+                                        Prefs.putInt(CGU_FON_KEY, 1);
+                                        int animationDuration = mp_cgu_fon.getDuration(); // 2500ms = 2,5s
+                                        circularProgressBar.setProgressWithAnimation(0);
+                                        int imgResource = R.drawable.ic_play_arrow;
+                                        final Button b = findViewById(R.id.cgu_fon);
+                                        b.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                                        b.setCompoundDrawablePadding(8);     //for padd
+                                        circularProgressBar.setBackground(null);
+
+                                    }
+                                });
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Log.d("Fon_prepared_excep", e.getMessage());
+                        }
+                    }
+                });
+
+            }
+
+        });
+        fon_prepare.setMessage("Lecture du CGU en cours...");
+        fon_prepare.setCancelable(true);
+
+        mp_cgu_fon.prepareAsync(); // might take long! (for buffering, etc)
+
+        circularProgressBar1 = findViewById(R.id.circular_progress1);
+        circularProgressBar1.setColor(ContextCompat.getColor(this, R.color.colorPrimary));
+
+        mp_cgu_fr = new MediaPlayer();
+        mp_cgu_fr.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        try {
+            mp_cgu_fr.setDataSource(cgu_fr_url);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mp_cgu_fr.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(final MediaPlayer player) {
+
+                b1.setVisibility(View.VISIBLE);
+                b1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        int animationDuration = mp_cgu_fr.getDuration(); // 2500ms = 2,5s
+                        int actual_percent = (mp_cgu_fr.getCurrentPosition() * 100) / animationDuration;
+
+                        try {
+                            if (mp_cgu_fr.isPlaying()) {
+                                mp_cgu_fr.pause();
+                                //b.setCompoundDrawablePadding(R.drawable.ic_play_arrow);
+                                int imgResource = R.drawable.ic_play_arrow;
+                                b1.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                                b1.setCompoundDrawablePadding(8);     //for padding
+                                circularProgressBar1.setBackground(null);
+
+                                // calculer le pourcentage actuel
+                                //Toast.makeText(getApplicationContext(),"s:"+mp_cgu_fon.getCurrentPosition()/1000,Toast.LENGTH_LONG).show();
+                                circularProgressBar1.setProgressWithAnimation(actual_percent, mp_cgu_fr.getCurrentPosition()); // Default duration = 1500ms
+                            } else {
+                                Toast.makeText(getApplicationContext(), "La lecture des termes et conditions est en cours...", Toast.LENGTH_SHORT).show();
+                                //mp_cgu_fr.prepare(); // might take long! (for buffering, etc)
+                                player.start();
+                                circularProgressBar1.setBackground(getResources().getDrawable(R.drawable.bg_ccm));
+                                if (mp_cgu_fon.isPlaying()) {
+                                    mp_cgu_fon.pause();
+                                    //b.setCompoundDrawablePadding(R.drawable.ic_play_arrow);
+                                    int imgResource = R.drawable.ic_play_arrow;
+                                    b.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                                    b.setCompoundDrawablePadding(8);     //for padding
+
+                                    // calculer le pourcentage actuel
+                                    //Toast.makeText(getApplicationContext(),"s:"+mp_cgu_fon.getCurrentPosition()/1000,Toast.LENGTH_LONG).show();
+                                    circularProgressBar.setProgressWithAnimation(actual_percent, mp_cgu_fon.getCurrentPosition()); // Default duration = 1500ms
+                                }
+                                int imgResource = R.drawable.ic_pause;
+                                b1.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                                b1.setCompoundDrawablePadding(8);     //for padding
+                                //circularProgressBar.setProgressWithAnimation(actual_percent);
+                                circularProgressBar1.setBackgroundColor(ContextCompat.getColor(Inscription.this, R.color.colorGrey));
+                                circularProgressBar1.setProgressBarWidth(getResources().getDimension(R.dimen.progressBarWidth));
+                                circularProgressBar1.setBackgroundProgressBarWidth(getResources().getDimension(R.dimen.backgroundProgressBarWidth));
+                                //circularProgressBar.
+                                circularProgressBar1.setProgressWithAnimation(100, (animationDuration - mp_cgu_fr.getCurrentPosition())); // Default duration = 1500ms
+
+                                mp_cgu_fr.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        // TODO Auto-generated method stub
+                                        // mettre à jour la preference
+                                        //Toast.makeText(getApplicationContext(),"Pouri :"+utilitaire.isConnected(),Toast.LENGTH_LONG).show();
+                                        //if (mp.getDuration() != 0) {
+                                        Toast.makeText(getApplicationContext(), "La lecture des termes et conditions est terminée", Toast.LENGTH_LONG).show();
+                                        //}
+                                        Prefs.putInt(CGU_FR_KEY, 1);
+                                        int animationDuration = mp_cgu_fr.getDuration(); // 2500ms = 2,5s
+                                        circularProgressBar1.setProgressWithAnimation(0);
+                                        int imgResource = R.drawable.ic_play_arrow;
+                                        final Button b = findViewById(R.id.cgu_fr);
+                                        b.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                                        b.setCompoundDrawablePadding(8);     //for padd
+                                        circularProgressBar1.setBackground(null);
+                                    }
+                                });
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+
+
+        //Bitmap crop = ivCrop.crop();
+        mp_cgu_fr.prepareAsync(); // might take long! (for buffering, etc)
+
+        TextView txt_cgu = (TextView) findViewById(R.id.txt_cgu);
+        txt_cgu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                startActivity(new Intent(Inscription.this, CGU.class));
+            }
+        });
+
+        if (Prefs.contains(MOOV_DATA_SHARING)) {
+            if (!Prefs.getBoolean(MOOV_DATA_SHARING, false)) {
+                Dialog dialog = new Dialog(Inscription.this);
+                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog.setCancelable(true);
+                dialog.setContentView(R.layout.dialog_attention_encaissement_marchand);
+
+                ImageView imageView = (ImageView) dialog.findViewById(R.id.imageView);
+                imageView.setImageResource(R.drawable.ic_info);
+
+                TextView titre = (TextView) dialog.findViewById(R.id.deco_title);
+                titre.setText("Demande d'autorisation");
+                TextView message_deco = (TextView) dialog.findViewById(R.id.deco_message);
+                message_deco.setText("Autoriser l’application à vérifier votre identité auprès de votre opérateur mobile ?");
+
+
+                Button oui = (Button) dialog.findViewById(R.id.btn_oui);
+                oui.setText("Oui");
+                oui.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.cancel();
+                        Prefs.putBoolean(MOOV_DATA_SHARING, true);
+                    }
+                });
+
+                Button non = (Button) dialog.findViewById(R.id.btn_non);
+                non.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Prefs.putBoolean(MOOV_DATA_SHARING, false);
+                        Toast.makeText(Inscription.this, "TONDi a besoin de cette autorisation pour vous facilitez votre inscription sur l'application TONDi", Toast.LENGTH_SHORT).show();
+                        Inscription.this.finish();
+                        dialog.cancel();
+
+                    }
+                });
+
+                dialog.show();
+
+                Dialog dialog1 = new Dialog(Inscription.this);
+                dialog1.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                dialog1.setCancelable(false);
+                dialog1.setContentView(R.layout.dialog_attention_encaissement_marchand);
+
+                ImageView imageView1 = (ImageView) dialog1.findViewById(R.id.imageView);
+                imageView1.setImageResource(R.drawable.ic_info);
+
+                TextView titre1 = (TextView) dialog1.findViewById(R.id.deco_title);
+                titre1.setText("Demande d'autorisation");
+                TextView message_deco1 = (TextView) dialog1.findViewById(R.id.deco_message);
+                message_deco1.setText("Autoriser l’opérateur mobile à partager vos informations d’identité avec l’application ?");
+
+                Button oui_1 = (Button) dialog1.findViewById(R.id.btn_oui);
+                oui_1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog1.cancel();
+                        Prefs.putBoolean(MOOV_DATA_SHARING, true);
+                    }
+                });
+
+                Button non_1 = (Button) dialog1.findViewById(R.id.btn_non);
+                non_1.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Prefs.putBoolean(MOOV_DATA_SHARING, false);
+                        Toast.makeText(Inscription.this, "TONDi a besoin de cette autorisation pour vous facilitez votre inscription sur l'application TONDi", Toast.LENGTH_SHORT).show();
+                        Inscription.this.finish();
+                        dialog1.cancel();
+
+                    }
+                });
+
+                dialog1.show();
+
+            }
+        }
     }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("onPause", "back");
+        //Prefs.putBoolean(ACCESS_BOOL,false);
+
+        final Button b = findViewById(R.id.cgu_fon);
+        final Button b1 = findViewById(R.id.cgu_fr);
+        if (mp_cgu_fon.isPlaying()) {
+            mp_cgu_fon.pause();
+
+            int animationDuration = mp_cgu_fon.getDuration(); // 2500ms = 2,5s
+            int actual_percent = (mp_cgu_fon.getCurrentPosition() * 100) / animationDuration;
+            //b.setCompoundDrawablePadding(R.drawable.ic_play_arrow);
+            int imgResource = R.drawable.ic_play_arrow;
+            b.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+            b.setCompoundDrawablePadding(8);     //for padding
+            // calculer le pourcentage actuel
+            //Toast.makeText(getApplicationContext(),"s:"+mp_cgu_fon.getCurrentPosition()/1000,Toast.LENGTH_LONG).show();
+            circularProgressBar.setProgressWithAnimation(actual_percent, mp_cgu_fon.getCurrentPosition()); // Default duration = 1500ms
+        }
+
+        if (mp_cgu_fr.isPlaying()) {
+            mp_cgu_fr.pause();
+
+            int animationDuration = mp_cgu_fr.getDuration(); // 2500ms = 2,5s
+            int actual_percent = (mp_cgu_fr.getCurrentPosition() * 100) / animationDuration;
+            int imgResource = R.drawable.ic_play_arrow;
+            b1.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+            b1.setCompoundDrawablePadding(8);     //for padding
+
+            // calculer le pourcentage actuel
+            //Toast.makeText(getApplicationContext(),"s:"+mp_cgu_fon.getCurrentPosition()/1000,Toast.LENGTH_LONG).show();
+            circularProgressBar1.setProgressWithAnimation(actual_percent, mp_cgu_fr.getCurrentPosition()); // Default duration = 1500ms
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("onResume", "fore");
+        Prefs.putBoolean(ACCESS_BOOL, true);
+
+
+        final Button b = findViewById(R.id.cgu_fon);
+        final Button b1 = findViewById(R.id.cgu_fr);
+
+        if (mp_cgu_fon.getCurrentPosition() != 0 && mp_cgu_fr.getCurrentPosition() != 0) {
+            mp_cgu_fon.start();
+
+            int animationDuration = mp_cgu_fon.getDuration(); // 2500ms = 2,5s
+            int actual_percent = (mp_cgu_fon.getCurrentPosition() * 100) / animationDuration;
+            //b.setCompoundDrawablePadding(R.drawable.ic_play_arrow);
+            int imgResource = R.drawable.ic_pause;
+            b.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+            b.setCompoundDrawablePadding(8);     //for padding
+            //circularProgressBar.setProgressWithAnimation(actual_percent);
+            circularProgressBar.setBackgroundColor(ContextCompat.getColor(Inscription.this, R.color.colorGrey));
+            circularProgressBar.setProgressBarWidth(getResources().getDimension(R.dimen.progressBarWidth));
+            circularProgressBar.setBackgroundProgressBarWidth(getResources().getDimension(R.dimen.backgroundProgressBarWidth));
+            //circularProgressBar.
+            circularProgressBar.setProgressWithAnimation(100, (animationDuration - mp_cgu_fon.getCurrentPosition()));
+        } else {
+            //Toast.makeText(getApplicationContext(), "mp_cgu_fon::"+mp_cgu_fon.getCurrentPosition(), Toast.LENGTH_SHORT).show();
+            if (mp_cgu_fon.getCurrentPosition() != 0) {
+                mp_cgu_fon.start();
+
+                int animationDuration = mp_cgu_fon.getDuration(); // 2500ms = 2,5s
+                int actual_percent = (mp_cgu_fon.getCurrentPosition() * 100) / animationDuration;
+                //b.setCompoundDrawablePadding(R.drawable.ic_play_arrow);
+                int imgResource = R.drawable.ic_pause;
+                b.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                b.setCompoundDrawablePadding(8);     //for padding
+                //circularProgressBar.setProgressWithAnimation(actual_percent);
+                circularProgressBar.setBackgroundColor(ContextCompat.getColor(Inscription.this, R.color.colorGrey));
+                circularProgressBar.setProgressBarWidth(getResources().getDimension(R.dimen.progressBarWidth));
+                circularProgressBar.setBackgroundProgressBarWidth(getResources().getDimension(R.dimen.backgroundProgressBarWidth));
+                //circularProgressBar.
+                circularProgressBar.setProgressWithAnimation(100, (animationDuration - mp_cgu_fon.getCurrentPosition())); // Default duration = 1500ms
+
+            }
+
+            if (mp_cgu_fr.getCurrentPosition() != 0) {
+                mp_cgu_fr.start();
+
+                int animationDuration = mp_cgu_fr.getDuration(); // 2500ms = 2,5s
+                int actual_percent = (mp_cgu_fr.getCurrentPosition() * 100) / animationDuration;
+                int imgResource = R.drawable.ic_pause;
+                b1.setCompoundDrawablesWithIntrinsicBounds(imgResource, 0, 0, 0);
+                b1.setCompoundDrawablePadding(8);     //for padding
+                circularProgressBar1.setBackgroundColor(ContextCompat.getColor(Inscription.this, R.color.colorGrey));
+                circularProgressBar1.setProgressBarWidth(getResources().getDimension(R.dimen.progressBarWidth));
+                circularProgressBar1.setBackgroundProgressBarWidth(getResources().getDimension(R.dimen.backgroundProgressBarWidth));
+                circularProgressBar1.setProgressWithAnimation(100, (animationDuration - mp_cgu_fr.getCurrentPosition())); // Default duration = 1500ms
+
+            }
+        }
+
+    }
+
 
     private void initMediaPlayer() {
         mp_cgu_fon = new MediaPlayer();
@@ -394,14 +776,14 @@ public class Inscription extends AppCompatActivity {
                         msg += "> Le champ Mot de passe et Confirmer ne correspondent pas.\n";
                         flag = true;
                     }
-//                    if (Prefs.getInt(CGU_FON_KEY, 0) != 1 && Prefs.getInt(CGU_FR_KEY, 0) != 1) {
-//                        msg += "> Vous devez lire ou écouter les termes et conditions.\n";
-//                        flag = true;
-//                    }
+                    if (Prefs.getInt(CGU_FON_KEY, 0) != 1 && Prefs.getInt(CGU_FR_KEY, 0) != 1) {
+                        msg = msg + "> Vous devez lire ou écouter les termes et conditions. \n";
+                        flag = true;
+                    }
 
                     CheckBox check_cgu = findViewById(R.id.check_cgu);
                     if (!check_cgu.isChecked()) {
-                        msg += "> Vous devez accepter les CGU.\n";
+                        msg = msg + "> Vous devez accepter les CGU. \n";
                         flag = true;
                     }
 
@@ -418,7 +800,7 @@ public class Inscription extends AppCompatActivity {
                             obtenirNomPrenomsEtVerifier(tel_value, mdp_value, sexe_value);
                             //inscrire();
                         } else {
-                           //
+                            //
 
                         }
                     }
@@ -460,9 +842,11 @@ public class Inscription extends AppCompatActivity {
                                 editor.apply();
                                 Log.e("nom", nom_value);
                                 Log.e("prenom", prenoms_value);
+                                Prefs.putString(NOM_KEY,nom_value);
+                                Prefs.putString(PRENOMS_KEY, prenoms_value);
 
-                                inscrire();
-                                //envoyerOtp(tel_value, mdp_value, sexe_value, nom_value, prenoms_value);
+                                //inscrire();
+                                envoyerOtp(tel_value, mdp_value, sexe_value, nom_value, prenoms_value);
                             } else {
                                 afficherMessageEtTerminer(bodyString);
                             }
@@ -474,12 +858,13 @@ public class Inscription extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        afficherErreurSnackbar();
+                        afficherErreurSnackbar(error.getMessage());
+                        Log.e("Erreur pour obtenir nom et prenom", error.getMessage());
                     }
                 });
 
         postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                250000,
+                5000,
                 -1,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(postRequest);
@@ -489,17 +874,31 @@ public class Inscription extends AppCompatActivity {
 
     private void envoyerOtp(final String tel_value, final String mdp_value, final String sexe_value, final String nom_value, final String prenoms_value) {
         RequestQueue queue = Volley.newRequestQueue(Inscription.this);
-        StringRequest postRequest = new StringRequest(Request.Method.POST, Constantes.URL_GENERATE_OTP,
-                new Response.Listener<String>() {
+
+        // Créer un JSONObject pour les paramètres de la requête
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("number", tel_value);
+            jsonBody.put(Constantes.TYPE_OP_KEY, OperationTypeEnum.INSCRIPTION.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.POST,
+                Constantes.URL_GENERATE_OTP,
+                jsonBody,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(JSONObject response) {
                         try {
-                            JSONObject result = new JSONObject(response);
-                            int responseCode = result.getInt("responseCode");
+                            Log.d("C'est ici otp","Oui  OTP");
+                            int responseCode = response.getInt("responseCode");
                             if (responseCode == 0) {
+                                Log.d("C'est dans la fonction","Pour saisir OTP");
                                 demarrerSmsRetriever(tel_value, mdp_value, sexe_value, nom_value, prenoms_value);
                             } else {
-                                afficherMessageEtTerminer(result.getString("body"));
+                                afficherMessageEtTerminer(response.getString("body"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -509,17 +908,12 @@ public class Inscription extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        afficherErreurSnackbar();
+                        afficherErreurSnackbar(error.getMessage());
+                        Log.e("Erreur pour OTP", error.getMessage());
+
                     }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                params.put("number", tel_value);
-                params.put(Constantes.TYPE_OP_KEY, OperationTypeEnum.INSCRIPTION.toString());
-                return params;
-            }
+                }) {
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -529,20 +923,31 @@ public class Inscription extends AppCompatActivity {
             }
         };
 
-        postRequest.setRetryPolicy(new DefaultRetryPolicy(
-                250000,
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                50000,
                 -1,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        queue.add(postRequest);
+        queue.add(jsonObjectRequest);
         afficherProgressDialog("Vérification du numero en cours.");
     }
 
+    @SuppressLint("LongLogTag")
     private void demarrerSmsRetriever(final String tel_value, final String mdp_value, final String sexe_value, final String nom_value, final String prenoms_value) {
         SmsRetrieverClient client = SmsRetriever.getClient(Inscription.this);
         Task<Void> task = client.startSmsRetriever();
-        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+        Log.d("C'est dans la fonction de migration OTP", "Oui migration OTP");
+        Intent codeOtpVer = new Intent(Inscription.this, CodeOtpVerification.class);
+        codeOtpVer.putExtra("numero", tel_value);
+        codeOtpVer.putExtra("nom", nom_value);
+        codeOtpVer.putExtra("prenoms", prenoms_value);
+        codeOtpVer.putExtra("mdp", mdp_value);
+        codeOtpVer.putExtra("sexe", sexe_value);
+        codeOtpVer.putExtra("caller_activity", "inscription");
+        startActivity(codeOtpVer);
+       /* task.addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                Log.e("Migration","Page de OTP");
                 Intent codeOtpVer = new Intent(Inscription.this, CodeOtpVerification.class);
                 codeOtpVer.putExtra("numero", tel_value);
                 codeOtpVer.putExtra("nom", nom_value);
@@ -556,9 +961,10 @@ public class Inscription extends AppCompatActivity {
         task.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
+                Log.e("SmsRetrieverError", "Erreur lors du démarrage du SMS Retriever : " + e.getMessage(), e);
                 afficherMessageNon("Erreur time out. Veuillez réessayer, Merci.");
             }
-        });
+        });*/
     }
 
     private void afficherMessageEtTerminer(String message) {
@@ -570,11 +976,11 @@ public class Inscription extends AppCompatActivity {
         startActivity(i);
     }
 
-    private void afficherErreurSnackbar() {
+    private void afficherErreurSnackbar(String message) {
         progressDialog.dismiss();
         ConstraintLayout mainLayout = findViewById(R.id.layout_inscription);
         Snackbar snackbar = Snackbar
-                .make(mainLayout, "Une erreur est survenue! Veuillez réessayer svp.", Snackbar.LENGTH_INDEFINITE)
+                .make(mainLayout, "Une erreur est survenue! Veuillez réessayer svp."+ message, Snackbar.LENGTH_INDEFINITE)
                 .setAction("OK", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -662,6 +1068,7 @@ public class Inscription extends AppCompatActivity {
                 params.put("numero_client", numero);
                 return params;
             }
+
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
@@ -886,7 +1293,6 @@ public class Inscription extends AppCompatActivity {
     }
 
 
-
     @SuppressLint("LongLogTag")
     private void inscrire() {
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -899,6 +1305,8 @@ public class Inscription extends AppCompatActivity {
         try {
             String telValue = tel.getValue().trim();
             String mdpValue = mdp.getValue().trim();
+            String nom = Prefs.getString(NOM_KEY, "");
+            String prenom = Prefs.getString(PRENOMS_KEY, "");
 
             Log.e("Numéro de téléphone", "Numéro: '" + telValue + "', Longueur: " + telValue.length());
 
@@ -914,6 +1322,8 @@ public class Inscription extends AppCompatActivity {
 
             postData.put("numero", telValue);
             postData.put("password", mdpValue);
+            postData.put("firstname", nom);
+            postData.put("lastname", prenom);
             Log.e("Le body de l'inscription", postData.toString());
         } catch (JSONException e) {
             e.printStackTrace();

@@ -168,7 +168,7 @@ public class USSDController implements USSDInterface{
         return false;
     }
 
-    protected static boolean isAccessibilitySettingsOn(Context context, final String service) {
+    public static boolean isAccessibilitySettingsOn(Context context, final String service) {
         int accessibilityEnabled = 0;
         try {
             accessibilityEnabled = Settings.Secure.getInt(

@@ -53,7 +53,7 @@
             android:inputType="textNoSuggestions"
             android:maxLines="1"
             tools:text="10000"
-            android:maxLength="6"
+            android:maxLength="9"
             android:imeOptions="actionNext"
             android:padding="16dp"
             android:textColor="@color/colorFormMasterElementTextValue"/>

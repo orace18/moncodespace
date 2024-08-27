@@ -90,15 +90,19 @@ import static com.sicmagroup.tondi.Accueil.CGU_FR_KEY;
 import static com.sicmagroup.tondi.Connexion.ACCESS_RETURNf_KEY;
 import static com.sicmagroup.tondi.Connexion.FIREBASE_TOKEN;
 import static com.sicmagroup.tondi.Connexion.ID_UTILISATEUR_KEY;
+import static com.sicmagroup.tondi.Connexion.NOM_KEY;
 import static com.sicmagroup.tondi.Connexion.NUMERO_COMPTE_KEY;
 import static com.sicmagroup.tondi.Connexion.PHOTO_CNI_KEY;
 import static com.sicmagroup.tondi.Connexion.PHOTO_KEY;
+import static com.sicmagroup.tondi.Connexion.PRENOMS_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.CODE_MARCHAND_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.accessToken;
 
 import cz.msebera.android.httpclient.entity.mime.content.ByteArrayBody;
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -302,6 +306,7 @@ public class Inscription_next extends AppCompatActivity {
     }
 
 
+    @SuppressLint("LongLogTag")
     private void uploadImage(final Bitmap bitmap, final Bitmap bitmap2, String cmValue) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream byteArrayOutputStream2 = new ByteArrayOutputStream();
@@ -331,7 +336,7 @@ public class Inscription_next extends AppCompatActivity {
 
         RequestBody body;
         Log.e("cmValue", cmValue + "==");
-        if (cmValue == null || cmValue.equals("") || cmValue.isEmpty() || cmValue.equals("null")) {
+        if (cmValue == null || cmValue.equals("null")) {
             body = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("pp_file", mypath1.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), mypath1))
                     .addFormDataPart("cni_file", mypath2.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), mypath2))
@@ -387,14 +392,13 @@ public class Inscription_next extends AppCompatActivity {
                             String nom = sharedPreferences.getString("nom", "");
                             String prenoms = sharedPreferences.getString("prenoms", "");
 
-
                             // Get values from JSON with default values if keys are missing
                             String profilePicture = user.optString("profilePicture", utilisateur.getPhoto_identite());
                             String cniPicture = user.optString("cniPicture", utilisateur.getcni_photo());
                             String accountNumber = user.optString("accountNumber", utilisateur.getNumero_compte());
                             String referent = user.optString("referent", "");
-                            String firstName = user.optString("firstName", prenoms);
-                            String lastName = user.optString("lastName", nom);
+                            String firstName = user.optString("firstName", Prefs.getString(PRENOMS_KEY,""));
+                            String lastName = user.optString("lastName", Prefs.getString(NOM_KEY, ""));
                             String updatedAtStr = user.optString("updatedAt", "1970-01-01 00:00:00");
 
                             utilisateur.setPhoto_identite(profilePicture);
@@ -452,19 +456,19 @@ public class Inscription_next extends AppCompatActivity {
             } catch (IOException e) {
                 showError("Une erreur IO est survenue: " + e.getMessage());
                 Log.e("task", "IOException: " + e.getMessage());
-                e.printStackTrace();
+               // e.printStackTrace();
                 progressDialog.dismiss();
                 return false;
             } catch (JSONException e) {
                 showError("Une erreur JSON est survenue: " + e.getMessage());
                 Log.e("task", "JSONException: " + e.getMessage());
-                e.printStackTrace();
+              //  e.printStackTrace();
                 progressDialog.dismiss();
                 return false;
             } catch (ParseException e) {
                 showError("Une erreur de parsing est survenue: " + e.getMessage());
                 Log.e("task", "ParseException: " + e.getMessage());
-                e.printStackTrace();
+               // e.printStackTrace();
                 progressDialog.dismiss();
                 return false;
             }

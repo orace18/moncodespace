@@ -393,6 +393,132 @@ public class MesPlaintes extends AppCompatActivity {
 
     }
 
+    public void uploadPlainte(Plainte plainte, String token) {
+        String fileName = plainte.getFile_name();
+
+        ContextWrapper cw = new ContextWrapper(MesPlaintes.this);
+        File directory = cw.getDir("tontine_plaintes", Context.MODE_PRIVATE);
+        File sourceFile = new File(directory, plainte.getFile_name());
+        String encodedAudio = null;
+
+        if (!sourceFile.isFile()) {
+            progressDialog.dismiss();
+            Log.e("uploadFile", "Source File not exist :" + sourceFile.getPath());
+            return;
+        }
+
+        try {
+            FileInputStream fis = new FileInputStream(sourceFile.getPath());
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            byte[] b = new byte[1024];
+            for (int readNum; (readNum = fis.read(b)) != -1; ) {
+                bos.write(b, 0, readNum);
+            }
+            encodedAudio = Base64.encodeToString(bos.toByteArray(), Base64.DEFAULT);
+        } catch (Exception e) {
+            Log.d("mylog", e.toString());
+        }
+
+        try {
+            // Créer l'objet JSON
+            JSONObject jsonData = new JSONObject();
+            jsonData.put("audio", encodedAudio);
+            jsonData.put("duration", plainte.getDuration());
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("data", jsonData);
+            jsonObject.put("audio", encodedAudio);
+
+            // Créer la requête Volley
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url_save_plainte, jsonObject,
+                    new Response.Listener<JSONObject>() {
+                        @SuppressLint("ResourceAsColor")
+                        @Override
+                        public void onResponse(JSONObject result) {
+                            progressDialog.dismiss();
+                            Log.e("Response", result.toString());
+                            try {
+                                if (result.getBoolean("success")) {
+                                    JSONObject resultat = result.getJSONObject("data");
+                                    String msg=result.getString("body");
+                                    Intent i = new Intent(MesPlaintes.this, Message_ok.class);
+                                    i.putExtra("msg_desc","Plainte bien envoyée");
+
+                                    i.putExtra("class","com.sicmagroup.tondi.MesPlaintes");
+                                    startActivity(i);
+                                   // Toast.makeText(MesPlaintes.this, "Plainte bien envoyée", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Alerter.create(MesPlaintes.this)
+                                            .setTitle(result.getString("message"))
+                                            .setIcon(R.drawable.ic_warning)
+                                            .setTitleAppearance(R.style.TextAppearance_AppCompat_Large)
+                                            .setIconColorFilter(R.color.colorPrimaryDark)
+                                            .setBackgroundColorRes(R.color.colorWhite)
+                                            .show();
+                                }
+                            } catch (Throwable t) {
+                                Log.e("My App", "Could not parse malformed JSON: \"" + result.toString() + "\"");
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError volleyError) {
+                    progressDialog.dismiss();
+                    handleVolleyError(volleyError, plainte, token);
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() throws AuthFailureError {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Bearer " + token);
+                    headers.put("Content-Type", "application/json"); // Ajouter ce header pour JSON
+                    return headers;
+                }
+            };
+
+            rQueue = Volley.newRequestQueue(MesPlaintes.this);
+            jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                    15000,
+                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+            rQueue.add(jsonObjectRequest);
+
+        } catch (JSONException e) {
+            Log.e("JSONObject Here", e.toString());
+        }
+    }
+
+    private void handleVolleyError(VolleyError volleyError, Plainte plainte, String token) {
+        androidx.coordinatorlayout.widget.CoordinatorLayout mainLayout = findViewById(R.id.layout_plainte);
+        String message;
+
+        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+            message = "Aucune connexion Internet!";
+        } else if (volleyError instanceof ServerError) {
+            message = "Impossible de contacter le serveur!";
+        } else if (volleyError instanceof ParseError) {
+            message = "Une erreur est survenue!";
+        } else {
+            message = "Erreur inconnue!";
+        }
+
+        Snackbar snackbar = Snackbar
+                .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
+                .setAction("REESSAYER", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        uploadPlainte(plainte, token);
+                    }
+                });
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(MesPlaintes.this, R.color.colorGray));
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
+        View sbView = snackbar.getView();
+        TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackbar.show();
+    }
+
+
 //    public void playAudio (View view) throws IOException
 //    {
 //        playButton.setEnabled(false);
@@ -405,7 +531,7 @@ public class MesPlaintes extends AppCompatActivity {
 //    }
 
 
-    public void uploadPlainte(Plainte plainte, String token) {
+    /*public void uploadPlainte(Plainte plainte, String token) {
         String fileName = plainte.getFile_name();
 
         HttpURLConnection conn = null;
@@ -525,7 +651,7 @@ public class MesPlaintes extends AppCompatActivity {
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         rQueue.add(jsonObjectRequest);
-    }
+    }*/
 
 
 

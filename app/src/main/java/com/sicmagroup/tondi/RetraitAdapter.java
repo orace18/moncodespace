@@ -132,6 +132,7 @@ public class RetraitAdapter extends RecyclerView.Adapter<RetraitAdapter.MyViewHo
         sendDesactiverAccountRequest(context);
     }
 
+    @SuppressLint("LongLogTag")
     private void sendDesactiverAccountRequest(Context context) {
         RequestQueue queue = Volley.newRequestQueue(context);
         JSONObject params = new JSONObject();

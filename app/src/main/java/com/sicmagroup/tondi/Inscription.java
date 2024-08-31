@@ -170,7 +170,8 @@ public class Inscription extends AppCompatActivity {
             setRequired(true);
     final FormElementPickerSexe element6 = FormElementPickerSexe.createInstance().setTag(TAG_SEXE).setHint("Sexe").setOptions(type_sexe).setPickerTitle("Sexe").setRequired(true);
     // single item picker input
-
+    final Button b = findViewById(R.id.cgu_fon);
+    final Button b1 = findViewById(R.id.cgu_fr);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,11 +225,11 @@ public class Inscription extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        final Button b = findViewById(R.id.cgu_fon);
-        final Button b1 = findViewById(R.id.cgu_fr);
 
-        b.setVisibility(View.VISIBLE);
-        b1.setVisibility(View.VISIBLE);
+
+        b.setVisibility(View.INVISIBLE);
+        b1.setVisibility(View.INVISIBLE);
+
 
         //if (utilitaire.isConnected()){
         final ProgressDialog fon_prepare = new ProgressDialog(Inscription.this);
@@ -505,6 +506,8 @@ public class Inscription extends AppCompatActivity {
             }
         }
     }
+
+
 
 
     @Override
@@ -856,6 +859,7 @@ public class Inscription extends AppCompatActivity {
                     }
                 },
                 new Response.ErrorListener() {
+                    @SuppressLint("LongLogTag")
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         afficherErreurSnackbar(error.getMessage());

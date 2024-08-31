@@ -615,6 +615,8 @@ public class Connexion extends AppCompatActivity {
                             //int responseCode = result.getInt("responseCode");
                             if (result != null) {
                                 final JSONObject user = result.getJSONObject("userDTO");
+                                Log.e("Le résultat du DTO :", user.toString());
+
                                 Long id = Long.valueOf(0);
                                 Utilisateur nouvel_utilisateur = null;
                                 @SuppressLint("SimpleDateFormat") DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -664,6 +666,7 @@ public class Connexion extends AppCompatActivity {
                                     nouvel_utilisateur.setPhoto_identite(user.getString("profilePicture"));
                                     nouvel_utilisateur.setcni_photo(user.getString("cniPicture"));
                                     nouvel_utilisateur.setMdp(mot_de_passe);
+                                    nouvel_utilisateur.setUuid(user.getString("uuid"));
                                     nouvel_utilisateur.setStatut("true");
                                     nouvel_utilisateur.setNumero_compte(user.getString("accountNumber"));
                                     if (result.isNull("referent"))
@@ -687,10 +690,20 @@ public class Connexion extends AppCompatActivity {
                                     Prefs.putString(NUMERO_COMPTE_KEY, user.getString("accountNumber"));
                                     Prefs.putString(TOKEN, result.getString("accessToken"));
                                     Prefs.putString(REFRESH_TOKEN, result.getString("refreshToken"));
+                                    Prefs.putString(UUID_KEY, user.getString("uuid"));
                                     if (user.isNull("referent"))
                                         Prefs.putString(CODE_MARCHAND_KEY, "");
                                     else
                                         Prefs.putString(CODE_MARCHAND_KEY, user.getString("referent"));
+
+                                    Log.e("Avant telechargement","de l'image");
+                                    try {
+                                        URL url_photo = new URL(Constantes.URL_MEDIA_PP + user.getString("profilePicture"));
+                                        new DownloadTask().execute(url_photo);
+                                    }catch (Exception e){
+                                        Log.e("Erreur lors du téléchargement de l'image",e.getMessage());
+                                    }
+                                    Log.e("Après telechargement", "de l'image");
 
                                     Date currentTime = Calendar.getInstance().getTime();
                                     long output_current = currentTime.getTime() / 1000L;
@@ -699,7 +712,7 @@ public class Connexion extends AppCompatActivity {
                                     Prefs.putString(CONNECTER_KEY, String.valueOf(timestamp_current));
                                     Prefs.putString(PHOTO_KEY, user.getString("profilePicture"));
 
-                                    URL url_photo = new URL(Constantes.URL_MEDIA_PP + user.getString("profilePicture"));
+                                   // URL url_photo = new URL(Constantes.URL_MEDIA_PP + user.getString("profilePicture"));
                                     URL url_photo_cni = new URL(Constantes.URL_MEDIA_CNI + Prefs.getString(PHOTO_CNI_KEY, null));
                                     Prefs.putString(TEL_KEY, String.valueOf(tel_value));
 
@@ -906,7 +919,7 @@ public class Connexion extends AppCompatActivity {
                                         }
                                     }
 
-                                    new DownloadTask().execute(url_photo);
+
                                     new DownloadTaskCNI().execute(url_photo_cni);
                                     progressDialog.dismiss();
 
@@ -1168,9 +1181,9 @@ public class Connexion extends AppCompatActivity {
                                 user.setNumero_compte(result.getString("numero_compte"));
                                 user.save();
 
-                                URL url_photo  = new URL(medias_url + Prefs.getString(PHOTO_KEY, null) + ".JPG");
+                                URL url_photo  = new URL(medias_url + Prefs.getString(PHOTO_KEY, null));
                                 new DownloadTask().execute(url_photo);
-                                URL url_photo_cni = new URL(medias_url + Prefs.getString(PHOTO_CNI_KEY, null) + ".JPG");
+                                URL url_photo_cni = new URL(medias_url + Prefs.getString(PHOTO_CNI_KEY, null));
                                 new DownloadTaskCNI().execute(url_photo_cni);
                                 Log.e("photo",  Prefs.getString(PHOTO_CNI_KEY, null));
 
@@ -1423,6 +1436,8 @@ public class Connexion extends AppCompatActivity {
 
 
     private class DownloadTask extends AsyncTask<URL, Void, Bitmap> {
+        //Log.d("C'est dans la fonction image","Telechargement de profil");
+
         private URL url;
 
         // Before the tasks execution
@@ -1437,24 +1452,35 @@ public class Connexion extends AppCompatActivity {
         }
 
         // Download the image from the given URL
+        @SuppressLint("LongLogTag")
         private Bitmap downloadImage(URL url) {
             HttpURLConnection connection = null;
 
             try {
+                Log.e("Initialisation de la connexion", "fonction de téléchargement");
                 // Initialize a new http url connection
+                String token = Prefs.getString(TOKEN, "");
+
+                // Initialiser une nouvelle connexion HTTP URL
                 connection = (HttpURLConnection) url.openConnection();
+
+                // Ajouter l'en-tête Authorization avec le token
+                connection.setRequestProperty("Authorization", "Bearer " + token);
 
                 // Connect the http url connection
                 connection.connect();
 
+                Log.e("Connexion...", "fonction de téléchargement");
+
+                Log.e("Le message de la connexion", connection.getResponseMessage());
+
                 // Check if the response code is 401
                 int responseCode = connection.getResponseCode();
+                Log.e("Le code de la reponse:", "Telechargement fichier " +String.valueOf(responseCode));
                 if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
                     // Refresh the token and retry the download
                     if (refreshToken()) {
                         return downloadImage(url); // Retry the download after refreshing the token
-                    } else {
-                        return null; // If token refresh fails, return null
                     }
                 }
 
@@ -1463,7 +1489,7 @@ public class Connexion extends AppCompatActivity {
 
                 BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
                 Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
-
+                Log.e("L'image est là", bmp.toString());
                 // Return the downloaded bitmap
                 return bmp;
 
@@ -1529,7 +1555,8 @@ public class Connexion extends AppCompatActivity {
             // Hide the progress dialog
             if (result != null) {
                 // Save bitmap to internal storage
-                utilitaire.saveToInternalStorage(result, Prefs.getString(PHOTO_KEY, null));
+                String imgName = "user_avatar";
+                utilitaire.saveToInternalStorage(result, imgName);
             } else {
                 // Notify user that an error occurred while downloading image
                 Toast.makeText(getApplicationContext(), "Erreur, photo de profil introuvable", Toast.LENGTH_LONG).show();
@@ -1612,7 +1639,13 @@ public class Connexion extends AppCompatActivity {
 
             try {
                 // Initialize a new http url connection
+                String token = Prefs.getString(TOKEN, "");
+
+                // Initialiser une nouvelle connexion HTTP URL
                 connection = (HttpURLConnection) url.openConnection();
+
+                // Ajouter l'en-tête Authorization avec le token
+                connection.setRequestProperty("Authorization", "Bearer " + token);
 
                 // Connect the http url connection
                 connection.connect();

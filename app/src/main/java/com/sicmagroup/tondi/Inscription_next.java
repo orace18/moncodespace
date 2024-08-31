@@ -318,7 +318,7 @@ public class Inscription_next extends AppCompatActivity {
         String encodedImage2 = Base64.encodeToString(byteArrayOutputStream2.toByteArray(), Base64.DEFAULT);
 
         OkHttpClient okHttpClient = new OkHttpClient();
-        String imgname = String.valueOf(Calendar.getInstance().getTimeInMillis());
+        String imgname = "user_avatar";
         String imgname2 = String.valueOf(Calendar.getInstance().getTimeInMillis());
         progressDialog = new ProgressDialog(Inscription_next.this);
         progressDialog.setCancelable(false);
@@ -395,6 +395,7 @@ public class Inscription_next extends AppCompatActivity {
                             // Get values from JSON with default values if keys are missing
                             String profilePicture = user.optString("profilePicture", utilisateur.getPhoto_identite());
                             String cniPicture = user.optString("cniPicture", utilisateur.getcni_photo());
+                            Log.e("Test photo", profilePicture);
                             String accountNumber = user.optString("accountNumber", utilisateur.getNumero_compte());
                             String referent = user.optString("referent", "");
                             String firstName = user.optString("firstName", Prefs.getString(PRENOMS_KEY,""));

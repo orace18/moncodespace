@@ -138,6 +138,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-base:17.6.0'
     implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
     implementation 'com.loopj.android:android-async-http:1.4.9'
+   // implementation 'com.google.android.tts:text-to-speech:9.0.0'
+    //implementation 'com.google.cloud:google-cloud-texttospeech:2.49.0'
 
     /*implementation('com.crashlytics.sdk.android:crashlytics:2.10.0@aar') {
         transitive = true;

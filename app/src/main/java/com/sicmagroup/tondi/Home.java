@@ -165,7 +165,8 @@ public class Home extends AppCompatActivity {
         File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
         String photo_identite = Prefs.getString(PHOTO_KEY, "");
         // Create imageDir
-        File mypath = new File(directory, photo_identite + ".png");
+        File mypath = new File(directory, "user_avatar" + ".png");
+        //File mypath = new File(directory, photo_identite + ".png");
         Picasso.get().load(mypath).transform(new Dashboard.CircleTransform()).into(user_avatar);
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each

@@ -132,7 +132,7 @@ public class Utilitaire {
             ContextWrapper cw = new ContextWrapper(context);
             File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
             // Create imageDir
-            File mypath=new File(directory,name+".JPG");
+            File mypath=new File(directory,name+".png");
 
             try {
                 OutputStream output = new FileOutputStream(mypath);
@@ -201,7 +201,7 @@ public class Utilitaire {
             // path to /data/data/yourapp/app_data/imageDir
             File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
             // Create imageDir
-            File f=new File(directory,name+".JPG");
+            File f=new File(directory,name+".png");
             //File f=new File(path, name+".JPG");
             Bitmap b = BitmapFactory.decodeStream(new FileInputStream(f));
             ImageView img=v.findViewById(R.id.user_avatar);

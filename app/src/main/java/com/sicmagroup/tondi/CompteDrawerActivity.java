@@ -37,6 +37,13 @@ public class CompteDrawerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        new Prefs.Builder()
+                .setContext(this)
+                .setMode(Context.MODE_PRIVATE)
+                .setPrefsName(getPackageName())
+                .setUseDefaultSharedPreference(true)
+                .build();
+
         setContentView(R.layout.activity_compte_drawer);
 
         close_drawer = (ImageView) findViewById(R.id.close_drawer);
@@ -108,7 +115,8 @@ public class CompteDrawerActivity extends AppCompatActivity {
         File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
         String photo_identite = Prefs.getString(PHOTO_KEY, "");
         // Create imageDir
-        File mypath = new File(directory, photo_identite + ".png");
+       // File mypath = new File(directory, photo_identite + ".png");
+        File mypath = new File(directory, "user_avatar" + ".png");
         Picasso.get().load(mypath).transform(new Dashboard.CircleTransform()).into(user_avatar);
     }
 

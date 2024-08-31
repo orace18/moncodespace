@@ -481,13 +481,14 @@ public class Dashboard extends AppCompatActivity  {
 
         //Toast.makeText(getApplicationContext(),Prefs.getString(PHOTO_KEY,null).toString(),Toast.LENGTH_LONG).show();
         ImageView user_avatar = findViewById(R.id.user_avatar);
-        Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
+       // Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
 
         ContextWrapper cw = new ContextWrapper(this);
         File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
         String photo_identite = Prefs.getString(PHOTO_KEY, "");
+        File mypath = new File(directory, "user_avatar" + ".png");
         // Create imageDir
-        File mypath = new File(directory, photo_identite + ".JPG");
+       // File mypath = new File(directory, photo_identite + ".JPG");
        // Picasso.get().load(mypath).transform(new CircleTransform()).into(user_avatar);
 
 

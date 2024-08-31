@@ -31,6 +31,7 @@ public class Utilisateur  extends SugarRecord<Utilisateur> {
     private String numeroCompte;
     private String codeMarchand;
     private String token;
+    private String uuid;
 
     public String getToken() {
         return token;
@@ -39,6 +40,13 @@ public class Utilisateur  extends SugarRecord<Utilisateur> {
         this.token = token;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public String getNumero_compte() {
         return numeroCompte;

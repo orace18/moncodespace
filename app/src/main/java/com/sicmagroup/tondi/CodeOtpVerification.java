@@ -1403,8 +1403,8 @@ public class CodeOtpVerification extends AppCompatActivity {
         try {
             SexeEnum sexeEnum;
 
-            jsonObject.put("firstName", nom);
-            jsonObject.put("lastName", prenoms);
+            jsonObject.put("firstName", Prefs.getString(PRENOMS_KEY,""));
+            jsonObject.put("lastName", Prefs.getString(NOM_KEY,""));
             jsonObject.put("numero", numero);
             jsonObject.put("password", mdp);
             if(sexe.equals("Homme")){
@@ -1414,7 +1414,7 @@ public class CodeOtpVerification extends AppCompatActivity {
             } else {
                 jsonObject.put("sexe", SexeEnum.OTHER);
             }
-
+Log.e("Le body de la connexion",jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

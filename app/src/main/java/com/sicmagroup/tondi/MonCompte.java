@@ -1,5 +1,6 @@
 package com.sicmagroup.tondi;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -26,18 +27,22 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
@@ -93,11 +98,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -142,6 +157,7 @@ import okhttp3.RequestBody;
 public class MonCompte extends AppCompatActivity {
 
     private static final int TAG_OLD_PASS = 41;
+
     private static final int TAG_PASS = 42;
     private static final int TAG_CF_PASS = 43;
     private static final int TAG_PIN = 44;
@@ -175,11 +191,10 @@ public class MonCompte extends AppCompatActivity {
     Uri picUri;
     Utilitaire utilitaire;
 
+    private static final int ALL_PERMISSIONS_RESULT = 107;
     private ArrayList<String> permissionsToRequest;
     private ArrayList<String> permissionsRejected = new ArrayList<>();
     private ArrayList<String> permissions = new ArrayList<>();
-
-    private final static int ALL_PERMISSIONS_RESULT = 107;
     String medias_url = SERVEUR + "/medias/";
 
     public static boolean isMultiSimEnabled = false;
@@ -200,7 +215,7 @@ public class MonCompte extends AppCompatActivity {
     private RecyclerView merchandForm;
     private TextView cardMerchantTitle;
     private Button btn_pmerchant;
-    private ImageView user_avatar;
+
     private ProgressBar progressBar;
     private LinearLayout linearLayoutDetails;
     private static AsyncHttpClient client = new AsyncHttpClient();
@@ -211,6 +226,7 @@ public class MonCompte extends AppCompatActivity {
     TextView cni_details;
 
 
+    @SuppressLint("MissingInflatedId")
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -222,6 +238,20 @@ public class MonCompte extends AppCompatActivity {
                 .setPrefsName(getPackageName())
                 .setUseDefaultSharedPreference(true)
                 .build();
+
+        permissions.add(Manifest.permission.CAMERA);
+        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        permissionsToRequest = findUnAskedPermissions(permissions);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (permissionsToRequest.size() > 0) {
+                requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+            }
+        }
+
+
         utilitaire = new Utilitaire(this);
         setupForm();
 //        recyclerView = (RecyclerView) findViewById(R.id.recycler_paiement);
@@ -259,7 +289,21 @@ public class MonCompte extends AppCompatActivity {
         expandedMerchantBtn = (ImageButton) findViewById(R.id.expanded_merchant_btn);
         expandeMerchantBox = (ConstraintLayout) findViewById(R.id.expand_merchant);
         merchandForm = (RecyclerView) findViewById(R.id.form_merchant);
-        user_avatar = findViewById(R.id.avatar);
+       ImageView user_avatar = (ImageView) findViewById(R.id.avatar);
+
+       /* String medias_url =   SERVEUR + "/medias/";
+        ImageView user_avatar = findViewById(R.id.avatar);
+        Picasso.get().load(medias_url+ Prefs.getString(PHOTO_KEY,null)).transform(new Dashboard.CircleTransform()).into(user_avatar);
+*/
+        ContextWrapper cw = new ContextWrapper(this);
+        File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
+        String photo_identite = Prefs.getString(PHOTO_KEY, "");
+        File mypath = new File(directory, "user_avatar" + ".png");
+        Picasso.get().load(mypath).transform(new Dashboard.CircleTransform()).into(user_avatar);
+
+
+        Log.e("Profil",mypath.toString());
+
 
 
         double solde = 0.00;
@@ -279,28 +323,24 @@ public class MonCompte extends AppCompatActivity {
         solde_compte.setText("Votre solde est : "+new DecimalFormat("##.##").format(u.getSolde())+" F CFA");
 
 
-        /*ContextWrapper cw = new ContextWrapper(this);
-        File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
-        String photo_identite = Prefs.getString(PHOTO_KEY, "");
-        // Create imageDir
-        File mypath = new File(directory, photo_identite);
-        Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
-*/
-        Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
 
-        ContextWrapper cw = new ContextWrapper(this);
-        File directory = cw.getDir("tontine_photos", Context.MODE_PRIVATE);
-        String photo_identite = Prefs.getString(PHOTO_KEY, "");
-        // Create imageDir
-        File mypath = new File(directory, photo_identite);
-        //Picasso.get().load(mypath).transform(new Dashboard.CircleTransform()).into(user_avatar);
-        //Log.e("photo identite", photo_identite);
+        try {
+           URL url_photo  = new URL(Constantes.URL_MEDIA_PP + photo_identite);
+            new MonCompte.DownloadTask().execute(url_photo);
 
-        ImageView photo_cni_view = findViewById(R.id.photo_cni_cmpte);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
         String photo_cni = Prefs.getString(PHOTO_CNI_KEY, "");
         File mypath_cni = new File(directory, photo_cni + ".png");
+        ImageView photo_cni_view = (ImageView) findViewById(R.id.photo_cni_cmpte);
         Picasso.get().load(mypath_cni).into(photo_cni_view);
         Log.e("photo cni", photo_cni);
+       /* Picasso.get()
+                .load(mypath_cni)
+                .resize(90, 90)
+                .into(photo_cni_view);*/
 
             user_avatar.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -308,6 +348,7 @@ public class MonCompte extends AppCompatActivity {
                     showPictureDialog();
                 }
             });
+       // loadImageFromStorage("user_avatar", user_avatar);
 
 
         if(!isSecuriteExpanded){
@@ -415,7 +456,7 @@ public class MonCompte extends AppCompatActivity {
             }
         });
 
-        if(Prefs.getString(CODE_MARCHAND_KEY, "").equals("null")){
+        if(Prefs.getString(CODE_MARCHAND_KEY, "").equals("null") || Prefs.getString(CODE_MARCHAND_KEY, "").equals("")){
             cardMerchantTitle.setText("Lier un marchand");
             //afficher le formulaire
             setupFormMerchand();
@@ -432,10 +473,10 @@ public class MonCompte extends AppCompatActivity {
 
         }
 
-        if(utilitaire.isConnected())
-        {
-            Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)+".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
-        }
+//        if(utilitaire.isConnected())
+//        {
+//            Picasso.get().load(medias_url+Prefs.getString(PHOTO_KEY,null)).transform(new Dashboard.CircleTransform()).into(user_avatar);
+//        }
 
         //Picasso.get().load(medias_url + Prefs.getString(PHOTO_KEY, null) + ".JPG").transform(new Dashboard.CircleTransform()).into(user_avatar);
 
@@ -578,41 +619,65 @@ public class MonCompte extends AppCompatActivity {
 //            e.printStackTrace();
 //        }
 
+
+
     }
 
-    public static class CircleTransform implements Transformation {
-        @Override
-        public Bitmap transform(Bitmap source) {
-            int size = Math.min(source.getWidth(), source.getHeight());
-
-            int x = (source.getWidth() - size) / 2;
-            int y = (source.getHeight() - size) / 2;
-
-            Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
-            if (squaredBitmap != source) {
-                source.recycle();
+    private ArrayList<String> findUnAskedPermissions(ArrayList<String> wanted) {
+        ArrayList<String> result = new ArrayList<>();
+        for (String perm : wanted) {
+            if (!hasPermission(perm)) {
+                result.add(perm);
             }
-
-            Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
-
-            Canvas canvas = new Canvas(bitmap);
-            Paint paint = new Paint();
-            BitmapShader shader = new BitmapShader(squaredBitmap,
-                    BitmapShader.TileMode.CLAMP, BitmapShader.TileMode.CLAMP);
-            paint.setShader(shader);
-            paint.setAntiAlias(true);
-
-            float r = size / 2f;
-            canvas.drawCircle(r, r, r, paint);
-
-            squaredBitmap.recycle();
-            return bitmap;
         }
+        return result;
+    }
 
-        @Override
-        public String key() {
-            return "circle";
+    private boolean hasPermission(String permission) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
         }
+        return true;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case ALL_PERMISSIONS_RESULT:
+                for (String perms : permissionsToRequest) {
+                    if (!hasPermission(perms)) {
+                        permissionsRejected.add(perms);
+                    }
+                }
+
+                if (permissionsRejected.size() > 0) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))) {
+                            showMessageOKCancel("Ces permissions sont nécessaires pour l'application. Veuillez les accorder.",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                requestPermissions(permissionsRejected.toArray(new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                }
+                break;
+        }
+    }
+
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Annuler", null)
+                .create()
+                .show();
     }
 
 
@@ -638,25 +703,36 @@ public class MonCompte extends AppCompatActivity {
         pictureDialog.show();
     }
 
-    
-
     public void choosePhotoFromGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
 
     }
 
+
+    private void checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
+        } else {
+            takePhotoFromCamera();
+        }
+    }
+
+
+
     private void takePhotoFromCamera() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, CAMERA_REQUEST_CODE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, CAMERA_REQUEST_CODE);
+        }
     }
+
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-
 
         if (resultCode == RESULT_OK) {
             if (requestCode == GALLERY_REQUEST_CODE) {
@@ -666,18 +742,14 @@ public class MonCompte extends AppCompatActivity {
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
                         String path = saveImage(bitmap);
                         Log.e("Image", bitmap.toString());
-
+                        String imageName = "user_avatar";
                         Bitmap circularBitmap = getCircularBitmap(bitmap);
+                        ImageView user_avatar = (ImageView) findViewById(R.id.avatar);
+
                         user_avatar.setImageBitmap(circularBitmap);
                         Log.e("Photo profil uploaded",bitmap.toString());                        Toast.makeText(MonCompte.this, "Image Saved!", Toast.LENGTH_SHORT).show();
-                        uploadImageToServer(path);
-                        String imageString = encodeToBase64(bitmap);
+                        uploadImageToServer(bitmap,path);
                         String imgname = String.valueOf(Calendar.getInstance().getTimeInMillis());
-
-
-                        utilitaire.saveToInternalStorage(bitmap, imgname);
-                        //Prefs.putString(PHOTO_KEY, imageString);
-                       // Log.e("image :", imageString);
                     } catch (IOException e) {
                         e.printStackTrace();
                         Toast.makeText(MonCompte.this, "Failed to load image!", Toast.LENGTH_SHORT).show();
@@ -692,20 +764,15 @@ public class MonCompte extends AppCompatActivity {
                     if (thumbnail != null) {
                         Log.d("Photo prise", thumbnail.toString());
                         Bitmap circularBitmap = getCircularBitmap(thumbnail);
+                        ImageView user_avatar = (ImageView) findViewById(R.id.avatar);
+
                         user_avatar.setImageBitmap(circularBitmap);
                         Log.e("Photo profil uploaded",thumbnail.toString());
                         String path = saveImage(thumbnail);
                         Log.e("Photo profil uploaded",path);
-                        String imgname = String.valueOf(Calendar.getInstance().getTimeInMillis());
-
-
-                        utilitaire.saveToInternalStorage(thumbnail, imgname);
-
                         Toast.makeText(MonCompte.this, "Image Saved!", Toast.LENGTH_SHORT).show();
-                        uploadImageToServer(path);
-                        String imageString = encodeToBase64(thumbnail);
-                        //Prefs.putString(PHOTO_KEY, imageString);
-                       // Log.e("image :", imageString);
+                        uploadImageToServer(thumbnail, path);
+
                     } else {
                         Toast.makeText(MonCompte.this, "Failed to capture image!", Toast.LENGTH_SHORT).show();
                     }
@@ -896,8 +963,12 @@ public class MonCompte extends AppCompatActivity {
 
 
 
-    private void uploadImageToServer(String imagePath) {
+    private void uploadImageToServer(final Bitmap bitmap, String imagePath) {
         File file = new File(imagePath);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream);
+        String imgname = "user_avatar";
+        utilitaire.saveToInternalStorage(bitmap, imgname);
 
         // Créer le RequestBody pour le fichier image
         RequestBody fileBody = RequestBody.create(MediaType.parse("image/jpeg"), file);
@@ -952,16 +1023,18 @@ public class MonCompte extends AppCompatActivity {
                             if (responseCode == 0) {
                                 String img = resp.getString("body");
                                 final Utilisateur utilisateur = Utilisateur.find(Utilisateur.class, "id_utilisateur = ?", Prefs.getString(ID_UTILISATEUR_KEY, null)).get(0);
+
                                 utilisateur.setPhoto_identite(img);
                                 utilisateur.save();
                                 Log.e("La valeur du body", img);
+                                runOnUiThread(() -> Toast.makeText(MonCompte.this, "Image envoyée au serveur ", Toast.LENGTH_SHORT).show());
                                 Prefs.putString(PHOTO_KEY, img);
                             }
                         }
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
-                    String msg = "Votre photo a été correctement modifiée";
+                   String msg = "Votre photo a été correctement modifiée";
                     Intent i = new Intent(MonCompte.this, Message_ok.class);
                     i.putExtra("msg_desc", msg);
                     i.putExtra("class", "com.sicmagroup.tondi.MonCompte");
@@ -969,7 +1042,7 @@ public class MonCompte extends AppCompatActivity {
                 } else if (response.code() == 401) {
                     refreshAccessToken(MonCompte.this, success -> {
                         if (success) {
-                            uploadImageToServer(imagePath);
+                            uploadImageToServer(bitmap,imagePath);
                         } else {
                             runOnUiThread(() -> Toast.makeText(MonCompte.this, "Failed to refresh token, please log in again.", Toast.LENGTH_SHORT).show());
                         }
@@ -1911,11 +1984,122 @@ public class MonCompte extends AppCompatActivity {
                         .setBackgroundColorRes(R.color.colorWhite) // or setBackgroundColorInt(Color.CYAN)
                         .show();
             }
-
-
-
     }
 
+    private class DownloadTask extends AsyncTask<URL, Void, Bitmap> {
+        private URL url;
+
+        // Before the tasks execution
+        protected void onPreExecute() {
+            // Display the progress dialog on async task start
+        }
+
+        // Do the task in background/non UI thread
+        protected Bitmap doInBackground(URL... urls) {
+            url = urls[0];
+            return downloadImage(url);
+        }
+
+        // Download the image from the given URL
+        private Bitmap downloadImage(URL url) {
+            HttpURLConnection connection = null;
+
+            try {
+                // Initialize a new http url connection
+                connection = (HttpURLConnection) url.openConnection();
+
+                // Connect the http url connection
+                connection.connect();
+
+                // Check if the response code is 401
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+                    // Refresh the token and retry the download
+                    if (refreshToken()) {
+                        return downloadImage(url); // Retry the download after refreshing the token
+                    } else {
+                        return null; // If token refresh fails, return null
+                    }
+                }
+
+                // Get the input stream from http url connection
+                InputStream inputStream = connection.getInputStream();
+
+                BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                Bitmap bmp = BitmapFactory.decodeStream(bufferedInputStream);
+
+                // Return the downloaded bitmap
+                return bmp;
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (connection != null) {
+                    // Disconnect the http url connection
+                    connection.disconnect();
+                }
+            }
+            return null;
+        }
+
+        // Refresh the token
+        private boolean refreshToken() {
+            // Implement your token refresh logic here
+            // Return true if token refresh is successful, false otherwise
+            // You might use a synchronous HTTP request here for simplicity
+            // For example, using HttpURLConnection or OkHttpClient to refresh the token
+            // Here is a simple example (you need to adapt it to your logic):
+            try {
+                URL url = new URL(Constantes.url_refresh_token);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setRequestProperty("Content-Type", "application/json");
+
+                JSONObject params = new JSONObject();
+                params.put("refreshToken", Prefs.getString(REFRESH_TOKEN, ""));
+
+                OutputStream os = connection.getOutputStream();
+                os.write(params.toString().getBytes("UTF-8"));
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    InputStream inputStream = connection.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    StringBuilder result = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    reader.close();
+
+                    JSONObject jsonResponse = new JSONObject(result.toString());
+                    String newAccessToken = jsonResponse.getString("token");
+                    String newRefreshToken = jsonResponse.getString("refreshToken");
+
+                    Prefs.putString(TOKEN, newAccessToken);
+                    Prefs.putString(REFRESH_TOKEN, newRefreshToken);
+                    return true;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
+
+        // When all async task done
+        protected void onPostExecute(Bitmap result) {
+            // Hide the progress dialog
+            if (result != null) {
+                // Save bitmap to internal storage
+                utilitaire.saveToInternalStorage(result, Prefs.getString(PHOTO_KEY, null));
+            } else {
+                // Notify user that an error occurred while downloading image
+                Toast.makeText(getApplicationContext(), "Erreur, photo de profil introuvable", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
     public String OperatorName(String numero) {
         String operator_name = "";
         String[] mtn_prefix_list =  getResources().getStringArray(R.array.mtn_prefix_list);
@@ -1979,11 +2163,6 @@ public class MonCompte extends AppCompatActivity {
 
         }
     }
-
-
-
-
-
 
     /**
      * Create a chooser intent to select the source to get image from.<br/>
@@ -2152,8 +2331,6 @@ public class MonCompte extends AppCompatActivity {
             String action = data.getAction();
             isCamera = action != null && action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
         }
-
-
         return isCamera ? getCaptureImageOutputUri() : data.getData();
     }
 
@@ -2174,7 +2351,7 @@ public class MonCompte extends AppCompatActivity {
         picUri = savedInstanceState.getParcelable("pic_uri");
     }
 
-    private ArrayList<String> findUnAskedPermissions(ArrayList<String> wanted) {
+    /*private ArrayList<String> findUnAskedPermissions(ArrayList<String> wanted) {
         ArrayList<String> result = new ArrayList<String>();
 
         for (String perm : wanted) {
@@ -2184,31 +2361,31 @@ public class MonCompte extends AppCompatActivity {
         }
 
         return result;
-    }
+    }*/
 
-    private boolean hasPermission(String permission) {
+    /*private boolean hasPermission(String permission) {
         if (canMakeSmores()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
             }
         }
         return true;
-    }
+    }*/
 
-    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+    /*private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(this)
                 .setMessage(message)
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", null)
                 .create()
                 .show();
-    }
+    }*/
 
     private boolean canMakeSmores() {
         return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    /*@TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
@@ -2251,9 +2428,7 @@ public class MonCompte extends AppCompatActivity {
                 break;
         }
 
-    }
-
-
+    }*/
 
     /**
      * On load image button click, start pick  image chooser activity.
@@ -2261,10 +2436,5 @@ public class MonCompte extends AppCompatActivity {
     public void onLoadImageClick(View view) {
         startActivityForResult(getPickImageChooserIntent(), 200);
     }
-
-
-
-
-
 
 }

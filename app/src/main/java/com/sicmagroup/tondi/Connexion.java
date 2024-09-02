@@ -18,6 +18,7 @@ import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
@@ -34,6 +35,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,6 +110,8 @@ import com.sicmagroup.formmaster.model.FormElementTextPassword;
 
 //import io.fabric.sdk.android.Fabric;
 
+import static com.sicmagroup.tondi.Accueil.CGU_FON_KEY;
+import static com.sicmagroup.tondi.Accueil.CGU_FR_KEY;
 import static com.sicmagroup.tondi.Accueil.MOOV_DATA_SHARING;
 import static com.sicmagroup.tondi.utils.Constantes.CODE_MARCHAND_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
@@ -293,7 +297,6 @@ public class Connexion extends AppCompatActivity {
         super.onDestroy();
         Log.d("onDestroy","back");
         Prefs.putBoolean(ACCESS_BOOL,false);
-
     }
 
 
@@ -448,9 +451,30 @@ public class Connexion extends AppCompatActivity {
                     }
                 }else{
                     BaseFormElement tel = mFormBuilder.getFormElement(TAG_TEL);
+                    BaseFormElement mdp = mFormBuilder.getFormElement(TAG_TEL);
                     String tel_value = tel.getValue();
-                    Utilitaire utilitaire = new Utilitaire(Connexion.this);
-                    auth();
+                    String mdp_value = mdp.getValue();
+                    String msg = "";
+                    boolean flag = false;
+
+                    if (element2.getValue().length() != 8) {
+                        msg += "> Le numéro de téléphone doit être composé de 8 caractères.\n";
+                        flag = true;
+                    }
+                    if (element1.getValue().length() < 6) {
+                        msg += "> Le Mot de passe doit être composé au minimum de 6 caractères.\n";
+                        flag = true;
+                    }
+                    if (flag) {
+                        alertView("Erreurs dans le formulaire", msg);
+                    } else {
+                        if (!tel_value.isEmpty() && tel_value != null && !mdp_value.isEmpty() && mdp_value != null) {
+                            Utilitaire utilitaire = new Utilitaire(Connexion.this);
+                            auth();
+                        }
+                    }
+
+
                 }
             }
         });
@@ -1209,21 +1233,17 @@ public class Connexion extends AppCompatActivity {
                         }
                     }
                 },
-                new Response.ErrorListener()
-                {
+                new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
                         progressDialog.dismiss();
                         Log.e("ResponseTagMain", String.valueOf(volleyError.getMessage()));
                         Log.e("Stack", "Error StackTrace: \t" + volleyError.getStackTrace());
-                        // error
-                        //Log.d("Error.Inscription", String.valueOf(error.getMessage()));
-                        ConstraintLayout mainLayout =  findViewById(R.id.layout_connexion);
 
-                        // volleyError.getMessage() == null
+                        ConstraintLayout mainLayout = findViewById(R.id.layout_connexion);
                         String message;
-                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {//Toast.makeText(Inscription.this, "error:"+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
 
+                        if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
                             message = "Aucune connexion Internet! Patientez et réessayez.";
                             final Snackbar snackbar = Snackbar
                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
@@ -1234,16 +1254,38 @@ public class Connexion extends AppCompatActivity {
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
-                            // Changing message text color
                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
                             View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                             textView.setTextColor(Color.WHITE);
                             snackbar.show();
 
                         } else if (volleyError instanceof ServerError) {
-                            message = "Impossible de contacter le serveur! Patientez et réessayez.";
+                            // On récupère le code de réponse du serveur
+                            NetworkResponse networkResponse = volleyError.networkResponse;
+                            if (networkResponse != null && networkResponse.statusCode == 500) {
+                                // On récupère le message d'erreur s'il existe dans le corps de la réponse
+                                try {
+                                    String responseBody = new String(networkResponse.data, "utf-8");
+                                    JSONObject data = new JSONObject(responseBody);
+                                    if (data.has("message")) {
+                                        message = data.getString("message");
+                                        if(message.equals("Bad credentials")){
+                                            message = "Numéro de Téléphone ou Mot de passe incorrect";
+                                        }else{
+                                            message = message;
+                                        }
+                                    } else {
+                                        message = "Erreur du serveur! Patientez et réessayez.";
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                    message = "Erreur du serveur! Patientez et réessayez.";
+                                }
+                            } else {
+                                message = "Impossible de contacter le serveur! Patientez et réessayez.";
+                            }
+
                             Snackbar snackbar = Snackbar
                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
                                     .setAction("REESSAYER", new View.OnClickListener() {
@@ -1253,15 +1295,13 @@ public class Connexion extends AppCompatActivity {
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
-                            // Changing message text color
                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
                             View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                             textView.setTextColor(Color.WHITE);
                             snackbar.show();
-                        }  else if (volleyError instanceof ParseError) {
-                            //message = "Parsing error! Please try again later";
+
+                        } else if (volleyError instanceof ParseError) {
                             message = "Une erreur est survenue! Patientez et réessayez.";
                             Snackbar snackbar = Snackbar
                                     .make(mainLayout, message, Snackbar.LENGTH_INDEFINITE)
@@ -1272,11 +1312,9 @@ public class Connexion extends AppCompatActivity {
                                         }
                                     });
                             snackbar.getView().setBackgroundColor(ContextCompat.getColor(Connexion.this, R.color.colorGray));
-                            // Changing message text color
                             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimary));
-                            // Changing action button text color
                             View sbView = snackbar.getView();
-                            TextView textView = (TextView) sbView.findViewById(com.google.android.material.R.id.snackbar_text);
+                            TextView textView = sbView.findViewById(com.google.android.material.R.id.snackbar_text);
                             textView.setTextColor(Color.WHITE);
                             snackbar.show();
                         }
@@ -1638,7 +1676,7 @@ public class Connexion extends AppCompatActivity {
             HttpURLConnection connection = null;
 
             try {
-                // Initialize a new http url connection
+
                 String token = Prefs.getString(TOKEN, "");
 
                 // Initialiser une nouvelle connexion HTTP URL

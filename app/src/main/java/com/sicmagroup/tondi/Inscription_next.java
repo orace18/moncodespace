@@ -336,19 +336,23 @@ public class Inscription_next extends AppCompatActivity {
 
         RequestBody body;
         Log.e("cmValue", cmValue + "==");
-        if (cmValue == null || cmValue.equals("null")) {
+        if (cmValue == null || cmValue.equals("null") || cmValue.isEmpty()) {
             body = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("pp_file", mypath1.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), mypath1))
                     .addFormDataPart("cni_file", mypath2.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), mypath2))
+                    .addFormDataPart("firstName", Prefs.getString(PRENOMS_KEY,""))
+                    .addFormDataPart("lastName", Prefs.getString(NOM_KEY,""))
                     .build();
-            Log.e("La valeur du body", body.toString());
+            Log.e("La valeur du body sans code référant", body.toString());
         } else {
             body = new MultipartBody.Builder().setType(MultipartBody.FORM)
                     .addFormDataPart("pp_file", mypath1.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), mypath1))
                     .addFormDataPart("cni_file", mypath2.getName(), RequestBody.create(MediaType.parse("multipart/form-data"), mypath2))
                     .addFormDataPart("referent", cmValue)
+                    .addFormDataPart("firstName", Prefs.getString(PRENOMS_KEY,""))
+                    .addFormDataPart("lastName", Prefs.getString(NOM_KEY,""))
                     .build();
-            Log.e("La valeur du body dans le else", body.toString());
+            Log.e("La valeur du body dans le else avec code référant", body.toString());
         }
 
         FutureTask<Boolean> refreshDataBaseTask = new FutureTask<>(() -> {

@@ -170,8 +170,8 @@ public class Inscription extends AppCompatActivity {
             setRequired(true);
     final FormElementPickerSexe element6 = FormElementPickerSexe.createInstance().setTag(TAG_SEXE).setHint("Sexe").setOptions(type_sexe).setPickerTitle("Sexe").setRequired(true);
     // single item picker input
-    final Button b = findViewById(R.id.cgu_fon);
-    final Button b1 = findViewById(R.id.cgu_fr);
+   // final Button b = findViewById(R.id.cgu_fon);
+    //final Button b1 = findViewById(R.id.cgu_fr);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -227,14 +227,14 @@ public class Inscription extends AppCompatActivity {
 
 
 
-        b.setVisibility(View.INVISIBLE);
-        b1.setVisibility(View.INVISIBLE);
+        //b.setVisibility(View.INVISIBLE);
+        //b1.setVisibility(View.INVISIBLE);
 
 
         //if (utilitaire.isConnected()){
         final ProgressDialog fon_prepare = new ProgressDialog(Inscription.this);
         //mp3 will be started after completion of preparing...
-        mp_cgu_fon.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        /*mp_cgu_fon.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(final MediaPlayer player) {
                 //Toast.makeText(getApplicationContext(),"prepare",Toast.LENGTH_LONG).show();
@@ -412,11 +412,11 @@ public class Inscription extends AppCompatActivity {
                     }
                 });
             }
-        });
+        });*/
 
 
         //Bitmap crop = ivCrop.crop();
-        mp_cgu_fr.prepareAsync(); // might take long! (for buffering, etc)
+//        mp_cgu_fr.prepareAsync(); // might take long! (for buffering, etc)
 
         TextView txt_cgu = (TextView) findViewById(R.id.txt_cgu);
         txt_cgu.setOnClickListener(new View.OnClickListener() {

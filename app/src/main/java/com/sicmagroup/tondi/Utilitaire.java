@@ -877,7 +877,7 @@ public class Utilitaire {
                                                 nouvelle_history.setId_server(histories.getJSONObject(i).getString("id"));
 
                                                 @SuppressLint("SimpleDateFormat")
-                                                DateFormat formatter_1 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                                                DateFormat formatter_1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                                 Date creation_1 = formatter_1.parse(histories.getJSONObject(i).getString("createdAt"));
                                                 long output_creation_1 = creation_1.getTime() / 1000L;
                                                 String str_creation_1 = Long.toString(output_creation_1);

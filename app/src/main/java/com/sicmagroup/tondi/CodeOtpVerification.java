@@ -1,18 +1,25 @@
 package com.sicmagroup.tondi;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,8 +50,12 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
+import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.orm.SugarRecord;
@@ -65,6 +76,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import static com.sicmagroup.tondi.Connexion.CODE_OTP_RECU;
@@ -78,6 +92,7 @@ import static com.sicmagroup.tondi.Connexion.SEXE_KEY;
 import static com.sicmagroup.tondi.Connexion.TEL_KEY;
 import static com.sicmagroup.tondi.Connexion.UUID_KEY;
 import static com.sicmagroup.tondi.Connexion.url_disable_code_otp;
+
 import static com.sicmagroup.tondi.utils.Constantes.REFRESH_TOKEN;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
@@ -115,7 +130,8 @@ public class CodeOtpVerification extends AppCompatActivity {
     boolean billetCodeRetraitEspece = false;
     String url_valider = SERVEUR+"/api/v1/versements/valider_ussd";
     private static final int SMS_CONSENT_REQUEST = 2;  // Set to an unused request code
-
+    private static final int REQUEST_CODE = 101;
+    private OtpReceiver otpReceiver;
     TextView renvoyerCodeOtp;
     TextView timerBeforeResendCode;
     CountDownTimer timer;
@@ -128,12 +144,18 @@ public class CodeOtpVerification extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_code_otp_verification);
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECEIVE_SMS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.RECEIVE_SMS}, REQUEST_CODE);
+        }
+
+
         new Prefs.Builder()
                 .setContext(this)
                 .setMode(ContextWrapper.MODE_PRIVATE)
                 .setPrefsName(getPackageName())
                 .setUseDefaultSharedPreference(true)
                 .build();
+
         final Intent intent = getIntent();
         utilitaire = new Utilitaire(this);
         caller_activity = intent.getStringExtra("caller_activity");
@@ -144,6 +166,28 @@ public class CodeOtpVerification extends AppCompatActivity {
         editText_codeOtp = findViewById(R.id.code_otp_saisit);
         mainLayout =  findViewById(R.id.layout_code_otp);
         codeOtpRecu = Prefs.getString(CODE_OTP_RECU, "");
+
+
+        SmsRetrieverClient client = SmsRetriever.getClient(this);
+        Task<Void> task = client.startSmsUserConsent(null); // null pour obtenir les SMS de n'importe quel expéditeur
+
+        task.addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                // API prête à être utilisée
+                Log.d("OTP", "Demande de consentement envoyée avec succès.");
+            }
+        });
+
+        task.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Échec de la demande
+                Log.e("OTP", "Échec de la demande de consentement.");
+            }
+        });
+
+
         if(caller_activity.equals(callable_activity_carte))
         {
             id_tontine = intent.getIntExtra("id_tontine", 0);
@@ -2223,9 +2267,51 @@ Log.e("Le body de la connexion",jsonObject.toString());
     }
 
 
+// ici la class est static sinon elle ne marchera pas avec une erreur de zero argument
+    public static class OtpReceiver extends BroadcastReceiver {
 
-    public static class OtpReceiver extends BroadcastReceiver{
+        // Constructeur vide requis pour ne pas causer d'erreur
+        public OtpReceiver() {
+
+            //super();
+        }
+
         @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals("android.provider.Telephony.SMS_RECEIVED")) {
+                // Récupérer le SMS en accédant à la messagerie
+                Bundle bundle = intent.getExtras();
+                if (bundle != null) {
+                    Object[] pdus = (Object[]) bundle.get("pdus");
+                    if (pdus != null) {
+                        for (Object pdu : pdus) {
+                            SmsMessage smsMessage = SmsMessage.createFromPdu((byte[]) pdu);
+                            String messageBody = smsMessage.getMessageBody();
+                            // Extraire le code OTP du message
+                            String otpCode = extractOtpFromMessage(messageBody);
+                            // Mise à jour du editText de otp là
+                            Toast.makeText(context, "Code OTP reçu: " + otpCode, Toast.LENGTH_SHORT).show();
+                            editText_codeOtp.setText(otpCode);
+                        }
+                    }
+                }
+            }
+        }
+
+        private String extractOtpFromMessage(String message) {
+            // Méthode pour extraire le code OTP du message SMS
+
+            Pattern otpPattern = Pattern.compile("\\d{4,6}"); // Extrait un code OTP de 4 à 6 chiffres
+            Matcher matcher = otpPattern.matcher(message);
+            if (matcher.find()) {
+                return matcher.group(0);
+            }
+            return null;
+        }
+
+
+
+        /*@Override
         public void onReceive(Context context, Intent intent) {
 
             Log.e("sms", "recu");
@@ -2324,7 +2410,7 @@ Log.e("Le body de la connexion",jsonObject.toString());
             else
                 Toast.makeText(context, "Un bug est survenu. Réessayez svp", Toast.LENGTH_SHORT).show();
 
-        }
+        }*/
     }
     private static SmsMessage getIncomingMessage(Object object, Bundle bundle) {
         SmsMessage smsMessage;
@@ -2434,4 +2520,74 @@ Log.e("Le body de la connexion",jsonObject.toString());
         };
         queue.add(postRequest);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission accordée
+                registerOtpReceiver();
+            } else {
+                // Permission refusée
+                Toast.makeText(this, "Permission de recevoir des SMS refusée.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void registerOtpReceiver() {
+        otpReceiver = new OtpReceiver();
+        IntentFilter filter = new IntentFilter("android.provider.Telephony.SMS_RECEIVED");
+        registerReceiver(otpReceiver, filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (otpReceiver != null) {
+            unregisterReceiver(otpReceiver);
+        }
+    }
+
+   /* private BroadcastReceiver smsBroadcastReceiver = new BroadcastReceiver() {
+        @SuppressLint("UnsafeIntentLaunch")
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (SmsRetriever.SMS_RETRIEVED_ACTION.equals(intent.getAction())) {
+                Bundle extras = intent.getExtras();
+                assert extras != null;
+                Status status = (Status) extras.get(SmsRetriever.EXTRA_STATUS);
+
+                switch (Objects.requireNonNull(status).getStatusCode()) {
+                    case CommonStatusCodes.SUCCESS:
+                        // Obtenir l'intention de consentement utilisateur
+                        @SuppressLint("UnsafeIntentLaunch") Intent consentIntent = extras.getParcelable(SmsRetriever.EXTRA_CONSENT_INTENT);
+                        try {
+                            startActivityForResult(consentIntent, SMS_CONSENT_REQUEST);
+                        } catch (ActivityNotFoundException e) {
+                            Log.e("OTP", "Impossible de démarrer l'intention de consentement.");
+                        }
+                        break;
+                    case CommonStatusCodes.TIMEOUT:
+                        Log.e("OTP", "Le temps d'attente du SMS a expiré.");
+                        break;
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter intentFilter = new IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION);
+        registerReceiver(smsBroadcastReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(smsBroadcastReceiver);
+    }*/
+
+
 }

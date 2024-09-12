@@ -864,7 +864,7 @@ public class Inscription extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         afficherErreurSnackbar(error.getMessage());
                         Log.e("Erreur pour obtenir nom et prenom", error.getMessage());
-                    }
+                    } //41744447
                 });
 
         postRequest.setRetryPolicy(new DefaultRetryPolicy(

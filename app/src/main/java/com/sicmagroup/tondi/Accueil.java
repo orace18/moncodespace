@@ -65,7 +65,7 @@ public class Accueil extends AppCompatActivity {
     static String FIRST_LAUNCH_KEY = "first_launch";
     static String COTIS_INFO__KEY = "cotis_auto";
     static String DUALSIM_INFO_KEY = "dualsim";
-    static String CGU_FR_KEY = "cgu_fr";
+    public static String CGU_FR_KEY = "cgu_fr";
     static String CGU_FON_KEY = "cgu_fon";
     static String CARTE_NAV_KEY = "carte_nav";
     static String PAYEMENT_IS_CHECKED_KEY = "payment_is_ckecked";

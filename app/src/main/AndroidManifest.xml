@@ -14,10 +14,14 @@
         android:required="false" />
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="ANDROID.PERMISSION.READ_EXTERNAL_STORAGE" /> <!-- <uses-permission android:name="android.permission.RECEIVE_SMS" /> -->
-    <!-- <uses-permission android:name="android.permission.READ_SMS" /> -->
+    <uses-permission android:name="ANDROID.PERMISSION.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS"
+        tools:ignore="PermissionImpliesUnsupportedChromeOsHardware" />
+    <uses-permission android:name="android.permission.READ_SMS"
+        tools:ignore="PermissionImpliesUnsupportedChromeOsHardware" />
     <!-- <uses-permission android:name="android.permission.SEND_SMS" /> -->
     <!-- <uses-permission android:name="android.permission.CALL_PHONE" /> -->
+
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" /> -->
     <uses-permission android:name="android.permission.ACTION_MANAGE_OVERLAY_PERMISSION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" / -->
@@ -194,13 +198,20 @@
 
         <receiver
             android:name=".CodeOtpVerification$OtpReceiver"
-            android:enabled="true"
             android:exported="true"
-            android:permission="com.google.android.gms.auth.api.phone.permission.SEND">
+            tools:ignore="Instantiatable">
             <intent-filter>
-                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+
+<!--        <receiver-->
+<!--            android:name=".CodeOtpVerification$OtpReceiver">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />-->
+<!--            </intent-filter>-->
+<!--        </receiver>-->
+
 
         <service android:name=".SmsReader" />
         <service

@@ -318,6 +318,15 @@ public class Home extends AppCompatActivity {
                         if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
                             message = "Aucune connexion Internet!";
                             //showSnackbar(mainLayout, message);
+                            refreshAccessToken( Home.this, new Home.TokenRefreshListener() {
+                                @Override
+                                public void onTokenRefreshed(boolean success) {
+                                    if (success) {
+                                        afficherDixHistorique();
+
+                                    }
+                                }
+                            });
                         } else if (volleyError instanceof ServerError) {
                             message = "Impossible de contacter le serveur!";
                             showSnackbar(mainLayout, message);

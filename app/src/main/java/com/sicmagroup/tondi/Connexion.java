@@ -704,8 +704,8 @@ public class Connexion extends AppCompatActivity {
 
                                 if (id != null) {
                                     Prefs.putString(ID_UTILISATEUR_KEY, String.valueOf(id));
-                                    Prefs.putString(NOM_KEY, "");
-                                    Prefs.putString(PRENOMS_KEY, "");
+                                    Prefs.putString(NOM_KEY, user.getString("lastName"));
+                                    Prefs.putString(PRENOMS_KEY, user.getString("firstName"));
                                     Prefs.putString(PASS_KEY, mot_de_passe);
                                     Prefs.putBoolean(MOOV_DATA_SHARING, true);
                                     Prefs.putString(STATUT_UTILISATEUR, "true");

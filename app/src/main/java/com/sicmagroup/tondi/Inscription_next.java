@@ -31,6 +31,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -95,6 +97,7 @@ import static com.sicmagroup.tondi.Connexion.NUMERO_COMPTE_KEY;
 import static com.sicmagroup.tondi.Connexion.PHOTO_CNI_KEY;
 import static com.sicmagroup.tondi.Connexion.PHOTO_KEY;
 import static com.sicmagroup.tondi.Connexion.PRENOMS_KEY;
+import static com.sicmagroup.tondi.Connexion.UUID_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.CODE_MARCHAND_KEY;
 import static com.sicmagroup.tondi.utils.Constantes.SERVEUR;
 import static com.sicmagroup.tondi.utils.Constantes.TOKEN;
@@ -119,6 +122,9 @@ public class Inscription_next extends AppCompatActivity {
     private FormBuilder mFormBuilder;
     public static final  int CROPPING_CODE =2;
     public static final  int CROPPING_CODE_CNI = 3;
+
+    private static final int GALLERY_REQUEST_CODE = 1;
+    private static final int CAMERA_REQUEST_CODE = 2;
     private static final int TAG_NOM = 11;
     private static final int TAG_PRENOMS = 12;
     private static final int TAG_TEL = 13;
@@ -143,6 +149,8 @@ public class Inscription_next extends AppCompatActivity {
     Utilitaire utilitaire;
     String CURRENT_UUID;
     String ACCESS_TOKEN;
+    int typeBouton = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,6 +198,27 @@ public class Inscription_next extends AppCompatActivity {
 
         photo_identite = findViewById(R.id.photo_identite);
         photo_cni = findViewById(R.id.photo_cni);
+
+
+        photo_identite.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                typeBouton = 1;
+                showPictureDialog();
+            }
+        });
+
+        photo_cni.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                typeBouton = 2;
+                showPictureDialog();
+            }
+        });
+
+
+
+
         Button btn_terminer = findViewById(R.id.btn_inscription_terminer);
         btn_terminer.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("ResourceAsColor")
@@ -216,11 +245,111 @@ public class Inscription_next extends AppCompatActivity {
                     Bitmap bm2 = ((BitmapDrawable) photo_cni.getDrawable()).getBitmap();
                     EditText cm = findViewById(R.id.code_marchand);
                     String cmValue = cm.getText().toString();
+                    Log.e("Image 1", bm.toString());
+                    Log.e("Image 2", bm2.toString());
                     uploadImage(bm, bm2, cmValue);
                 }
             }
         });
     }
+
+
+    private void showPictureDialog() {
+        AlertDialog.Builder pictureDialog = new AlertDialog.Builder(this);
+        pictureDialog.setTitle("Choisissez une action");
+        String[] pictureDialogItems = {
+                "Sélectionner depuis la galerie",
+                "Prendre une photo"};
+        pictureDialog.setItems(pictureDialogItems,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                choosePhotoFromGallery();
+                                break;
+                            case 1:
+                                checkCameraPermission();
+                                break;
+                        }
+                    }
+                });
+        pictureDialog.show();
+    }
+
+    public void choosePhotoFromGallery() {
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+    }
+
+    private void checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
+        } else {
+            takePhotoFromCamera();
+        }
+    }
+
+    private void takePhotoFromCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, CAMERA_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            if (requestCode == GALLERY_REQUEST_CODE) {
+                if (data != null && data.getData() != null) {
+                    Uri contentURI = data.getData();
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), contentURI);
+                        if(typeBouton == 1){
+                            photo_identite.setImageBitmap(bitmap);
+                        }else if(typeBouton == 2){
+                            photo_cni.setImageBitmap(bitmap);
+                        }
+                        Button btn_terminer = findViewById(R.id.btn_inscription_terminer);
+                        btn_terminer.setVisibility(View.VISIBLE);
+                       // uploadImageToServer(bitmap, path);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(Inscription_next.this, "Failed to load image!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(Inscription_next.this, "Failed to get image from gallery!", Toast.LENGTH_SHORT).show();
+                }
+            }
+            if (requestCode == CAMERA_REQUEST_CODE) {
+                if (data != null && data.getExtras() != null) {
+                    Bitmap thumbnail = (Bitmap) data.getExtras().get("data");
+                    if (thumbnail != null) {
+                        //Bitmap circularBitmap = getCircularBitmap(thumbnail);
+                        if(typeBouton == 1){
+                            photo_identite.setImageBitmap(thumbnail);
+                        }else if(typeBouton == 2){
+                            photo_cni.setImageBitmap(thumbnail);
+                        }
+                        //String path = saveImage(thumbnail);
+                        Button btn_terminer = findViewById(R.id.btn_inscription_terminer);
+                        btn_terminer.setVisibility(View.VISIBLE);
+                       // uploadImageToServer(thumbnail, path);
+                    } else {
+                        Toast.makeText(Inscription_next.this, "Failed to capture image!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(Inscription_next.this, "Failed to capture image!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else {
+            Toast.makeText(Inscription_next.this, "Action canceled or failed!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 
 
 
@@ -369,6 +498,13 @@ public class Inscription_next extends AppCompatActivity {
                 Log.e("task", "intask");
                 Log.e("La valeur du UUID", CURRENT_UUID);
                 Log.e("Le token est:", accessToken);
+                if(CURRENT_UUID == null){
+                    CURRENT_UUID = Prefs.getString(UUID_KEY,"");
+                }
+                if (accessToken == null){
+                    accessToken = Prefs.getString(TOKEN,"");
+                }
+
                 ResponseBody responseBody = okHttpClient.newCall(
                         new Request.Builder().url(Constantes.URL_INSCRIPTION_NEXT + CURRENT_UUID).put(body).build()
                 ).execute().body();
@@ -521,7 +657,7 @@ public class Inscription_next extends AppCompatActivity {
     /**
      * On load image button click, start pick  image chooser activity.
      */
-    public void onLoadImageClick(View view) {
+   /* public void onLoadImageClick(View view) {
         startActivityForResult(getPickImageChooserIntent(), 200);
     }
 
@@ -611,7 +747,7 @@ public class Inscription_next extends AppCompatActivity {
         }
 
         //}
-    }
+    }*/
 
 
     /**

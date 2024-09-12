@@ -1714,12 +1714,27 @@ public class NouvelleTontine extends AppCompatActivity  {
                                 nouvelle_tontine.setStatut(tontineJson.getString("state"));
 
                                 // Gestion de la date de déblocage
-                                JSONArray unBlockDateArray = tontineJson.getJSONArray("unBlockDate");
+
+                                try {
+                                    String unBlockDateString = tontineJson.getString("unBlockDate");
+                                    // Supposons que la date soit au format "YYYY-MM-DD"
+                                    String[] dateParts = unBlockDateString.split("-");
+                                    if (dateParts.length == 3) {
+                                        @SuppressLint("DefaultLocale") String unBlockDate = Integer.parseInt(dateParts[0]) + "-" +
+                                                String.format("%02d", Integer.parseInt(dateParts[1])) + "-" +
+                                                String.format("%02d", Integer.parseInt(dateParts[2]));
+                                        nouvelle_tontine.setDateDeblocage(unBlockDate);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                /*JSONArray unBlockDateArray = tontineJson.getJSONArray("unBlockDate");
                                 String unBlockDate = unBlockDateArray.getInt(0) + "-" +
                                         String.format("%02d", unBlockDateArray.getInt(1)) + "-" +
                                         String.format("%02d", unBlockDateArray.getInt(2));
                                 nouvelle_tontine.setDateDeblocage(unBlockDate);
-
+*/
                                 // Timestamps de création et de mise à jour
 
                                 nouvelle_tontine.setCreation(timestamp_creation);

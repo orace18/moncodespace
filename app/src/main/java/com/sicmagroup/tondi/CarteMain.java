@@ -2041,6 +2041,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                         Toast t = Toast.makeText(getApplicationContext(),"Mauvais montant! \nVeuillez taper un montant entre "+mise +"FCFA et 100 000FCFA",Toast.LENGTH_LONG);
                         t.setGravity(Gravity.CENTER|Gravity.CENTER, 0,0);
                         t.show();
+
                     }
                     else
                     {
@@ -2064,21 +2065,26 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                         }
                         Log.e(TAG, "onClick: "+total_restant + " cum "+tontine_main.getMontCumule(tontine_main.getStatut())+ " a co"+ total_a_cotiser);
                         if (Integer.parseInt(montant_value)<mise){
-                            Toast t = Toast.makeText(getApplicationContext(),"Le montant saisi est inférieur à la mise de "+mise+" F",Toast.LENGTH_LONG);
+                         /* Toast t = Toast.makeText(getApplicationContext(),"Le montant saisi est inférieur à la mise de "+mise+" F",Toast.LENGTH_LONG);
                             t.setGravity(Gravity.TOP|Gravity.CENTER, 0,0);
-                            t.show();
+                            t.show();*/
+                            Intent intent = new Intent(CarteMain.this, Message_non.class);
+                            intent.putExtra("msg_desc", "Le montant que vous essayez d'envoyer à COMUBA076 est en dessous du minimum de"+mise+"FCFA");
+                           // intent.putExtra("id_tontine", id_tontine);
+                            startActivity(intent);
                         } else if(Integer.parseInt(montant_value) > total_restant){
-                            Toast t = Toast.makeText(getApplicationContext(),"Le montant saisi dépasse les capacités de votre carnet",Toast.LENGTH_LONG);
+                            /*Toast t = Toast.makeText(getApplicationContext(),"Le montant saisi dépasse les capacités de votre carnet",Toast.LENGTH_LONG);
                             t.setGravity(Gravity.CENTER, 0,0);
-                            t.show();
+                            t.show();*/
+                            Intent intent = new Intent(CarteMain.this, Message_non.class);
+                            intent.putExtra("msg_desc", "Le montant saisi dépasse les capacités de votre carnet");
+                            // intent.putExtra("id_tontine", id_tontine);
+                            startActivity(intent);
                         }
                         else{
-//
                                 //Toast.makeText(getApplicationContext(),"efvgehf",Toast.LENGTH_LONG).show();
                                 alertView("Nouveau Versement","Confirmez-vous ce versement de "+montant_value+" F",montant_value);
                                 dialog.dismiss();
-
-
                         }
                     }
                 }
@@ -3220,7 +3226,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                             }
 
                         }  else if (volleyError instanceof ParseError) {
-                            message = "Parsing error! Please try again later";
+//message = "Parsing error! Please try again later";
                             message = "Une erreur est survenue! Patientez et réessayez.";
                             Dialog dialog = new Dialog(CarteMain.this);
                             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);

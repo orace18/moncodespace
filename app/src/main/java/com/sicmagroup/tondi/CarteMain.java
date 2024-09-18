@@ -621,6 +621,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                             Log.e(TAG, date_deblocage.before(now)+"");
                             if(date_deblocage.before(now)){
                                 btn_encaisser.setVisibility(View.VISIBLE);
+
                             } else {
                                 btn_encaisser.setVisibility(View.GONE);
                             }
@@ -653,8 +654,10 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
                         Log.e(TAG, date_deblocage.before(now)+"");
                         if(date_deblocage.before(now)){
                             lockedIcon.setImageResource(R.drawable.lock_open_48px);
+                            btn_terminer.setVisibility(View.VISIBLE);
                         } else {
                             lockedIcon.setImageResource(R.drawable.lock_48px);
+                            btn_terminer.setVisibility(View.VISIBLE);
                         }
                     } catch(ParseException e){
                         e.printStackTrace();
@@ -2773,7 +2776,182 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
          progressDialog.show();
      }
 
-     private void requete_retry_retrait_2(final int id_tontine)
+
+     private void requete_retry_retrait_2(final int id_tontine) {
+         final Tontine tontine = SugarRecord.findById(Tontine.class, (long) id_tontine);
+         RequestQueue queue = Volley.newRequestQueue(CarteMain.this);
+
+         // Créer un JSONObject pour les paramètres
+         JSONObject jsonBody = new JSONObject();
+         try {
+             jsonBody.put("customerNumber", Prefs.getString(TEL_KEY, ""));
+             jsonBody.put("idTontine", String.valueOf(tontine.getId_server()));
+         } catch (JSONException e) {
+             e.printStackTrace();
+         }
+
+         // Utiliser JsonObjectRequest au lieu de StringRequest
+         JsonObjectRequest postRequest = new JsonObjectRequest(Request.Method.POST, Constantes.URL_RETRY_WITHDRAW, jsonBody,
+                 new Response.Listener<JSONObject>() {
+                     @SuppressLint("ResourceAsColor")
+                     @Override
+                     public void onResponse(JSONObject response) {
+                         Log.e("ResponseTagP", response.toString());
+                         try {
+
+                             JSONObject result = response;
+                             //final JSONArray array = result.getJSONArray("data");
+                             Log.e("test", String.valueOf(result.getInt("responseCode")));
+                             Long id_retrait = Long.valueOf(0);
+                             if (result.getInt("responseCode") == 0) {
+                                 // maj des dates
+                                 Date currentTime = Calendar.getInstance().getTime();
+                                 long output_creation=currentTime.getTime()/1000L;
+                                 String str_creation=Long.toString(output_creation);
+                                 long timestamp_creation = Long.parseLong(str_creation) * 1000;
+                                 long output_maj=currentTime.getTime()/1000L;
+                                 String str_maj=Long.toString(output_maj);
+                                 long timestamp_maj = Long.parseLong(str_maj) * 1000;
+                                 progressDialog.dismiss();
+                                 JSONArray resultat = result.getJSONArray("body");
+                                 String[] actionGroup = {};
+                                 String action = "";
+                                 String object = "";
+                                 String token = "";
+                                 for (int i = 0; i < resultat.length(); i++) {
+
+                                     JSONObject content = new JSONObject(resultat.get(i).toString());
+                                     actionGroup = content.getString("action").split("#");
+                                     action = actionGroup[0];
+                                     object = actionGroup[1];
+                                     JSONObject data = new JSONObject(content.getJSONObject("data").toString());
+                                     Utilisateur u = SugarRecord.find(Utilisateur.class, "id_utilisateur = ? ", Prefs.getString(ID_UTILISATEUR_KEY, "")).get(0);
+
+                                     if ("add".equals(action)) {
+                                         if("retraits".equals(object))
+                                         {
+                                             Retrait retrait = new Retrait();
+                                             retrait.setToken(data.getString("token"));
+                                             retrait.setCreation(timestamp_creation);
+                                             retrait.setMaj(timestamp_maj);
+                                             retrait.setMontant(data.getString("amount"));
+                                             retrait.setStatut(data.getString("state"));
+                                             List<Tontine> t = SugarRecord.find(Tontine.class, "id_server = ?", tontine_main.getId_server());
+                                             if(t.size()>0)
+                                                 retrait.setTontine(t.get(0));
+                                             retrait.setUtilisateur(u);
+                                             retrait.save();
+                                             id_retrait = retrait.getId();
+                                             Log.e("cartemain", "id_retriat = "+id_retrait);
+
+                                             token = data.getString("token");
+                                         }
+                                     }
+                                     else if("update".equals(action)){
+                                         if (object.equals("tontines")) {
+                                             List<Tontine> old = Tontine.find(Tontine.class, "id_server = ?", data.getString("id"));
+                                             Log.e("old_t_size", String.valueOf(old.size()));
+                                             if (old.size() > 0) {
+                                                 if(data.has("state")) {
+                                                     old.get(0).setStatut(data.getString("state"));
+                                                     Log.e("old_t_stat", data.getString("state"));
+                                                 }
+                                                 old.get(0).setMaj(timestamp_maj);
+                                                 old.get(0).save();
+                                             }
+                                         }
+                                     }
+                                 }
+                                 if(id_retrait != null)
+                                 {
+                                     Log.e("cartemain", "id_retriat = "+id_retrait);
+                                     String msg="Le code de retrait portant le token "+ token +" est désormais actif pour 24H. Passé ce délai il sera inactif, vous pourrez toujours en généré autant de fois que vous voulez.";
+                                     Intent i = new Intent(CarteMain.this, Message_ok.class);
+                                     i.putExtra("msg_desc",msg);
+                                     i.putExtra("id_retrait",id_retrait);
+                                     startActivity(i);
+                                 }
+                                 else
+                                 {
+                                     String msg="Une erreur est survenue!";
+                                     Intent i = new Intent(CarteMain.this, Message_non.class);
+                                     i.putExtra("msg_desc",msg);
+                                     i.putExtra("id_tontine",id_tontine);
+//                                    i.putExtra("class","com.sicmagroup.tondi.MesTontines");
+                                     startActivity(i);
+                                 }
+
+
+                             }
+                             else{
+                                 progressDialog.dismiss();
+                                 String msg=result.getString("body");
+                                 Intent i = new Intent(CarteMain.this, Message_non.class);
+                                 i.putExtra("msg_desc",msg);
+                                 i.putExtra("id_tontine",id_tontine);
+//                                i.putExtra("class","com.sicmagroup.tondi.MesTontines");
+                                 startActivity(i);
+                             }
+
+                         } catch (JSONException e) {
+                             Log.e("errorParsing", "JSON Parsing Error: " + e.getMessage());
+                         }
+                     }
+                 },
+                 new Response.ErrorListener() {
+                     @Override
+                     public void onErrorResponse(VolleyError volleyError) {
+                         progressDialog.dismiss();
+                         handleVolleyError(volleyError, id_tontine);
+                     }
+                 }) {
+             @Override
+             public Map<String, String> getHeaders() throws AuthFailureError {
+                 Map<String, String> headers = new HashMap<>();
+                 headers.put("Content-Type", "application/json");
+                 headers.put("Authorization", "Bearer " + accessToken); // Ajoute le token ici
+                 return headers;
+             }
+         };
+
+         postRequest.setRetryPolicy(new DefaultRetryPolicy(
+                 35000,
+                 -1,
+                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+         queue.add(postRequest);
+
+         progressDialog = new ProgressDialog(CarteMain.this);
+         progressDialog.setCancelable(false);
+         progressDialog.setMessage("Veuillez patienter SVP! \nInitialisation de la requête de retrait en espèce...");
+         progressDialog.show();
+     }
+
+     // Méthode pour afficher les erreurs
+     private void showMessageError(String message, int id_tontine) {
+         Intent i = new Intent(CarteMain.this, Message_non.class);
+         i.putExtra("msg_desc", message);
+         i.putExtra("id_tontine", id_tontine);
+         startActivity(i);
+     }
+
+     // Gestion des erreurs Volley
+     private void handleVolleyError(VolleyError volleyError, int id_tontine) {
+         String message;
+         if (volleyError instanceof NetworkError || volleyError instanceof AuthFailureError || volleyError instanceof TimeoutError) {
+             message = "Aucune connexion Internet! Patientez et réessayez.";
+         } else if (volleyError instanceof ServerError) {
+             message = "Impossible de contacter le serveur! Patientez et réessayez.";
+         } else if (volleyError instanceof ParseError) {
+             message = "Une erreur est survenue! Patientez et réessayez.";
+         } else {
+             message = "Erreur inconnue.";
+         }
+         showMessageError(message, id_tontine);
+     }
+
+
+
+    /* private void requete_retry_retrait_2(final int id_tontine)
     {
         final Tontine tontine = SugarRecord.findById(Tontine.class, (long)id_tontine);
         RequestQueue queue = Volley.newRequestQueue(CarteMain.this);
@@ -3022,7 +3200,7 @@ import static com.sicmagroup.tondi.utils.Constantes.url_refresh_token;
         progressDialog.show();
 
 
-    }
+    }*/
 
 
     private void alertView(String title , String message, final String montant_value) {

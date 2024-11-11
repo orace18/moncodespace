@@ -553,7 +553,7 @@ public class Inscription extends AppCompatActivity {
         Log.d("onResume", "fore");
         Prefs.putBoolean(ACCESS_BOOL, true);
 
-
+/*
         final Button b = findViewById(R.id.cgu_fon);
         final Button b1 = findViewById(R.id.cgu_fr);
 
@@ -606,7 +606,7 @@ public class Inscription extends AppCompatActivity {
                 circularProgressBar1.setProgressWithAnimation(100, (animationDuration - mp_cgu_fr.getCurrentPosition())); // Default duration = 1500ms
 
             }
-        }
+        }*/
 
     }
 

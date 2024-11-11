@@ -2290,7 +2290,7 @@ Log.e("Le body de la connexion",jsonObject.toString());
                             // Extraire le code OTP du message
                             String otpCode = extractOtpFromMessage(messageBody);
                             // Mise à jour du editText de otp là
-                            Toast.makeText(context, "Code OTP reçu: " + otpCode, Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(context, "Code OTP reçu: " + otpCode, Toast.LENGTH_SHORT).show();
                             editText_codeOtp.setText(otpCode);
                         }
                     }

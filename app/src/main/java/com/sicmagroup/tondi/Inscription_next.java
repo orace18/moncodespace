@@ -196,6 +196,11 @@ public class Inscription_next extends AppCompatActivity {
             Log.e("IntentError", "L'extra 'id_utilisateur' n'est pas passé à l'activité Inscription_next.");
         }
 
+        if(CURRENT_UUID == null || ACCESS_TOKEN == null){
+            CURRENT_UUID = Prefs.getString(UUID_KEY,"");
+            ACCESS_TOKEN = Prefs.getString(TOKEN,"");
+        }
+
         photo_identite = findViewById(R.id.photo_identite);
         photo_cni = findViewById(R.id.photo_cni);
 
@@ -348,11 +353,6 @@ public class Inscription_next extends AppCompatActivity {
             Toast.makeText(Inscription_next.this, "Action canceled or failed!", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-
-
-
 
 
     private ArrayList<String> findUnAskedPermissions(ArrayList<String> wanted) {
